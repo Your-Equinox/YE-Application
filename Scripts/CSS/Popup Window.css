@@ -1,0 +1,28 @@
+/* Styles/modal.css */
+
+/* Styles the popup window */
+#settingsModal {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+/* Styles the background overlay */
+#settingsModal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+#reminderSettings {
+    list-style-type: none;
+    padding: 0;
+}
+
+#reminderSettings li {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}

@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Equinox</title>
+
+  <link rel="stylesheet" href="/Styles/modal.css">
 </head>
 <body>
 <h2>My Dashboard</h2>
@@ -23,7 +25,10 @@
 
 <fieldset>
   <legend>Your Reminders</legend>
-  <a href= "settings.html">⚙️ Notification Settings</a>
+
+  <button type="button" id="openSettingsBtn" style="background: none; border: none; color: blue; text-decoration:
+  underline; cursor: pointer; padding: 0; margin-bottom: 10px; font-size: 1rem;">⚙️ Notification Settings</button>
+
   <form id="reminder-form">
     <label for="reminder-title"></label><input type="text" id="reminder-title" placeholder="Need a little reminder?" />
     <label for="reminder-time"></label><input type="datetime-local" id="reminder-time" />
@@ -33,9 +38,31 @@
   </form>
 </fieldset>
 
+<dialog id="settingsModal">
+  <div class="modal-content">
+    <h2>Notification Settings</h2>
+
+    <fieldset>
+      <legend>Adjust Reminder Alerts</legend>
+      <p>Adjust your notification settings here:</p>
+      <ul id="reminderSettings"></ul>
+    </fieldset>
+
+    <br>
+    <button type="button" id="closeSettingsBtn">Close Settings</button>
+  </div>
+</dialog>
+
+<dialog id="notification-modal" style="padding: 20px; border-radius: 8px; border: 2px solid #d9534f; max-width: 400px; text-align: center;">
+  <h2 style="margin-top: 0; color: #d9534f;">⚠️ Deadline Alert!</h2>
+  <p id="notification-message" style="font-size: 1.2rem; font-weight: bold;"></p>
+  <button type="button" id="close-notification-btn" style="padding: 10px 20px; cursor: pointer;">Got it!</button>
+</dialog>
+
 <script type="module" src="/Scripts/Tasks/AddTasks.ts"></script>
 <script type="module" src="/Scripts/Tasks/DeleteTasks.ts"></script>
 <script type="module" src="/Scripts/Reminders/AddReminder.ts"></script>
 <script type="module" src="/Scripts/Reminders/DeleteReminder.ts"></script>
+<script type="module" src="/Scripts/Reminders/ReminderSettings.ts"></script>
 </body>
 </html>
