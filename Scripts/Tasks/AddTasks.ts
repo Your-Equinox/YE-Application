@@ -1,27 +1,28 @@
 import { v4 as uuidv4 } from "uuid"
 
-type Task = {
+export type Task = {
     id: string
     title: string
     completed: boolean
     createdAt: Date
 }
 
-const list = document.querySelector<HTMLUListElement>("#list")!
-const form = document.querySelector<HTMLFormElement>("#new-task-form")!
-const input = document.querySelector<HTMLInputElement>("#new-task-title")!
+const taskForm = document.querySelector<HTMLFormElement>("#task-form")!
+const taskInput = document.querySelector<HTMLInputElement>("#task-title")!
 
-const tasks: Task[] = loadTasks()
+export const taskList = document.querySelector<HTMLUListElement>("#task-list")!
+
+export const tasks: Task[] = loadTasks()
 tasks.forEach(addListItem)
 
-form.addEventListener("submit", (e) => {
+taskForm.addEventListener("submit", (e) => {
     e.preventDefault()
-    if (!input.value) return
+    if (!taskInput.value) return
 
     const newTask: Task = {
         id: uuidv4(),
-        title: input.value,
-        completed: true,
+        title: taskInput.value,
+        completed: false,
         createdAt: new Date(),
     }
 
@@ -29,10 +30,10 @@ form.addEventListener("submit", (e) => {
     saveTasks()
     addListItem(newTask)
 
-    input.value = ""
+    taskInput.value = ""
 })
 
-function addListItem(task: Task) {
+export function addListItem(task: Task) {
     const item = document.createElement("li")
     const label = document.createElement("label")
     const checkbox = document.createElement("input")
@@ -47,10 +48,10 @@ function addListItem(task: Task) {
 
     label.append(checkbox, task.title)
     item.append(label)
-    list.append(item)
+    taskList.append(item)
 }
 
-function saveTasks() {
+export function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks))
 }
 
