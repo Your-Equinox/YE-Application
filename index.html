@@ -3,17 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tasks</title>
+  <title>Personal Management System</title>
 </head>
 <body>
+<h2>My Dashboard</h2>
 <ul id="list"></ul>
 
-<form id="new-task-form">
-  <input type="text" id="new-task-title" />
-  <button type="submit">Add</button>
-</form>
+<fieldset>
+  <legend>Your Tasks</legend>
+  <form id="task-form">
+    <label for="task-title"></label><input type="text" id="task-title" placeholder="What would like to learn today?" />
+    <ul id="task-list"></ul>
+    <button type="submit" id="add-task-btn">Add Task</button>
+    <button type="button" id="delete-task">Delete Task</button>
+  </form>
+</fieldset>
 
-<!-- Vite entry -->
-<script type="module" src="/src/main.ts"></script>
+<br />
+
+<fieldset>
+  <legend>Your Reminders</legend>
+  <a href= "settings.html">⚙️ Notification Settings</a>
+  <form id="reminder-form">
+    <label for="reminder-title"></label><input type="text" id="reminder-title" placeholder="Need a little reminder?" />
+    <label for="reminder-time"></label><input type="datetime-local" id="reminder-time" />
+    <ul id="reminder-list"></ul>
+    <button type="submit" id="add-reminder-btn">Add Reminder</button>
+    <button type="button" id="delete-reminders">Delete Selected/Past Due Reminders</button>
+  </form>
+</fieldset>
+
+<script type="module" src="/Scripts/Tasks/AddTasks.ts"></script>
+<script type="module" src="/Scripts/Tasks/DeleteTasks.ts"></script>
+<script type="module" src="/Scripts/Reminders/AddReminder.ts"></script>
+<script type="module" src="/Scripts/Reminders/DeleteReminder.ts"></script>
 </body>
 </html>
