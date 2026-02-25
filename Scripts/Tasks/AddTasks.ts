@@ -15,6 +15,7 @@ export const taskList = document.querySelector<HTMLUListElement>("#task-list")!
 export const tasks: Task[] = loadTasks()
 tasks.forEach(addListItem)
 
+// Creation of new tasks
 taskForm.addEventListener("submit", (e) => {
     e.preventDefault()
     if (!taskInput.value) return
@@ -32,6 +33,7 @@ taskForm.addEventListener("submit", (e) => {
 
     taskInput.value = ""
 })
+
 
 export function addListItem(task: Task) {
     const item = document.createElement("li")
@@ -51,10 +53,12 @@ export function addListItem(task: Task) {
     taskList.append(item)
 }
 
+// Saves tasks into local storage
 export function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks))
 }
 
+// Helper function for loading savetasks
 function loadTasks(): Task[] {
     const taskJSON = localStorage.getItem("tasks")
     if (!taskJSON) return []

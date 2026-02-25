@@ -1,4 +1,9 @@
- export type Reminder = {
+
+/*
+This section serves as a way for users to configure a specific set of settings for their reminders and adjust their
+their reminders to how they wish although right now the sections are limited.
+ */
+export type Reminder = {
         id: string
         title: string
         completed: boolean
@@ -26,9 +31,11 @@
 
         const options = [
             { label: "At time of event", value: "0" },
-            { label: "15 minutes before", value: "15" },
-            { label: "1 hour before", value: "60" },
-            { label: "1 day before", value: "1440" }
+            { label: "15 Minutes", value: "15" },
+            { label: "1 Hour", value: "60" },
+            { label: "1 Day", value: "1440" },
+            { label: "1 Week", value: "10080" },
+            { label: "1 Month", value: "43800" }
         ];
 
         options.forEach(option => {

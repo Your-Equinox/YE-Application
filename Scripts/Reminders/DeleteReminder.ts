@@ -2,6 +2,7 @@ import {reminderList, saveReminders, reminders, displayReminder, isPastDue} from
 
 export const deleteReminders = document.querySelector<HTMLButtonElement>("#delete-reminders")!;
 
+// Deleting Reminders Button
 deleteReminders.addEventListener("click", () => {
 
     const remainingReminders = reminders.filter(reminder => {

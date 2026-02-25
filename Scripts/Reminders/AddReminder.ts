@@ -9,6 +9,7 @@ export type Reminder = {
     reminderSent?: boolean
 }
 
+
 export const reminderForm = document.querySelector<HTMLFormElement>("#reminder-form")!
 export const reminderInput = document.querySelector<HTMLInputElement>("#reminder-title")!
 export const reminderTimeInput = document.querySelector<HTMLInputElement>("#reminder-time")!
@@ -51,6 +52,7 @@ setInterval(() => {
     }
 }, 10000);
 
+// Submit button to add a task
 reminderForm.addEventListener("submit", (e) => {
     e.preventDefault()
     if (!reminderInput.value) return
@@ -84,6 +86,7 @@ reminderForm.addEventListener("submit", (e) => {
 
 })
 
+// Allows the reminders to be added into a list along with their checkbox
 export function addListItem(reminder: Reminder) {
     const item = document.createElement("li")
     const label = document.createElement("label")
@@ -102,11 +105,13 @@ export function addListItem(reminder: Reminder) {
     reminderList.append(item)
 }
 
+// Saves reminders in local storage so that the users can easily access
 export function saveReminders() {
     // Saving under a new key to match the new system
     localStorage.setItem("reminders", JSON.stringify(reminders))
 }
 
+// Displays the previously stored reminders
 export function displayReminder(reminders: Reminder) {
     const item = document.createElement("li");
     const label = document.createElement("label");
@@ -132,14 +137,14 @@ export function displayReminder(reminders: Reminder) {
 
     reminderList.append(item);
 }
-
+// If the reminders are past due then they will be deleted
 export function isPastDue(reminder: Reminder): boolean {
     if (!reminder.remindAt) return false;
     const now = new Date();
     return reminder.remindAt < now;
 }
 
-
+//Loads the array from local storage
 export function loadReminders(): Reminder[] {
     const remindersJSON = localStorage.getItem("reminders")
     if (!remindersJSON) return []
