@@ -33,11 +33,6 @@ const colorPalette = [
     { className: "bg-amber-500", hex: "#f59e0b" },
 ];
 
-const sampleTitles = [
-    "Product sync", "Design review", "Data pipeline", "Infra standup",
-    "Research slot", "Customer call", "Doc writing", "1:1"
-];
-
 function pickRandom(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -59,7 +54,7 @@ function generateRandomEvents(baseDate: any, count = 12): CalendarEvent[] {
 
         events.push({
             id: `rand-${i}-${Date.now()}`,
-            title: pickRandom(sampleTitles),
+            title: "string",
             start: start.format("YYYY-MM-DD HH:mm"),
             end: end.format("YYYY-MM-DD HH:mm"),
             color: color.className,
@@ -75,9 +70,6 @@ const state: CalendarState = {
     currentDate: dayjs(),
     events: [],
 };
-
-// Fill with some random events
-state.events.push(...generateRandomEvents(dayjs(), 14));
 
 // SYNC REMINDERS TO CALENDAR
 function syncReminders() {
