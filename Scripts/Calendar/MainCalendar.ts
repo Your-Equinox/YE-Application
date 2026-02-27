@@ -1,0 +1,691 @@
+// Scripts/Calendar/Calendar.ts
+
+// Declare dayjs from the CDN
+declare const dayjs: any;
+
+// Define Types for TypeScript
+export interface CalendarEvent {
+    id: string;
+    title: string;
+    start: string;
+    end: string;
+    color: string;
+    rawColor: string;
+}
+
+export interface CalendarState {
+    currentView: "month" | "week" | "day";
+    currentDate: any; // dayjs instance
+    events: CalendarEvent[];
+}
+
+// ==================================================================================
+//  1. Data & State Management
+// ==================================================================================
+const colorPalette = [
+    { className: "bg-blue-500", hex: "#3b82f6" },
+    { className: "bg-indigo-500", hex: "#6366f1" },
+    { className: "bg-purple-500", hex: "#a855f7" },
+    { className: "bg-green-500", hex: "#22c55e" },
+    { className: "bg-red-500", hex: "#ef4444" },
+    { className: "bg-orange-500", hex: "#f97316" },
+    { className: "bg-cyan-500", hex: "#06b6d4" },
+    { className: "bg-amber-500", hex: "#f59e0b" },
+];
+
+const sampleTitles = [
+    "Product sync", "Design review", "Data pipeline", "Infra standup",
+    "Research slot", "Customer call", "Doc writing", "1:1"
+];
+
+function pickRandom(arr: any[]) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateRandomEvents(baseDate: any, count = 12): CalendarEvent[] {
+    const startOfWeek = baseDate.startOf("week");
+    const events: CalendarEvent[] = [];
+
+    for (let i = 0; i < count; i++) {
+        const dayOffset = Math.floor(Math.random() * 7);
+        const startHour = 8 + Math.floor(Math.random() * 9); // 8-16
+        const startMinute = Math.random() > 0.5 ? 30 : 0;
+        const durationSlots = [30, 45, 60, 75, 90, 120];
+        const duration = pickRandom(durationSlots);
+
+        const start = startOfWeek.add(dayOffset, "day").hour(startHour).minute(startMinute);
+        const end = start.add(duration, "minute");
+        const color = pickRandom(colorPalette);
+
+        events.push({
+            id: `rand-${i}-${Date.now()}`,
+            title: pickRandom(sampleTitles),
+            start: start.format("YYYY-MM-DD HH:mm"),
+            end: end.format("YYYY-MM-DD HH:mm"),
+            color: color.className,
+            rawColor: color.hex,
+        });
+    }
+
+    return events;
+}
+
+const state: CalendarState = {
+    currentView: "week",
+    currentDate: dayjs(),
+    events: [],
+};
+
+// Fill with some random events
+state.events.push(...generateRandomEvents(dayjs(), 14));
+
+// SYNC REMINDERS TO CALENDAR
+const savedRemindersStr = localStorage.getItem("reminders");
+if (savedRemindersStr) {
+    const savedReminders = JSON.parse(savedRemindersStr);
+
+    const reminderEvents: CalendarEvent[] = savedReminders
+        .filter((r: any) => !r.completed && r.remindAt)
+        .map((r: any) => {
+            const start = dayjs(r.remindAt);
+            return {
+                id: r.id,
+                title: `🔔 ${r.title}`,
+                start: start.format("YYYY-MM-DD HH:mm"),
+                end: start.add(1, 'hour').format("YYYY-MM-DD HH:mm"),
+                color: "bg-rose-500",
+                rawColor: "#f43f5e",
+            };
+        });
+
+    state.events.push(...reminderEvents);
+}
+
+// Helper Utilities
+const Utils = {
+    isTimeBlockEvent: (e: CalendarEvent) => {
+        const s = dayjs(e.start);
+        const end = dayjs(e.end);
+        return s.isSame(end, "day");
+    },
+    getCellHeight: () => 60, // 60px per hour
+};
+
+// ==================================================================================
+//  2. Core Engine: Layout Calculation
+// ==================================================================================
+const CalendarEngine = {
+    generateMonthGrid: (date: any) => {
+        const start = date.startOf("month").startOf("week");
+        const end = date.endOf("month").endOf("week");
+        const weeks = [];
+        let curr = start;
+        while (curr.isBefore(end)) {
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                days.push({
+                    date: curr,
+                    dateStr: curr.format("YYYY-MM-DD"),
+                });
+                curr = curr.add(1, "day");
+            }
+            weeks.push(days);
+        }
+        return weeks;
+    },
+
+    generateTimeColumns: (date: any, viewType: string) => {
+        const days = [];
+        if (viewType === "day") {
+            days.push({
+                date: date,
+                dateStr: date.format("YYYY-MM-DD"),
+            });
+        } else {
+            let curr = date.startOf("week");
+            for (let i = 0; i < 7; i++) {
+                days.push({
+                    date: curr,
+                    dateStr: curr.format("YYYY-MM-DD"),
+                });
+                curr = curr.add(1, "day");
+            }
+        }
+        return days;
+    },
+
+    calculateTimeLayout: (events: CalendarEvent[], dateStr: string) => {
+        let dayEvents = events
+            .filter((e) => {
+                const s = dayjs(e.start);
+                return (
+                    s.format("YYYY-MM-DD") === dateStr &&
+                    Utils.isTimeBlockEvent(e)
+                );
+            })
+            .map((e) => {
+                const s = dayjs(e.start);
+                const end = dayjs(e.end);
+                const startMin = s.hour() * 60 + s.minute();
+                const duration = end.diff(s, "minute");
+                const endMin = startMin + duration;
+
+                const top = startMin * (Utils.getCellHeight() / 60);
+                const height = Math.max(
+                    20,
+                    duration * (Utils.getCellHeight() / 60),
+                );
+
+                return {
+                    origin: e,
+                    top,
+                    height,
+                    startMin,
+                    endMin,
+                    widthPercent: 100,
+                    leftPercent: 0,
+                    colIndex: 0
+                };
+            });
+
+        if (dayEvents.length === 0) return [];
+
+        dayEvents.sort((a, b) => a.startMin - b.startMin || b.endMin - a.endMin);
+
+        const groups: any[] = [];
+        let currentGroup = [dayEvents[0]];
+        let groupEnd = dayEvents[0].endMin;
+
+        for (let i = 1; i < dayEvents.length; i++) {
+            const ev = dayEvents[i];
+            if (ev.startMin < groupEnd) {
+                currentGroup.push(ev);
+                groupEnd = Math.max(groupEnd, ev.endMin);
+            } else {
+                groups.push(currentGroup);
+                currentGroup = [ev];
+                groupEnd = ev.endMin;
+            }
+        }
+        groups.push(currentGroup);
+
+        groups.forEach((group) => {
+            const columns: number[] = [];
+            group.forEach((ev: any) => {
+                let placed = false;
+                for (let i = 0; i < columns.length; i++) {
+                    if (columns[i] <= ev.startMin) {
+                        columns[i] = ev.endMin;
+                        ev.colIndex = i;
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    columns.push(ev.endMin);
+                    ev.colIndex = columns.length - 1;
+                }
+            });
+
+            const numCols = columns.length;
+            group.forEach((ev: any) => {
+                ev.widthPercent = 100 / numCols;
+                ev.leftPercent = ev.colIndex * ev.widthPercent;
+            });
+        });
+
+        return dayEvents;
+    },
+
+    calculateMonthLayout: (events: CalendarEvent[], weekStart: any, weekEnd: any) => {
+        const weekEvents = events.filter((e) => {
+            return (
+                !dayjs(e.end).isBefore(weekStart) &&
+                !dayjs(e.start).isAfter(weekEnd)
+            );
+        });
+
+        const visualItems = weekEvents.map((e) => {
+            const s = dayjs(e.start);
+            const end = dayjs(e.end);
+            const displayStart = s.isBefore(weekStart) ? weekStart : s;
+            const displayEnd = end.isAfter(weekEnd) ? weekEnd : end;
+
+            return {
+                origin: e,
+                startIdx: displayStart.diff(weekStart, "day"),
+                span: displayEnd.diff(displayStart, "day") + 1,
+                isStart: !s.isBefore(weekStart),
+                isEnd: !end.isAfter(weekEnd),
+                slot: 0
+            };
+        });
+
+        visualItems.sort((a, b) => a.startIdx - b.startIdx || b.span - a.span);
+        const slots: number[] = [];
+        visualItems.forEach((item) => {
+            let i = 0;
+            while (true) {
+                if (!slots[i] || slots[i] < item.startIdx) {
+                    slots[i] = item.startIdx + item.span - 1;
+                    item.slot = i;
+                    break;
+                }
+                i++;
+            }
+        });
+        return visualItems;
+    },
+};
+
+// ==================================================================================
+//  3. Drag Manager
+// ==================================================================================
+const DragManager = {
+    state: null as any,
+
+    initMonthDrag(el: HTMLElement, eventData: CalendarEvent, visualData: any, renderCallback: () => void) {
+        el.onmousedown = (e) => {
+            if (e.button !== 0) return;
+            e.stopPropagation();
+
+            const row = el.closest(".month-row") as HTMLElement;
+            const cellW = row.offsetWidth / 7;
+            let mode = "move";
+            if ((e.target as HTMLElement).classList.contains("left")) mode = "resize-left";
+            if ((e.target as HTMLElement).classList.contains("right")) mode = "resize-right";
+
+            this.startDrag({
+                type: "month",
+                mode,
+                event: eventData,
+                startX: e.clientX,
+                startDate: dayjs(eventData.start),
+                endDate: dayjs(eventData.end),
+                cellW,
+                renderCallback,
+                clickOffsetDays: Math.floor((e.clientX - el.getBoundingClientRect().left) / cellW),
+            });
+        };
+    },
+
+    initTimeDrag(el: HTMLElement, eventData: CalendarEvent, layoutData: any, renderCallback: () => void) {
+        el.onmousedown = (e) => {
+            if (e.button !== 0) return;
+            e.stopPropagation();
+
+            const col = el.closest(".day-column") as HTMLElement;
+            const colRect = col.getBoundingClientRect();
+
+            let mode = "move";
+            if ((e.target as HTMLElement).classList.contains("resize-v")) mode = "resize-bottom";
+
+            this.startDrag({
+                type: "time",
+                mode,
+                event: eventData,
+                startX: e.clientX,
+                startY: e.clientY,
+                startDate: dayjs(eventData.start),
+                endDate: dayjs(eventData.end),
+                colW: colRect.width,
+                renderCallback,
+                origStartMin: dayjs(eventData.start).hour() * 60 + dayjs(eventData.start).minute(),
+                origDuration: dayjs(eventData.end).diff(dayjs(eventData.start), "minute"),
+            });
+        };
+    },
+
+    startDrag(stateData: any) {
+        this.state = stateData;
+        document.body.style.cursor = "grabbing";
+        document.querySelectorAll(`[data-eid="${stateData.event.id}"]`).forEach((el) => el.classList.add("is-dragging-source"));
+
+        const proxy = document.getElementById("drag-proxy")!;
+        proxy.innerHTML = stateData.event.title;
+        proxy.style.backgroundColor = stateData.event.rawColor;
+        proxy.style.color = "white";
+        proxy.style.padding = "4px 8px";
+        proxy.style.fontSize = "12px";
+
+        document.addEventListener("mousemove", this.onMove);
+        document.addEventListener("mouseup", this.onUp);
+    },
+
+    onMove: (e: MouseEvent) => {
+        const self = DragManager;
+        if (!self.state) return;
+        const s = self.state;
+
+        const proxy = document.getElementById("drag-proxy")!;
+        proxy.style.visibility = "visible";
+        proxy.style.left = e.clientX + 10 + "px";
+        proxy.style.top = e.clientY + 10 + "px";
+        proxy.style.transform = "none";
+
+        if (s.type === "month") self.handleMonthMove(e, s);
+        if (s.type === "time") self.handleTimeMove(e, s);
+    },
+
+    handleMonthMove(e: MouseEvent, s: any) {
+        const row = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement)?.closest(".month-row") as HTMLElement;
+        if (!row) return;
+
+        const rowStart = dayjs(row.dataset.date);
+        const cellIdx = Math.floor((e.clientX - row.getBoundingClientRect().left) / s.cellW);
+        const hoverDate = rowStart.add(Math.max(0, Math.min(6, cellIdx)), "day");
+
+        let newStart = s.startDate;
+        let newEnd = s.endDate;
+
+        if (s.mode === "move") {
+            const duration = s.endDate.diff(s.startDate, "day");
+            newStart = hoverDate;
+            newEnd = newStart.add(duration, "day");
+        } else if (s.mode === "resize-right") {
+            newEnd = hoverDate;
+            if (newEnd.isBefore(newStart)) newEnd = newStart;
+        }
+
+        DragManager.renderMonthGhost(newStart, newEnd);
+        s.tentativeStart = newStart;
+        s.tentativeEnd = newEnd;
+    },
+
+    handleTimeMove(e: MouseEvent, s: any) {
+        const col = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement)?.closest(".day-column") as HTMLElement;
+        if (!col) return;
+
+        const newDateBase = dayjs(col.dataset.date);
+        const rect = col.getBoundingClientRect();
+
+        const relY = e.clientY - rect.top;
+        const rawMins = (relY / Utils.getCellHeight()) * 60;
+        const snappedMins = Math.max(0, Math.min(1440, Math.round(rawMins / 15) * 15));
+
+        let newStart, newEnd;
+
+        if (s.mode === "move") {
+            newStart = newDateBase.hour(0).minute(snappedMins);
+            newEnd = newStart.add(s.origDuration, "minute");
+        } else if (s.mode === "resize-bottom") {
+            newStart = s.startDate;
+            if (newDateBase.isSame(s.startDate, "day")) {
+                const endMins = Math.max(s.origStartMin + 15, snappedMins);
+                newEnd = newDateBase.hour(0).minute(endMins);
+            } else {
+                newEnd = s.endDate;
+            }
+        }
+
+        DragManager.renderTimeGhost(newStart, newEnd);
+        s.tentativeStart = newStart;
+        s.tentativeEnd = newEnd;
+    },
+
+    renderMonthGhost(start: any, end: any) {
+        document.querySelectorAll(".ghost-event").forEach((el) => el.remove());
+        const rows = document.querySelectorAll(".month-row");
+        rows.forEach((row) => {
+            const rElement = row as HTMLElement;
+            const rStart = dayjs(rElement.dataset.date);
+            const rEnd = rStart.add(6, "day");
+            if (!end.isBefore(rStart) && !start.isAfter(rEnd)) {
+                const dStart = start.isBefore(rStart) ? rStart : start;
+                const dEnd = end.isAfter(rEnd) ? rEnd : end;
+                const left = dStart.diff(rStart, "day") * 14.2857;
+                const width = (dEnd.diff(dStart, "day") + 1) * 14.2857;
+
+                const g = document.createElement("div");
+                g.className = "ghost-event";
+                g.style.left = left + "%";
+                g.style.width = width + "%";
+                g.style.top = "30px";
+                g.style.height = "26px";
+                row.appendChild(g);
+            }
+        });
+    },
+
+    renderTimeGhost(start: any, end: any) {
+        document.querySelectorAll(".ghost-event").forEach((el) => el.remove());
+
+        const dateStr = start.format("YYYY-MM-DD");
+        const col = document.querySelector(`.day-column[data-date="${dateStr}"]`);
+        if (col) {
+            const top = (start.hour() * 60 + start.minute()) * (Utils.getCellHeight() / 60);
+            const h = end.diff(start, "minute") * (Utils.getCellHeight() / 60);
+
+            const g = document.createElement("div");
+            g.className = "ghost-event";
+            g.style.top = top + "px";
+            g.style.height = h + "px";
+            g.style.width = "90%";
+            g.style.left = "5%";
+            g.innerText = `${start.format("HH:mm")} - ${end.format("HH:mm")}`;
+            g.style.color = "#3b82f6";
+            g.style.fontSize = "10px";
+            g.style.padding = "2px";
+            col.appendChild(g);
+        }
+    },
+
+    onUp: () => {
+        const self = DragManager;
+        if (!self.state) return;
+        const s = self.state;
+
+        document.body.style.cursor = "";
+
+        document.getElementById("drag-proxy")!.style.visibility = "hidden";
+        document.querySelectorAll(".ghost-event").forEach((el) => el.remove());
+        document.querySelectorAll(".is-dragging-source").forEach((el) => el.classList.remove("is-dragging-source"));
+        document.removeEventListener("mousemove", self.onMove);
+        document.removeEventListener("mouseup", self.onUp);
+
+        if (s.tentativeStart && s.tentativeEnd) {
+            const target = state.events.find((ev) => ev.id === s.event.id);
+            if (target) {
+                target.start = s.tentativeStart.format("YYYY-MM-DD HH:mm");
+                target.end = s.tentativeEnd.format("YYYY-MM-DD HH:mm");
+            }
+            s.renderCallback();
+        }
+        self.state = null;
+    },
+};
+
+// ==================================================================================
+//  4. View Rendering
+// ==================================================================================
+const app = document.getElementById("app")!;
+
+export function renderApp() {
+    let preservedScrollTop: number | null = null;
+    const existingScroll = document.querySelector(".time-grid-container");
+    if (existingScroll) {
+        preservedScrollTop = existingScroll.scrollTop;
+    }
+
+    app.innerHTML = "";
+    const container = document.createElement("div");
+    container.className = "w-full max-w-6xl bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col overflow-hidden";
+    container.style.maxHeight = "90vh";
+
+    // --- Header ---
+    const header = document.createElement("div");
+    header.className = "flex justify-between items-center p-4 border-b border-gray-200 bg-white";
+
+    const title = document.createElement("h1");
+    title.className = "text-xl font-bold text-gray-800";
+    title.innerText = state.currentDate.format(state.currentView === "day" ? "YYYY M D" : "YYYY MMMM");
+
+    const viewSwitch = document.createElement("div");
+    viewSwitch.className = "flex bg-gray-100 p-1 rounded-lg";
+    ["month", "week", "day"].forEach((v) => {
+        const btn = document.createElement("button");
+        btn.className = `px-3 py-1 text-sm rounded-md transition ${state.currentView === v ? "bg-white shadow text-blue-600 font-medium" : "text-gray-500 hover:text-gray-700"}`;
+        btn.innerText = v === "month" ? "Month" : v === "week" ? "Week" : "Day";
+        btn.onclick = () => {
+            state.currentView = v as any;
+            renderApp();
+        };
+        viewSwitch.appendChild(btn);
+    });
+
+    const nav = document.createElement("div");
+    nav.className = "flex gap-2";
+    nav.innerHTML = `
+        <button onclick="window.moveDate(-1)" class="px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded border text-sm">Previous</button>
+        <button onclick="window.resetDate()" class="px-3 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded border border-blue-100 text-sm">Today</button>
+        <button onclick="window.moveDate(1)" class="px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded border text-sm">Next</button>
+    `;
+
+    header.appendChild(title);
+    header.appendChild(viewSwitch);
+    header.appendChild(nav);
+    container.appendChild(header);
+
+    // --- View Body ---
+    const viewBody = document.createElement("div");
+    viewBody.className = "flex-1 overflow-hidden relative";
+
+    if (state.currentView === "month") {
+        renderMonthView(viewBody);
+    } else {
+        renderTimeView(viewBody, preservedScrollTop);
+    }
+
+    container.appendChild(viewBody);
+    app.appendChild(container);
+}
+
+// --- Render Month View ---
+function renderMonthView(container: HTMLElement) {
+    const head = document.createElement("div");
+    head.className = "grid grid-cols-7 border-b bg-gray-50";
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach((d) => (head.innerHTML += `<div class="py-2 text-center text-xs font-bold text-gray-400">${d}</div>`));
+    container.appendChild(head);
+
+    const body = document.createElement("div");
+    body.className = "overflow-y-auto h-[600px]";
+
+    const weeks = CalendarEngine.generateMonthGrid(state.currentDate);
+    weeks.forEach((weekDays) => {
+        const row = document.createElement("div");
+        row.className = "month-row grid grid-cols-7";
+        row.dataset.date = weekDays[0].dateStr;
+
+        weekDays.forEach((d: any) => {
+            const cell = document.createElement("div");
+            cell.className = "month-cell p-1";
+            cell.innerHTML = `<div class="text-right text-xs ${d.date.month() === state.currentDate.month() ? "text-gray-700" : "text-gray-300"}">${d.date.date()}</div>`;
+            row.appendChild(cell);
+        });
+
+        const layout = CalendarEngine.calculateMonthLayout(state.events, weekDays[0].date, weekDays[6].date);
+        layout.forEach((item) => {
+            const el = document.createElement("div");
+            el.className = `event-base event-bar ${item.origin.color}`;
+            el.innerText = item.origin.title;
+            el.dataset.eid = item.origin.id;
+            el.style.left = `calc(${item.startIdx * 14.28}% + 2px)`;
+            el.style.width = `calc(${item.span * 14.28}% - 4px)`;
+            el.style.top = `${26 + item.slot * 28}px`;
+            el.innerHTML += `<div class="resize-handle resize-h left"></div><div class="resize-handle resize-h right"></div>`;
+            DragManager.initMonthDrag(el, item.origin, item, renderApp);
+            row.appendChild(el);
+        });
+
+        body.appendChild(row);
+    });
+    container.appendChild(body);
+}
+
+// --- Render Week/Day View ---
+function renderTimeView(container: HTMLElement, initialScrollTop: number | null) {
+    const columns = CalendarEngine.generateTimeColumns(state.currentDate, state.currentView);
+
+    const header = document.createElement("div");
+    header.className = "time-header pl-[60px]";
+    columns.forEach((d: any) => {
+        const cell = document.createElement("div");
+        cell.className = "time-header-cell " + (d.date.isSame(dayjs(), "day") ? "bg-blue-50 text-blue-600" : "");
+        cell.innerHTML = `<div>${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.date.day()]}</div><div class="font-bold text-lg">${d.date.date()}</div>`;
+        header.appendChild(cell);
+    });
+
+    const scrollWrap = document.createElement("div");
+    scrollWrap.className = "time-grid-container";
+
+    const bodyInner = document.createElement("div");
+    bodyInner.className = "time-body";
+
+    const axis = document.createElement("div");
+    axis.className = "time-axis";
+    for (let i = 0; i < 24; i++) {
+        const label = document.createElement("div");
+        label.className = "time-axis-label";
+        label.innerText = `${i}:00`;
+        label.style.position = "absolute";
+        label.style.top = `${i * 60}px`;
+        axis.appendChild(label);
+    }
+    bodyInner.appendChild(axis);
+
+    columns.forEach((colData: any) => {
+        const col = document.createElement("div");
+        col.className = "day-column";
+        col.dataset.date = colData.dateStr;
+
+        const layout = CalendarEngine.calculateTimeLayout(state.events, colData.dateStr);
+        layout.forEach((item: any) => {
+            const el = document.createElement("div");
+            el.className = `event-base event-block ${item.origin.color}`;
+            el.dataset.eid = item.origin.id;
+            el.style.top = `${item.top}px`;
+            el.style.height = `${item.height}px`;
+
+            el.style.width = `calc(${item.widthPercent}% - 2px)`;
+            el.style.left = `${item.leftPercent}%`;
+
+            el.innerHTML = `
+                <div class="time-text">${dayjs(item.origin.start).format("HH:mm")} - ${dayjs(item.origin.end).format("HH:mm")}</div>
+                <div class="font-bold truncate">${item.origin.title}</div>
+                <div class="resize-handle resize-v"></div>
+            `;
+
+            DragManager.initTimeDrag(el, item.origin, item, renderApp);
+            col.appendChild(el);
+        });
+
+        bodyInner.appendChild(col);
+    });
+
+    scrollWrap.appendChild(bodyInner);
+    container.appendChild(header);
+    container.appendChild(scrollWrap);
+
+    setTimeout(() => {
+        if (initialScrollTop !== null && initialScrollTop !== undefined) {
+            scrollWrap.scrollTop = initialScrollTop;
+        } else {
+            scrollWrap.scrollTop = 480; // 8:00 (default)
+        }
+    }, 0);
+}
+
+// Window Navigation Event Handlers exposed so HTML buttons can use them
+(window as any).moveDate = (delta: number) => {
+    const unit = state.currentView === "month" ? "month" : state.currentView === "week" ? "week" : "day";
+    state.currentDate = state.currentDate.add(delta, unit);
+    renderApp();
+};
+
+(window as any).resetDate = () => {
+    state.currentDate = dayjs();
+    renderApp();
+};
+
+// Initial Render
+renderApp();

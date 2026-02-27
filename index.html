@@ -25,10 +25,16 @@
 
 <fieldset>
   <legend>Your Reminders</legend>
+  <div style="display: flex; gap: 20px; margin-bottom: 15px; align-items: center;">
 
   <button type="button" id="openSettingsBtn" style="background: none; border: none; color: blue; text-decoration:
   underline; cursor: pointer; padding: 0; margin-bottom: 10px; font-size: 1rem;">⚙️ Notification Settings</button>
 
+    <a href="ye-calendar.html" style="color: blue; text-decoration: underline; font-size: 1rem; font-weight: bold;">
+      📅 Open Calendar
+    </a>
+
+  </div>
   <form id="reminder-form">
     <label for="reminder-title"></label><input type="text" id="reminder-title" placeholder="Need a little reminder?" />
     <label for="reminder-time"></label><input type="datetime-local" id="reminder-time" />
@@ -37,6 +43,7 @@
     <button type="button" id="delete-reminders">Delete Selected/Past Due Reminders</button>
   </form>
 </fieldset>
+
 
 <dialog id="settingsModal">
   <div class="modal-content">
@@ -52,6 +59,8 @@
     <button type="button" id="closeSettingsBtn">Close Settings</button>
   </div>
 </dialog>
+
+
 
 <dialog id="notification-modal" style="padding: 20px; border-radius: 8px; border: 2px solid #d9534f; max-width: 400px; text-align: center;">
   <h2 style="margin-top: 0; color: #d9534f;">⚠️ Deadline Alert!</h2>
