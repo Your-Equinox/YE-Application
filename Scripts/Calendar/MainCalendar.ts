@@ -80,26 +80,38 @@ const state: CalendarState = {
 state.events.push(...generateRandomEvents(dayjs(), 14));
 
 // SYNC REMINDERS TO CALENDAR
-const savedRemindersStr = localStorage.getItem("reminders");
-if (savedRemindersStr) {
-    const savedReminders = JSON.parse(savedRemindersStr);
+function syncReminders() {
+    const savedRemindersStr = localStorage.getItem("reminders");
+    if (savedRemindersStr) {
+        try {
+            const savedReminders = JSON.parse(savedRemindersStr);
 
-    const reminderEvents: CalendarEvent[] = savedReminders
-        .filter((r: any) => !r.completed && r.remindAt)
-        .map((r: any) => {
-            const start = dayjs(r.remindAt);
-            return {
-                id: r.id,
-                title: `🔔 ${r.title}`,
-                start: start.format("YYYY-MM-DD HH:mm"),
-                end: start.add(1, 'hour').format("YYYY-MM-DD HH:mm"),
-                color: "bg-rose-500",
-                rawColor: "#f43f5e",
-            };
-        });
+            const reminderEvents: CalendarEvent[] = savedReminders
+                .filter((r: any) => !r.completed && r.remindAt)
+                .map((r: any) => {
+                    const start = dayjs(r.remindAt);
+                    return {
+                        id: r.id,
+                        title: `🔔 ${r.title}`,
+                        start: start.format("YYYY-MM-DD HH:mm"),
+                        end: start.add(1, 'hour').format("YYYY-MM-DD HH:mm"),
+                        color: r.colorClass || "bg-rose-500", // Dynamically apply saved class
+                        rawColor: r.colorHex || "#f43f5e",    // Dynamically apply saved hex
+                    };
+                });
 
-    state.events.push(...reminderEvents);
+            // Filter out old synced reminders to prevent duplicates, then add the fresh ones
+            state.events = state.events.filter(e => !e.title.startsWith("🔔 "));
+            state.events.push(...reminderEvents);
+
+        } catch (error) {
+            console.error("Failed to parse reminders for calendar sync:", error);
+        }
+    }
 }
+
+// Run the sync when the script loads
+syncReminders();
 
 // Helper Utilities
 const Utils = {
@@ -516,9 +528,22 @@ export function renderApp() {
     const header = document.createElement("div");
     header.className = "flex justify-between items-center p-4 border-b border-gray-200 bg-white";
 
+    // Create a group for the Back Button and Title
+    const titleGroup = document.createElement("div");
+    titleGroup.className = "flex items-center gap-4";
+
+    // The Back to Dashboard Link
+    const backBtn = document.createElement("a");
+    backBtn.href = "/index.html"; // Adjust to "/" if you moved index.html back to the root
+    backBtn.className = "text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors cursor-pointer text-decoration-none";
+    backBtn.innerHTML = "&larr; Back to Dashboard";
+
     const title = document.createElement("h1");
     title.className = "text-xl font-bold text-gray-800";
     title.innerText = state.currentDate.format(state.currentView === "day" ? "YYYY M D" : "YYYY MMMM");
+
+    titleGroup.appendChild(backBtn);
+    titleGroup.appendChild(title);
 
     const viewSwitch = document.createElement("div");
     viewSwitch.className = "flex bg-gray-100 p-1 rounded-lg";
@@ -541,7 +566,7 @@ export function renderApp() {
         <button onclick="window.moveDate(1)" class="px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded border text-sm">Next</button>
     `;
 
-    header.appendChild(title);
+    header.appendChild(titleGroup); // Append the group instead of just the title
     header.appendChild(viewSwitch);
     header.appendChild(nav);
     container.appendChild(header);

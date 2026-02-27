@@ -1,12 +1,12 @@
 import { Reminder, reminders, saveReminders } from "./AddReminder";
 
-// 1. Grab DOM elements
+// Grab DOM elements
 const modal = document.querySelector<HTMLDialogElement>("#settingsModal")!;
 const openBtn = document.querySelector<HTMLButtonElement>("#openSettingsBtn")!;
 const closeBtn = document.querySelector<HTMLButtonElement>("#closeSettingsBtn")!;
 const settingList = document.querySelector<HTMLUListElement>("#reminderSettings")!;
 
-// 2. Open and Close the Dialog
+// Open and Close the Dialog
 openBtn.addEventListener("click", () => {
     populateSettingsList();
     modal.showModal();
@@ -16,7 +16,7 @@ closeBtn.addEventListener("click", () => {
     modal.close();
 });
 
-// 3. Populate the List
+// Populate the List
 function populateSettingsList() {
     settingList.innerHTML = "";
 
@@ -27,7 +27,7 @@ function populateSettingsList() {
     });
 }
 
-// 4. Build Individual Rows
+// Build Individual Rows
 function createSettingsRow(reminder: Reminder) {
     const item = document.createElement("li");
     const label = document.createElement("label");

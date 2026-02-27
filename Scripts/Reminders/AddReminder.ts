@@ -8,6 +8,9 @@ export type Reminder = {
     remindAt?: Date
     reminderSent?: boolean
     notifyOffset: number
+    colorClass: string
+    colorHex: string
+
 }
 
 // 1. DOM Elements (Dashboard)
@@ -20,6 +23,7 @@ export const reminderList = document.querySelector<HTMLUListElement>("#reminder-
 export const notificationModal = document.querySelector<HTMLDialogElement>("#notification-modal")!;
 export const notificationMessage = document.querySelector<HTMLParagraphElement>("#notification-message")!;
 export const closeNotificationBtn = document.querySelector<HTMLButtonElement>("#close-notification-btn")!;
+export const reminderColorInput = document.querySelector<HTMLSelectElement>("#reminder-color")!
 
 if (Notification.permission !== "granted") {
     Notification.requestPermission();
@@ -84,6 +88,7 @@ reminderForm.addEventListener("submit", (e) => {
     if (reminderTimeInput.value) {
         finalReminderTime = new Date(reminderTimeInput.value);
     }
+    const [colorClass, colorHex] = reminderColorInput.value.split(",");
 
     const newReminder: Reminder = {
         id: uuidv4(),
@@ -92,7 +97,9 @@ reminderForm.addEventListener("submit", (e) => {
         createdAt: new Date(),
         remindAt: finalReminderTime,
         reminderSent: false,
-        notifyOffset: 0
+        notifyOffset: 0,
+        colorClass: colorClass,
+        colorHex: colorHex
     }
 
     reminders.push(newReminder)
@@ -142,7 +149,10 @@ export function loadReminders(): Reminder[] {
         ...reminder,
         createdAt: new Date(reminder.createdAt),
         remindAt: reminder.remindAt ? new Date(reminder.remindAt) : undefined,
-        notifyOffset: reminder.notifyOffset || 0
+        notifyOffset: reminder.notifyOffset || 0,
+        // Fallback to Rose if they were created before we added the color picker
+        colorClass: reminder.colorClass || "bg-rose-500",
+        colorHex: reminder.colorHex || "#f43f5e"
     }))
 }
 
