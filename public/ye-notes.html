@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YE - Notes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white font-sans text-slate-800 h-screen flex overflow-hidden">
+
+<aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col h-full">
+  <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+    <a href="../index.html" class="text-sm font-medium text-gray-500 hover:text-blue-600 transition">&larr; Dashboard</a>
+    <button id="new-note-btn" class="text-2xl font-light text-gray-400 hover:text-gray-800 transition px-2" title="New Note">+</button>
+  </div>
+  <ul id="sidebar-note-list" class="flex-1 overflow-y-auto p-3 space-y-1">
+  </ul>
+</aside>
+
+<main class="flex-1 flex flex-col bg-white overflow-y-auto relative">
+
+  <div id="empty-state" class="absolute inset-0 flex items-center justify-center text-gray-400 text-lg pointer-events-none">
+    Select a note from the sidebar or create a new one.
+  </div>
+
+  <div id="editor-container" class="max-w-4xl w-full mx-auto p-12 hidden flex-col min-h-full">
+    <div class="flex justify-end mb-8">
+      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition">Delete Note</button>
+    </div>
+
+    <input type="text" id="note-title" class="text-5xl font-bold w-full outline-none mb-6 placeholder-gray-200 text-gray-800 bg-transparent" placeholder="Untitled">
+
+    <textarea id="note-body" class="w-full flex-1 outline-none resize-none text-lg leading-relaxed placeholder-gray-300 text-gray-700 bg-transparent min-h-[600px]" placeholder="Start typing..."></textarea>
+  </div>
+</main>
+
+<script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script></body>
+</html>
