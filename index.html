@@ -37,16 +37,7 @@
     <label for="reminder-title"></label><input type="text" id="reminder-title" placeholder="Need a little reminder?" class="border p-1 rounded" />
     <label for="reminder-time"></label><input type="datetime-local" id="reminder-time" class="border p-1 rounded" />
 
-    <select id="reminder-color" class="border p-1 rounded ml-1">
-      <option value="bg-blue-500,#3b82f6">🔵 Blue</option>
-      <option value="bg-indigo-500,#6366f1">🌌 Indigo</option>
-      <option value="bg-purple-500,#a855f7">🟣 Purple</option>
-      <option value="bg-green-500,#22c55e">🟢 Green</option>
-      <option value="bg-red-500,#ef4444">🔴 Red</option>
-      <option value="bg-orange-500,#f97316">🟠 Orange</option>
-      <option value="bg-amber-500,#f59e0b">🟡 Amber</option>
-      <option value="bg-rose-500,#f43f5e" selected>🌺 Rose</option>
-    </select>
+    <input type="color" id="reminder-color" class="border p-1 rounded ml-2 h-10 w-14 cursor-pointer align-middle" value="#3b82f6" />
 
     <ul id="reminder-list" class="my-2"></ul>
     <button type="submit" id="add-reminder-btn" class="bg-blue-200 px-2 py-1 rounded">Add Reminder</button>
@@ -89,16 +80,10 @@
     <input type="text" id="cal-reminder-title" placeholder="What's the reminder?" class="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
     <input type="datetime-local" id="cal-reminder-time" class="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
 
-    <select id="cal-reminder-color" class="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <option value="bg-blue-500,#3b82f6">🔵 Blue</option>
-      <option value="bg-indigo-500,#6366f1">🌌 Indigo</option>
-      <option value="bg-purple-500,#a855f7">🟣 Purple</option>
-      <option value="bg-green-500,#22c55e">🟢 Green</option>
-      <option value="bg-red-500,#ef4444">🔴 Red</option>
-      <option value="bg-orange-500,#f97316">🟠 Orange</option>
-      <option value="bg-amber-500,#f59e0b">🟡 Amber</option>
-      <option value="bg-rose-500,#f43f5e" selected>🌺 Rose</option>
-    </select>
+    <div class="flex items-center gap-3">
+      <label for="cal-reminder-color" class="text-gray-700 font-medium">Event Color:</label>
+      <input type="color" id="cal-reminder-color" class="border border-gray-300 p-1 rounded-md cursor-pointer h-10 w-14" value="#3b82f6" />
+    </div>
 
     <div class="flex justify-end gap-2 mt-2">
       <button type="button" id="cal-close-modal" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition">Cancel</button>
