@@ -33,11 +33,6 @@ const colorPalette = [
     { className: "bg-amber-500", hex: "#f59e0b" },
 ];
 
-const sampleTitles = [
-    "Product sync", "Design review", "Data pipeline", "Infra standup",
-    "Research slot", "Customer call", "Doc writing", "1:1"
-];
-
 function pickRandom(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -59,7 +54,7 @@ function generateRandomEvents(baseDate: any, count = 12): CalendarEvent[] {
 
         events.push({
             id: `rand-${i}-${Date.now()}`,
-            title: pickRandom(sampleTitles),
+            title: "string",
             start: start.format("YYYY-MM-DD HH:mm"),
             end: end.format("YYYY-MM-DD HH:mm"),
             color: color.className,
@@ -75,9 +70,6 @@ const state: CalendarState = {
     currentDate: dayjs(),
     events: [],
 };
-
-// Fill with some random events
-state.events.push(...generateRandomEvents(dayjs(), 14));
 
 // SYNC REMINDERS TO CALENDAR
 function syncReminders() {
@@ -95,8 +87,8 @@ function syncReminders() {
                         title: `🔔 ${r.title}`,
                         start: start.format("YYYY-MM-DD HH:mm"),
                         end: start.add(1, 'hour').format("YYYY-MM-DD HH:mm"),
-                        color: r.colorClass || "bg-rose-500", // Dynamically apply saved class
-                        rawColor: r.colorHex || "#f43f5e",    // Dynamically apply saved hex
+                        color: r.colorClass || "bg-blue-500", // Dynamically apply saved class
+                        rawColor: r.colorHex || "#3b82f6",    // Dynamically apply saved hex
                     };
                 });
 
@@ -611,6 +603,7 @@ function renderMonthView(container: HTMLElement) {
         const layout = CalendarEngine.calculateMonthLayout(state.events, weekDays[0].date, weekDays[6].date);
         layout.forEach((item) => {
             const el = document.createElement("div");
+            el.style.backgroundColor = item.origin.rawColor;
             el.className = `event-base event-bar ${item.origin.color}`;
             el.innerText = item.origin.title;
             el.dataset.eid = item.origin.id;
@@ -667,6 +660,7 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
         layout.forEach((item: any) => {
             const el = document.createElement("div");
             el.className = `event-base event-block ${item.origin.color}`;
+            el.style.backgroundColor = item.origin.rawColor;
             el.dataset.eid = item.origin.id;
             el.style.top = `${item.top}px`;
             el.style.height = `${item.height}px`;

@@ -23,7 +23,7 @@ export const reminderList = document.querySelector<HTMLUListElement>("#reminder-
 export const notificationModal = document.querySelector<HTMLDialogElement>("#notification-modal")!;
 export const notificationMessage = document.querySelector<HTMLParagraphElement>("#notification-message")!;
 export const closeNotificationBtn = document.querySelector<HTMLButtonElement>("#close-notification-btn")!;
-export const reminderColorInput = document.querySelector<HTMLSelectElement>("#reminder-color")!
+export const reminderColorInput = document.querySelector<HTMLInputElement>("#reminder-color")!
 
 if (Notification.permission !== "granted") {
     Notification.requestPermission();
@@ -88,7 +88,8 @@ reminderForm.addEventListener("submit", (e) => {
     if (reminderTimeInput.value) {
         finalReminderTime = new Date(reminderTimeInput.value);
     }
-    const [colorClass, colorHex] = reminderColorInput.value.split(",");
+    const colorHex= reminderColorInput.value;
+    const colorClass = "custom-color";
 
     const newReminder: Reminder = {
         id: uuidv4(),
@@ -150,9 +151,9 @@ export function loadReminders(): Reminder[] {
         createdAt: new Date(reminder.createdAt),
         remindAt: reminder.remindAt ? new Date(reminder.remindAt) : undefined,
         notifyOffset: reminder.notifyOffset || 0,
-        // Fallback to Rose if they were created before we added the color picker
-        colorClass: reminder.colorClass || "bg-rose-500",
-        colorHex: reminder.colorHex || "#f43f5e"
+        // Fallback to default color if they were created before we added the color picker
+        colorClass: reminder.colorClass || "bg-blue-500",
+        colorHex: reminder.colorHex || "#3b82f6"
     }))
 }
 
