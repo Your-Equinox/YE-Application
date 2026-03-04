@@ -1,8 +1,8 @@
 
 // DOM Elements
-export const statTask = document.getElementById('statTasks')!;
-export const statStreak = document.getElementById('statStreak')!;
-export const statReview = document.getElementById('statReview')!;
+export const statTask = document.getElementById('stat-tasks');
+export const statStreak = document.getElementById('stat-streak');
+export const statReview = document.getElementById('stat-review');
 
 // Data Structures
 
@@ -16,7 +16,7 @@ type YeStats = {
 }
 
 export function loadStats(): YeStats {
-    const saved = localStorage.getItem('ye_stats');
+    const saved = localStorage.getItem('ye-stats');
     const now = new Date()
 
     let stats: YeStats = saved ? JSON.parse(saved) : {
@@ -40,7 +40,7 @@ export function loadStats(): YeStats {
 }
 
 export function saveStats(stats: YeStats) {
-    localStorage.setItem('ye_stats', JSON.stringify(stats));
+    localStorage.setItem('ye-stats', JSON.stringify(stats));
     updateDashboardUI();
 }
 
@@ -77,3 +77,5 @@ export function updateDashboardUI() {
         statReview.textContent = dueCount.toString();
     }
 }
+
+updateDashboardUI();
