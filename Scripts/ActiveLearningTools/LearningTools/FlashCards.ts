@@ -148,6 +148,10 @@ function handleConfidenceRating(e:Event) {
 revealNoteBtn.addEventListener("click", revealNote);
 confidenceBtns.forEach(btn => btn.addEventListener("click", handleConfidenceRating));
 
+// ==========================================
+// 3. QUIZZES
+// ==========================================
+
 // Initialize both features when the script loads
 loadDailyIntention();
 initialMemoryCheck();

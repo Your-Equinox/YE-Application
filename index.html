@@ -80,7 +80,6 @@
 <fieldset class="mb-8 bg-white p-4 rounded shadow">
   <legend class="font-bold">Your Reminders</legend>
 
-  <button type="button" id="openSettingsBtn" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; padding: 0; margin-bottom: 10px; font-size: 1rem;">⚙️ Notification Settings</button>
 
   <form id="reminder-form">
     <label for="reminder-title"></label><input type="text" id="reminder-title" placeholder="Need a little reminder?" class="border p-1 rounded" />
@@ -111,10 +110,13 @@
       <p>Adjust your notification settings here:</p>
       <ul id="reminderSettings"></ul>
     </fieldset>
-
     <br>
     <button type="button" id="closeSettingsBtn">Close Settings</button>
+
+
   </div>
+
+
 </dialog>
 
 <dialog id="notification-modal" style="padding: 20px; border-radius: 8px; border: 2px solid #d9534f; max-width: 400px; text-align: center;">
@@ -140,7 +142,9 @@
     </div>
   </form>
 </dialog>
-
+<div class="w-full max-w-6xl mx-auto mb-4">
+  <a href="/public/Settings.html" style="color: blue; text-decoration: underline; font-weight: 500;">Settings </a>
+</div>
 <script type="module" src="/Scripts/Tasks/AddTasks.ts"></script>
 <script type="module" src="/Scripts/Tasks/DeleteTasks.ts"></script>
 <script type="module" src="/Scripts/Reminders/AddReminder.ts"></script>
@@ -150,6 +154,7 @@
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
 <script type= "module" src= "/Scripts/ActiveLearningTools/Dashboard/Stats.ts"></script>
 <script type= "module" src= "/Scripts/ActiveLearningTools/LearningTools/FlashCards.ts"></script>
+<script type = "module" src="Scripts/Settings/SettingsPage.ts"></script>
 
 </body>
 </html>

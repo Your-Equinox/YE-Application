@@ -65,3 +65,52 @@ function createSettingsRow(reminder: Reminder) {
     item.append(label, select);
     settingList.append(item);
 }
+
+export function loadReminderSettings() {
+    const reminderSettingsList = document.getElementById("reminderSettings");
+
+    // Safeguard: If the list element isn't on the page, stop running.
+    if (!reminderSettingsList) return;
+
+    // Clear the list before redrawing it
+    reminderSettingsList.innerHTML = "";
+
+    // Assuming your reminders are saved in localStorage under 'reminders'
+    const storedReminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+
+    if (storedReminders.length === 0) {
+        reminderSettingsList.innerHTML = "<li class='text-gray-500 text-sm'>No active reminders to configure.</li>";
+        return;
+    }
+
+    // Draw the list items
+    storedReminders.forEach((reminder: any, index: number) => {
+        const li = document.createElement("li");
+        li.className = "flex justify-between items-center py-2 border-b border-gray-100 last:border-0";
+
+        li.innerHTML = `
+            <span class="text-sm text-gray-700">${reminder.title || 'Task'}</span>
+            <button data-index="${index}" class="delete-reminder-btn text-red-500 hover:text-red-700 text-sm font-medium">Remove</button>
+        `;
+
+        reminderSettingsList.appendChild(li);
+    });
+
+    // Add logic to the new "Remove" buttons
+    const deleteButtons = reminderSettingsList.querySelectorAll(".delete-reminder-btn");
+    deleteButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            const target = e.target as HTMLButtonElement;
+            const idx = parseInt(target.getAttribute("data-index") || "0");
+
+            // Remove the item from the array
+            storedReminders.splice(idx, 1);
+
+            // Save back to local storage
+            localStorage.setItem("reminders", JSON.stringify(storedReminders));
+
+            // Redraw the list instantly
+            loadReminderSettings();
+        });
+    });
+}
