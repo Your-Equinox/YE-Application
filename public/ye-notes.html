@@ -24,15 +24,24 @@
   </div>
 
   <div id="editor-container" class="max-w-4xl w-full mx-auto p-12 hidden flex-col min-h-full">
-    <div class="flex justify-end mb-8">
+
+    <div class="flex justify-between items-center mb-8">
+      <button id="toggle-flashcard-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">
+        <span>🧠</span> Enable Flashcard
+      </button>
+
       <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition">Delete Note</button>
     </div>
 
     <input type="text" id="note-title" class="text-5xl font-bold w-full outline-none mb-6 placeholder-gray-200 text-gray-800 bg-transparent" placeholder="Untitled">
 
     <textarea id="note-body" class="w-full flex-1 outline-none resize-none text-lg leading-relaxed placeholder-gray-300 text-gray-700 bg-transparent min-h-[600px]" placeholder="Start typing..."></textarea>
+
   </div>
+
 </main>
 
-<script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script></body>
+<script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
+<script type="module" src="/Scripts/ActiveLearningTools/LearningTools/FlashCards.ts"></script>
+</body>
 </html>

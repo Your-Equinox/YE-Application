@@ -6,12 +6,15 @@ export type Note = {
     title: string;
     body: string;
     lastEdited: number;
+    nextReviewDate: number;
+    needsReview: boolean; // Enables/disables flashcard queue
 };
 
 // --- DOM Elements ---
 const sidebarList = document.querySelector<HTMLUListElement>("#sidebar-note-list")!;
 const newNoteBtn = document.querySelector<HTMLButtonElement>("#new-note-btn")!;
 const deleteNoteBtn = document.querySelector<HTMLButtonElement>("#delete-note-btn")!;
+const toggleFlashcardBtn = document.getElementById("toggle-flashcard-btn")!;
 
 const emptyState = document.querySelector<HTMLDivElement>("#empty-state")!;
 const editorContainer = document.querySelector<HTMLDivElement>("#editor-container")!;
@@ -33,6 +36,18 @@ deleteNoteBtn.addEventListener("click", deleteActiveNote);
 titleInput.addEventListener("input", saveActiveNote);
 bodyInput.addEventListener("input", saveActiveNote);
 
+// Flashcard Toggle Listener
+toggleFlashcardBtn.addEventListener("click", () => {
+    if (!activeNoteId) return;
+
+    const note = notes.find(n => n.id === activeNoteId);
+    if (note) {
+        note.needsReview = !note.needsReview; // Flip the state
+        saveToLocalStorage();
+        updateFlashcardButtonUI(note.needsReview);
+    }
+});
+
 // --- Core Functions ---
 
 function createNewNote() {
@@ -41,6 +56,8 @@ function createNewNote() {
         title: "",
         body: "",
         lastEdited: Date.now(),
+        nextReviewDate: Date.now(),
+        needsReview: false, // Turned off by default!
     };
 
     notes.unshift(newNote); // Put new note at the top of the list
@@ -68,10 +85,12 @@ function setActiveNote(id: string) {
     editorContainer.classList.remove("hidden");
     editorContainer.classList.add("flex");
 
+    // Update the flashcard button visually
+    updateFlashcardButtonUI(note.needsReview);
+
     // Re-render sidebar to highlight the active note
     renderSidebar();
 
-    // Focus the title input automatically
     titleInput.focus();
 }
 
@@ -87,7 +106,6 @@ function saveActiveNote() {
         saveToLocalStorage();
 
         // Update just the text in the sidebar without fully re-rendering it
-        // (to avoid losing input focus while typing)
         const sidebarLink = document.querySelector(`[data-note-id="${activeNoteId}"] span`);
         if (sidebarLink) {
             sidebarLink.textContent = note.title.trim() || "Untitled";
@@ -95,7 +113,7 @@ function saveActiveNote() {
     }
 }
 
-function deleteActiveNote() {
+export function deleteActiveNote() {
     if (!activeNoteId) return;
 
     // Confirm deletion just in case
@@ -105,13 +123,23 @@ function deleteActiveNote() {
     notes = notes.filter(n => n.id !== activeNoteId);
     saveToLocalStorage();
 
-    // Reset state
+    // Reset state back to empty
     activeNoteId = null;
     editorContainer.classList.add("hidden");
     editorContainer.classList.remove("flex");
     emptyState.classList.remove("hidden");
 
     renderSidebar();
+}
+
+function updateFlashcardButtonUI(isActive: boolean) {
+    if (isActive) {
+        toggleFlashcardBtn.className = "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200";
+        toggleFlashcardBtn.innerHTML = `<span>🧠</span> Flashcard Active`;
+    } else {
+        toggleFlashcardBtn.className = "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200";
+        toggleFlashcardBtn.innerHTML = `<span>🧠</span> Enable Flashcard`;
+    }
 }
 
 function renderSidebar() {
@@ -132,7 +160,6 @@ function renderSidebar() {
             isActive ? "bg-blue-100 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-200"
         }`;
 
-        // Use a span so we can target it easily during auto-save
         const titleSpan = document.createElement("span");
         titleSpan.textContent = note.title.trim() || "Untitled";
 
@@ -146,10 +173,16 @@ function renderSidebar() {
 
 // --- Storage Utilities ---
 function saveToLocalStorage() {
-    localStorage.setItem("ye_notes", JSON.stringify(notes));
+    localStorage.setItem("ye-notes", JSON.stringify(notes));
 }
 
 function loadNotes(): Note[] {
-    const saved = localStorage.getItem("ye_notes");
-    return saved ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem("ye-notes");
+    if (!saved) return [];
+
+    return JSON.parse(saved).map((n: any) => ({
+        ...n,
+        nextReviewDate: n.nextReviewDate || Date.now(),
+        needsReview: n.needsReview || false
+    }));
 }
