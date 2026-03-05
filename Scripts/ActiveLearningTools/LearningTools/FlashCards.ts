@@ -1,9 +1,6 @@
 import { updateDashboardUI} from "../Dashboard/Stats";
 
-// ==========================================
-// 1. DAILY LOGIC
-// ==========================================
-
+// Daily logic
 const intentionInputMode = document.getElementById("intention-input-mode")!;
 const intentionDisplayMode = document.getElementById("intention-display-mode")!;
 const intentionInput = document.querySelector<HTMLInputElement>("#daily-intention-input")!;
@@ -13,7 +10,7 @@ const editIntentionBtn = document.getElementById("edit-intention-btn")!;
 
 function loadDailyIntention() {
     const saved = localStorage.getItem("daily_intention");
-    const today = new Date().toDateString(); // e.g., "Tue Oct 24 2023"
+    const today = new Date().toDateString();
 
     if (saved) {
         const parsed = JSON.parse(saved);
@@ -23,7 +20,7 @@ function loadDailyIntention() {
             return;
         }
     }
-    // If no intention for today, show the input form
+
     showIntentionInput();
 }
 
@@ -59,9 +56,9 @@ if(intentionInput) {
         if (e.key === "Enter") saveDailyIntention();
     });
 }
-// ==========================================
-// 2. FLASHCARD LOGIC
-// ==========================================
+
+// FLASHCARD LOGIC
+
 //Constants
 const recallContainer = document.getElementById("recallContainer")!;
 const noNoteMessage = document.getElementById("noNoteMessage")!;
@@ -147,6 +144,7 @@ function handleConfidenceRating(e:Event) {
 
 revealNoteBtn.addEventListener("click", revealNote);
 confidenceBtns.forEach(btn => btn.addEventListener("click", handleConfidenceRating));
+
 
 // Initialize both features when the script loads
 loadDailyIntention();
