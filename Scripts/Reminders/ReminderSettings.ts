@@ -1,37 +1,37 @@
-import { Reminder, reminders, saveReminders } from "./AddReminder";
+export function loadReminderSettings() {
+    const settingList = document.querySelector<HTMLUListElement>("#reminderSettings");
 
-// Grab DOM elements
-const modal = document.querySelector<HTMLDialogElement>("#settingsModal")!;
-const openBtn = document.querySelector<HTMLButtonElement>("#openSettingsBtn")!;
-const closeBtn = document.querySelector<HTMLButtonElement>("#closeSettingsBtn")!;
-const settingList = document.querySelector<HTMLUListElement>("#reminderSettings")!;
+    if (!settingList) return;
 
-// Open and Close the Dialog
-openBtn.addEventListener("click", () => {
-    populateSettingsList();
-    modal.showModal();
-});
-
-closeBtn.addEventListener("click", () => {
-    modal.close();
-});
-
-// Populate the List
-function populateSettingsList() {
     settingList.innerHTML = "";
 
-    reminders.forEach(reminder => {
+    // 1. Grab reminders directly from localStorage
+    const allReminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+
+    if (allReminders.length === 0) {
+        settingList.innerHTML = "<li class='text-gray-500 text-sm py-2'>No active reminders to configure.</li>";
+        return;
+    }
+
+    // 2. Draw the list items
+    allReminders.forEach((reminder: any, index: number) => {
         if (!reminder.completed && reminder.remindAt) {
-            createSettingsRow(reminder);
+            createSettingsRow(reminder, index, settingList, allReminders);
         }
     });
 }
 
-// Build Individual Rows
-function createSettingsRow(reminder: Reminder) {
+// Build Individual Rows for dropdowns
+function createSettingsRow(reminder: any, index: number, settingList: HTMLUListElement, allReminders: any[]) {
     const item = document.createElement("li");
+    item.className = "flex justify-between items-center py-3 border-b border-gray-100 last:border-0";
+
     const label = document.createElement("label");
+    label.className = "text-sm font-medium text-gray-700";
+    label.innerText = `${reminder.title} - Alert me `;
+
     const select = document.createElement("select");
+    select.className = "ml-2 border border-gray-300 rounded p-1 text-sm focus:ring-blue-500 outline-none";
 
     const options = [
         { label: "At time of event", value: "0" },
@@ -54,63 +54,15 @@ function createSettingsRow(reminder: Reminder) {
 
     // Listen for changes on the dropdown
     select.addEventListener("change", ()  => {
-        reminder.notifyOffset = parseInt(select.value, 10);
-        reminder.reminderSent = false; // Reset so the alert can trigger again if needed
+        // 3. Update the specific reminder locally
+        allReminders[index].notifyOffset = parseInt(select.value, 10);
+        allReminders[index].reminderSent = false;
 
-        saveReminders(); // Updates localStorage using the function imported from AddReminder
-        console.log(`Updated ${reminder.title} to trigger ${reminder.notifyOffset} minutes early.`);
+        // 4. Save directly back to localStorage!
+        localStorage.setItem("reminders", JSON.stringify(allReminders));
+        console.log(`Updated ${reminder.title} to trigger ${select.value} minutes early.`);
     });
 
-    label.innerText = `${reminder.title} - Alert me `;
     item.append(label, select);
     settingList.append(item);
-}
-
-export function loadReminderSettings() {
-    const reminderSettingsList = document.getElementById("reminderSettings");
-
-    // Safeguard: If the list element isn't on the page, stop running.
-    if (!reminderSettingsList) return;
-
-    // Clear the list before redrawing it
-    reminderSettingsList.innerHTML = "";
-
-    // Assuming your reminders are saved in localStorage under 'reminders'
-    const storedReminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-
-    if (storedReminders.length === 0) {
-        reminderSettingsList.innerHTML = "<li class='text-gray-500 text-sm'>No active reminders to configure.</li>";
-        return;
-    }
-
-    // Draw the list items
-    storedReminders.forEach((reminder: any, index: number) => {
-        const li = document.createElement("li");
-        li.className = "flex justify-between items-center py-2 border-b border-gray-100 last:border-0";
-
-        li.innerHTML = `
-            <span class="text-sm text-gray-700">${reminder.title || 'Task'}</span>
-            <button data-index="${index}" class="delete-reminder-btn text-red-500 hover:text-red-700 text-sm font-medium">Remove</button>
-        `;
-
-        reminderSettingsList.appendChild(li);
-    });
-
-    // Add logic to the new "Remove" buttons
-    const deleteButtons = reminderSettingsList.querySelectorAll(".delete-reminder-btn");
-    deleteButtons.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-            const target = e.target as HTMLButtonElement;
-            const idx = parseInt(target.getAttribute("data-index") || "0");
-
-            // Remove the item from the array
-            storedReminders.splice(idx, 1);
-
-            // Save back to local storage
-            localStorage.setItem("reminders", JSON.stringify(storedReminders));
-
-            // Redraw the list instantly
-            loadReminderSettings();
-        });
-    });
 }

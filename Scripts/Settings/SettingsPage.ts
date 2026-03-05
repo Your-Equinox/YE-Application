@@ -1,9 +1,6 @@
-// Scripts/Settings/SettingsPage.ts
-
-// 1. Import the function from your Reminders script
 import { loadReminderSettings } from '../Reminders/ReminderSettings';
 
-// 2. Sidebar Tab Navigation Logic
+// Sidebar Tab Navigation Logic
 const navButtons = document.querySelectorAll('aside nav button');
 const sections = document.querySelectorAll('main section');
 
@@ -27,12 +24,10 @@ navButtons.forEach((btn, index) => {
     });
 });
 
-// 3. Trigger the Reminders list to draw!
+// Trigger Reminder List
 loadReminderSettings();
 
-// ==========================================
-// 4. AI API Key Management
-// ==========================================
+// AI API Key Management
 const apiKeyInput = document.querySelector<HTMLInputElement>("#gemini-api-key");
 const saveApiKeyBtn = document.querySelector<HTMLButtonElement>("#save-api-key-btn");
 const apiKeyStatus = document.querySelector<HTMLParagraphElement>("#api-key-status");
