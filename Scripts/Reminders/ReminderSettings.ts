@@ -5,7 +5,7 @@ export function loadReminderSettings() {
 
     settingList.innerHTML = "";
 
-    // 1. Grab reminders directly from localStorage
+    // Getting reminders from storage
     const allReminders = JSON.parse(localStorage.getItem('reminders') || '[]');
 
     if (allReminders.length === 0) {
@@ -13,7 +13,7 @@ export function loadReminderSettings() {
         return;
     }
 
-    // 2. Draw the list items
+    // Pulling up the list of items
     allReminders.forEach((reminder: any, index: number) => {
         if (!reminder.completed && reminder.remindAt) {
             createSettingsRow(reminder, index, settingList, allReminders);
@@ -21,7 +21,7 @@ export function loadReminderSettings() {
     });
 }
 
-// Build Individual Rows for dropdowns
+// Invidiual Rows for Dropdown
 function createSettingsRow(reminder: any, index: number, settingList: HTMLUListElement, allReminders: any[]) {
     const item = document.createElement("li");
     item.className = "flex justify-between items-center py-3 border-b border-gray-100 last:border-0";
@@ -54,11 +54,11 @@ function createSettingsRow(reminder: any, index: number, settingList: HTMLUListE
 
     // Listen for changes on the dropdown
     select.addEventListener("change", ()  => {
-        // 3. Update the specific reminder locally
+        // Updating reminders locally
         allReminders[index].notifyOffset = parseInt(select.value, 10);
         allReminders[index].reminderSent = false;
 
-        // 4. Save directly back to localStorage!
+        // Saving directly to storage
         localStorage.setItem("reminders", JSON.stringify(allReminders));
         console.log(`Updated ${reminder.title} to trigger ${select.value} minutes early.`);
     });
