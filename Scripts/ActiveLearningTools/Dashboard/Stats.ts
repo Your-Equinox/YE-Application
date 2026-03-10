@@ -69,7 +69,7 @@ export function updateDashboardUI() {
             // 2. Count notes where needsReview is TRUE and due date is past/present
             dueCount = allNotes.filter((n: any) =>
                 n.needsReview === true &&
-                (n.nextReviewDate || 0) <= now &&
+              //  (n.nextReviewDate || 0) <= now &&
                 (n.title.trim() !== "" || n.body.trim() !== "")
             ).length;
         }

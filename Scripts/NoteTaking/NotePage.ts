@@ -7,7 +7,8 @@ export type Note = {
     body: string;
     lastEdited: number;
     nextReviewDate: number;
-    needsReview: boolean; // Enables/disables flashcard queue
+    needsReview: boolean;
+    TestQuestions?: { q: string; a: string }[];
 };
 
 // --- DOM Elements ---
@@ -15,6 +16,16 @@ const sidebarList = document.querySelector<HTMLUListElement>("#sidebar-note-list
 const newNoteBtn = document.querySelector<HTMLButtonElement>("#new-note-btn")!;
 const deleteNoteBtn = document.querySelector<HTMLButtonElement>("#delete-note-btn")!;
 const toggleFlashcardBtn = document.getElementById("toggle-flashcard-btn")!;
+const generateQuizBtn = document.getElementById("generate-quiz-btn") as HTMLButtonElement;
+
+// AI Elements
+const aiAssistBtn = document.getElementById("ai-assist-btn") as HTMLButtonElement;
+const aiSidebar = document.getElementById("ai-sidebar") as HTMLElement;
+const closeAiBtn = document.getElementById("close-ai-btn") as HTMLButtonElement;
+const aiForm = document.getElementById("ai-form") as HTMLFormElement;
+const aiInput = document.getElementById("ai-input") as HTMLInputElement;
+const aiChatHistory = document.getElementById("ai-chat-history") as HTMLElement;
+const aiSubmitBtn = document.getElementById("ai-submit-btn") as HTMLButtonElement;
 
 const emptyState = document.querySelector<HTMLDivElement>("#empty-state")!;
 const editorContainer = document.querySelector<HTMLDivElement>("#editor-container")!;
@@ -32,17 +43,15 @@ renderSidebar();
 newNoteBtn.addEventListener("click", createNewNote);
 deleteNoteBtn.addEventListener("click", deleteActiveNote);
 
-// Auto-save listeners (fires on every keystroke)
 titleInput.addEventListener("input", saveActiveNote);
 bodyInput.addEventListener("input", saveActiveNote);
 
-// Flashcard Toggle Listener
 toggleFlashcardBtn.addEventListener("click", () => {
     if (!activeNoteId) return;
 
     const note = notes.find(n => n.id === activeNoteId);
     if (note) {
-        note.needsReview = !note.needsReview; // Flip the state
+        note.needsReview = !note.needsReview;
         saveToLocalStorage();
         updateFlashcardButtonUI(note.needsReview);
     }
@@ -57,10 +66,10 @@ function createNewNote() {
         body: "",
         lastEdited: Date.now(),
         nextReviewDate: Date.now(),
-        needsReview: false, // Turned off by default!
+        needsReview: false,
     };
 
-    notes.unshift(newNote); // Put new note at the top of the list
+    notes.unshift(newNote);
     saveToLocalStorage();
     setActiveNote(newNote.id);
 }
@@ -70,27 +79,23 @@ function setActiveNote(id: string) {
     const note = notes.find(n => n.id === id);
 
     if (!note) {
-        // If no note found, show empty state
         editorContainer.classList.add("hidden");
+        aiAssistBtn?.classList.remove("hidden");
         emptyState.classList.remove("hidden");
         return;
     }
 
-    // Populate Editor
     titleInput.value = note.title;
     bodyInput.value = note.body;
 
-    // Show Editor, Hide Empty State
     emptyState.classList.add("hidden");
     editorContainer.classList.remove("hidden");
     editorContainer.classList.add("flex");
 
-    // Update the flashcard button visually
+    aiAssistBtn?.classList.remove("hidden");
+
     updateFlashcardButtonUI(note.needsReview);
-
-    // Re-render sidebar to highlight the active note
     renderSidebar();
-
     titleInput.focus();
 }
 
@@ -105,7 +110,6 @@ function saveActiveNote() {
 
         saveToLocalStorage();
 
-        // Update just the text in the sidebar without fully re-rendering it
         const sidebarLink = document.querySelector(`[data-note-id="${activeNoteId}"] span`);
         if (sidebarLink) {
             sidebarLink.textContent = note.title.trim() || "Untitled";
@@ -115,15 +119,15 @@ function saveActiveNote() {
 
 export function deleteActiveNote() {
     if (!activeNoteId) return;
-
-    // Confirm deletion just in case
     if (!confirm("Are you sure you want to delete this note?")) return;
 
-    // Filter out the deleted note
+    // FIX 4: Added '?.' so the delete function doesn't crash on missing AI HTML
+    aiAssistBtn?.classList.add("hidden");
+    aiSidebar?.classList.add("translate-x-full");
+
     notes = notes.filter(n => n.id !== activeNoteId);
     saveToLocalStorage();
 
-    // Reset state back to empty
     activeNoteId = null;
     editorContainer.classList.add("hidden");
     editorContainer.classList.remove("flex");
@@ -133,6 +137,7 @@ export function deleteActiveNote() {
 }
 
 function updateFlashcardButtonUI(isActive: boolean) {
+    if (!toggleFlashcardBtn) return;
     if (isActive) {
         toggleFlashcardBtn.className = "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200";
         toggleFlashcardBtn.innerHTML = `<span>🧠</span> Flashcard Active`;
@@ -144,17 +149,13 @@ function updateFlashcardButtonUI(isActive: boolean) {
 
 function renderSidebar() {
     sidebarList.innerHTML = "";
-
-    // Sort notes by most recently edited
     notes.sort((a, b) => b.lastEdited - a.lastEdited);
 
     notes.forEach(note => {
         const li = document.createElement("li");
-
         const btn = document.createElement("button");
         btn.dataset.noteId = note.id;
 
-        // Styling for active vs inactive notes
         const isActive = note.id === activeNoteId;
         btn.className = `w-full text-left px-3 py-2 rounded-md transition text-sm truncate ${
             isActive ? "bg-blue-100 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-200"
@@ -170,6 +171,141 @@ function renderSidebar() {
         sidebarList.appendChild(li);
     });
 }
+
+// AI Logic Implementation
+
+
+// Generating Quizzes
+generateQuizBtn?.addEventListener("click", async () => {
+    if (!activeNoteId) return;
+
+    const note = notes.find(n => n.id === activeNoteId);
+    if (!note || note.body.trim().length < 20) {
+        alert("Please write some more notes first before generating a quiz!");
+        return;
+    }
+
+    const apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+        alert("Please set your Gemini API key in the Settings page first!");
+        return;
+    }
+
+    const originalText = generateQuizBtn.innerHTML;
+    generateQuizBtn.innerHTML = `<span>⏳</span> Generating...`;
+    generateQuizBtn.disabled = true;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: `You are a strict tutor. Read the user's notes and generate exactly 3 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks (like \`\`\`json). Each object must have a 'q' property for the question and an 'a' property for the answer. Example: [{"q": "What is biology?", "a": "The study of life."}]\n\nNotes:\n${note.body}` }
+                    ]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message);
+
+        let aiResponse = data.candidates[0].content.parts[0].text;
+        aiResponse = aiResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+
+        const questionsArray = JSON.parse(aiResponse);
+
+        // --- NEW: Save to the current note and redirect! ---
+        note.TestQuestions = questionsArray;
+        saveToLocalStorage();
+
+        window.location.href = `/public/ye-quiz.html?noteId=${note.id}`;
+
+    } catch (error) {
+        console.error("AI Error:", error);
+        alert("Failed to generate quiz. Check the console for errors.");
+    } finally {
+        generateQuizBtn.innerHTML = originalText;
+        generateQuizBtn.disabled = false;
+    }
+});
+
+// Sidebar Event Listeners (Cleaned up duplicates)
+aiAssistBtn?.addEventListener("click", () => {
+    aiSidebar?.classList.remove("translate-x-full");
+    aiInput?.focus();
+});
+
+closeAiBtn?.addEventListener("click", () => {
+    aiSidebar?.classList.add("translate-x-full");
+});
+
+function appendMessage(text: string, isUser: boolean) {
+    if (!aiChatHistory) return;
+    const msgDiv = document.createElement("div");
+
+    msgDiv.className = `p-3 rounded-xl text-sm leading-relaxed whitespace-pre-wrap ${
+        isUser
+            ? 'bg-blue-600 text-white ml-8 rounded-br-none self-end'
+            : 'bg-white border border-gray-200 text-gray-800 mr-8 rounded-bl-none shadow-sm self-start'
+    }`;
+
+    msgDiv.textContent = text;
+    aiChatHistory.appendChild(msgDiv);
+    aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
+}
+
+// Sidebar Chat Submission
+aiForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!activeNoteId) return;
+
+    const apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+        alert("Please set your Gemini API key in the Settings page first!");
+        return;
+    }
+
+    const promptText = aiInput.value.trim();
+    if (!promptText) return;
+
+    aiInput.value = "";
+    appendMessage(promptText, true);
+
+    const noteContent = bodyInput.value;
+    const originalBtnText = aiSubmitBtn.innerText;
+    aiSubmitBtn.innerText = "...";
+    aiSubmitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: `Instructions: ${promptText}\n\nDocument Text:\n${noteContent}` }
+                    ]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const aiResponse = data.candidates[0].content.parts[0].text;
+        appendMessage(aiResponse, false);
+
+    } catch (error) {
+        console.error("AI Error:", error);
+        appendMessage("⚠️ There was an error communicating with the AI. Please double-check your API key in settings or try again.", false);
+    } finally {
+        aiSubmitBtn.innerText = originalBtnText;
+        aiSubmitBtn.disabled = false;
+        aiInput.focus();
+    }
+});
 
 // --- Storage Utilities ---
 function saveToLocalStorage() {
