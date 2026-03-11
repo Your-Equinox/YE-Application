@@ -6,6 +6,8 @@
   },
   "dependencies": {
     "canvas-confetti": "^1.2.0",
+    "mammoth": "^1.11.0",
+    "pdfjs-dist": "^5.5.207",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
