@@ -3,19 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YE - Notes</title>
+  <title>Your Equinox - Pro Editor</title>
   <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
   <style>
-    {
-      transform: rotate(90deg);
+    /* 1. Category Folder Styling */
+    .rotate-90 { transform: rotate(90deg); }
+    .transition-transform { transition: transform 0.2s ease-in-out; }
+
+    /* 2. Tiptap Table Styling */
+    .prose table {
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      margin: 2rem 0;
+      border: 1px solid #e2e8f0;
     }
-    #sidebar-note-list::-webkit-scrollbar {
-      display: none;
+    .prose table td, .prose table th {
+      min-width: 1em;
+      border: 1px solid #e2e8f0;
+      padding: 8px 12px;
+      vertical-align: top;
+      box-sizing: border-box;
+      position: relative;
     }
-    #sidebar-note-list {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .prose table th {
+      font-weight: bold;
+      background-color: #f8fafc;
+      text-align: left;
     }
+
+    /* 3. Code Styling (Inline & Block) */
+    .prose :not(pre) > code {
+      background-color: #f1f5f9;
+      color: #ef4444;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-family: ui-monospace, monospace;
+    }
+    .prose pre {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+    }
+    .prose pre code {
+      background: none;
+      color: inherit;
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* 4. Editor Surface & Bubble Menu */
+    .ProseMirror { outline: none !important; min-height: 600px; }
+
+    #table-bubble-menu {
+      display: flex;
+      /* Tiptap handles visibility via the BubbleMenu extension */
+    }
+
+    /* Sidebar Scrollbar Hide */
+    #sidebar-note-list::-webkit-scrollbar { display: none; }
+    #sidebar-note-list { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-white font-sans text-slate-800 h-screen flex overflow-hidden">
@@ -33,10 +83,10 @@
   </div>
 
   <div class="p-4 border-t border-gray-200 bg-gray-50">
-    <button id="importDocument-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition shadow-sm" title="Import Document">
+    <input type="file" id="import-file" class="hidden" accept=".json,.docx,.pdf,.txt,.md">
+    <button id="importDocument-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition shadow-sm">
       <span>📥</span> Import Notes
     </button>
-    <input type="file" id="import-file" accept=".pdf, .docx, .txt, .md" class="hidden" />
   </div>
 </aside>
 
@@ -48,53 +98,46 @@
 
   <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 md:p-12 hidden flex-col min-h-full">
 
-    <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
-      <div class="flex flex-wrap gap-2 md:gap-3">
-        <button id="toggle-preview-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">
-          <span>👁️</span> Preview Mode
-        </button>
-
-        <button id="toggle-flashcard-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">
-          <span>🧠</span> Enable Flashcard
-        </button>
-
-        <button id="ai-assist-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-blue-100 text-blue-700 hover:bg-blue-200 hidden">
-          <span>✨</span> Ask AI
-        </button>
-
-        <button id="generate-quiz-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-blue-100 text-blue-700 hover:bg-blue-200">
-          <span>🤖</span> Generate Quiz
-        </button>
+    <div class="flex justify-between items-center mb-8">
+      <div class="flex gap-2">
+        <button id="toggle-flashcard-btn" class="px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">🧠 Flashcards</button>
+        <button id="generate-quiz-btn" class="px-3 py-1.5 rounded-md text-sm font-medium transition bg-blue-100 text-blue-700 hover:bg-blue-200">🤖 Generate Quiz</button>
       </div>
-
-      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition whitespace-nowrap">Delete Note</button>
+      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition">Delete Note</button>
     </div>
 
-    <input type="text" id="note-title" class="text-4xl md:text-5xl font-bold w-full outline-none mb-6 placeholder-gray-200 text-gray-800 bg-transparent" placeholder="Untitled">
+    <input type="text" id="note-title" class="text-5xl font-bold w-full outline-none mb-6 placeholder-gray-100 text-gray-800 bg-transparent" placeholder="Untitled">
 
-    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 mb-4 bg-gray-50 border border-gray-200 p-1.5 rounded-lg transition-opacity w-fit">
-      <button id="format-h1" class="px-2.5 py-1 text-sm font-bold text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Heading 1">H1</button>
-      <button id="format-h2" class="px-2.5 py-1 text-sm font-semibold text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Heading 2">H2</button>
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-      <button id="format-bold" class="px-2.5 py-1 text-sm font-bold text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Bold">B</button>
-      <button id="format-italic" class="px-2.5 py-1 text-sm italic text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition font-serif" title="Italic">I</button>
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-      <button id="format-list" class="px-2.5 py-1 text-sm text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition flex items-center gap-1" title="Bullet List">
-        <span class="text-lg leading-none">•</span> List
-      </button>
-      <button id="format-code" class="px-2.5 py-1 text-sm font-mono text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Inline Code">`</button>
+    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 mb-6 bg-gray-50 border border-gray-200 p-1.5 rounded-lg w-fit sticky top-4 z-20 shadow-sm">
+      <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1 text-sm font-bold text-gray-600 hover:bg-white rounded transition">H1</button>
+      <button onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="px-3 py-1 text-sm font-semibold text-gray-600 hover:bg-white rounded transition">H2</button>
+
       <div class="w-px h-5 bg-gray-300 mx-1"></div>
 
-      <button id="format-image" class="px-2.5 py-1 text-sm font-medium text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Insert Image Link">🖼️</button>
-      <input type="file" id="image-upload-input" accept="image/*" class="hidden" />
+      <button onclick="editor.chain().focus().toggleBold().run()" class="px-3 py-1 text-sm font-bold text-gray-600 hover:bg-white rounded transition">B</button>
+      <button onclick="editor.chain().focus().toggleItalic().run()" class="px-3 py-1 text-sm italic font-serif text-gray-600 hover:bg-white rounded transition">I</button>
+
+      <div class="w-px h-5 bg-gray-300 mx-1"></div>
+
+      <button onclick="editor.chain().focus().toggleCodeBlock().run()" class="px-3 py-1 text-sm font-mono text-gray-600 hover:bg-white rounded transition">Code</button>
+
+      <div class="w-px h-5 bg-gray-300 mx-1"></div>
+
+      <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()" class="px-3 py-1 text-sm text-gray-600 hover:bg-white rounded transition">📊 Table</button>
     </div>
 
-    <textarea id="note-body" class="w-full flex-1 outline-none resize-none text-lg leading-relaxed placeholder-gray-300 text-gray-700 bg-transparent min-h-[500px]" placeholder="Start typing..."></textarea>
+    <div id="table-bubble-menu" class="flex items-center gap-1 bg-white border border-gray-200 shadow-xl p-1.5 rounded-lg z-50">
+      <button onclick="editor.chain().focus().addRowAfter().run()" class="px-2 py-1 text-[11px] font-bold text-green-600 hover:bg-green-50 rounded transition">+ Row</button>
+      <button onclick="editor.chain().focus().addColumnAfter().run()" class="px-2 py-1 text-[11px] font-bold text-blue-600 hover:bg-blue-50 rounded transition">+ Col</button>
+      <div class="w-px h-4 bg-gray-200 mx-1"></div>
+      <button onclick="editor.chain().focus().deleteRow().run()" class="px-2 py-1 text-[11px] text-red-500 hover:bg-red-50 rounded transition">Del Row</button>
+      <button onclick="editor.chain().focus().deleteColumn().run()" class="px-2 py-1 text-[11px] text-red-500 hover:bg-red-50 rounded transition">Del Col</button>
+      <button onclick="editor.chain().focus().deleteTable().run()" class="px-2 py-1 text-[11px] text-gray-400 hover:text-red-600 transition">🗑️</button>
+    </div>
 
-    <div id="note-preview" class="w-full flex-1 text-lg leading-relaxed bg-transparent min-h-[500px] hidden prose prose-blue max-w-none pb-12"></div>
+    <div id="tiptap-editor" class="w-full flex-1 prose prose-slate prose-blue max-w-none bg-transparent pb-24"></div>
 
   </div>
-
 </main>
 
 <aside id="ai-sidebar" class="fixed top-0 right-0 w-80 md:w-96 h-full bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col z-50">
@@ -102,13 +145,11 @@
     <h3 class="font-bold text-gray-800 flex items-center gap-2"><span>✨</span> AI Assistant</h3>
     <button id="close-ai-btn" class="text-gray-400 hover:text-gray-700 text-2xl leading-none transition">&times;</button>
   </div>
-  <div id="ai-chat-history" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 flex flex-col">
-    <div class="text-sm text-gray-500 text-center my-4">Ask a question about your current note!</div>
-  </div>
-  <div class="p-4 border-t border-gray-200 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+  <div id="ai-chat-history" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 flex flex-col"></div>
+  <div class="p-4 border-t border-gray-200 bg-white">
     <form id="ai-form" class="flex gap-2">
-      <input type="text" id="ai-input" placeholder="How can I help with this note?" class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition disabled:bg-blue-400" id="ai-submit-btn">Send</button>
+      <input type="text" id="ai-input" placeholder="Ask AI..." class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" required>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700" id="ai-submit-btn">Send</button>
     </form>
   </div>
 </aside>

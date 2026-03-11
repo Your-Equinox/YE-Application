@@ -1,27 +1,36 @@
 import { v4 as uuidv4 } from "uuid";
 import "./ImportingFiles";
-import {marked} from "marked";
-import {initSidebar, renderCategorySideBar} from "./Categories";
+import { marked } from "marked";
+import { Editor } from '@tiptap/core';
+import StarterKit from '@tiptap/starter-kit';
+import { Table } from '@tiptap/extension-table';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader } from '@tiptap/extension-table-header';
+import {BubbleMenu} from '@tiptap/extension-bubble-menu';
+import { initSidebar, renderCategorySideBar } from "./Categories";
+
+// --- Global Types & State ---
+declare global {
+    interface Window {
+        editor: Editor;
+    }
+}
 
 export type Note = {
-    id: string;
-    title: string;
-    body: string;
-    lastEdited: number;
-    nextReviewDate: number;
-    needsReview: boolean;
-    categoryID: string | null;
+    id: string; title: string; body: string; lastEdited: number;
+    nextReviewDate: number; needsReview: boolean; categoryID: string | null;
     TestQuestions?: { q: string; a: string }[];
 };
 
-// --- DOM Elements  ---
-const sidebarList = document.getElementById("sidebar-note-list");
+let notes: Note[] = loadNotes();
+let activeNoteId: string | null = null;
+
+// --- DOM Elements ---
 const newNoteBtn = document.getElementById("new-note-btn");
 const deleteNoteBtn = document.getElementById("delete-note-btn");
 const toggleFlashcardBtn = document.getElementById("toggle-flashcard-btn");
 const generateQuizBtn = document.getElementById("generate-quiz-btn") as HTMLButtonElement | null;
-
-// AI Elements
 const aiAssistBtn = document.getElementById("ai-assist-btn") as HTMLButtonElement | null;
 const aiSidebar = document.getElementById("ai-sidebar");
 const closeAiBtn = document.getElementById("close-ai-btn");
@@ -29,31 +38,51 @@ const aiForm = document.getElementById("ai-form") as HTMLFormElement | null;
 const aiInput = document.getElementById("ai-input") as HTMLInputElement | null;
 const aiChatHistory = document.getElementById("ai-chat-history");
 const aiSubmitBtn = document.getElementById("ai-submit-btn") as HTMLButtonElement | null;
-
 const emptyState = document.getElementById("empty-state");
 const editorContainer = document.getElementById("editor-container");
 const titleInput = document.getElementById("note-title") as HTMLInputElement | null;
-const bodyInput = document.getElementById("note-body") as HTMLTextAreaElement | null;
 
-// --- State ---
-let notes: Note[] = loadNotes();
-let activeNoteId: string | null = null;
+const editorInstance = new Editor({
+    element: document.querySelector('#tiptap-editor')!,
+    extensions: [
+        StarterKit,
+        (Table as any).configure({
+            resizable: true,
+            lastColumnResizable: false
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        BubbleMenu.configure({
+            element: document.querySelector('#table-bubble-menu') as HTMLElement,
+            // We use 'editor' to check state; other params are optional
+            shouldShow: ({ editor }) => {
+                // Return true only if the cursor is in a table AND the user is actually clicking/typing
+                return editor.isActive('table') && editor.isFocused;
+            },
+        }),
+    ],
+    content: '',
+    onUpdate: ({ editor }) => {
+        // Automatically save HTML to our storage function
+        saveActiveNote(editor.getHTML());
+    },
+});
+window.editor = editorInstance;
 
+// Sidebar Initialization
 initSidebar(
     () => notes,
     () => activeNoteId,
     setActiveNote,
     saveToLocalStorage
 );
-
 renderCategorySideBar();
 
-
-// --- Event Listeners (Safely Attached) ---
+// --- Event Listeners ---
 if (newNoteBtn) newNoteBtn.addEventListener("click", createNewNote);
 if (deleteNoteBtn) deleteNoteBtn.addEventListener("click", deleteActiveNote);
-if (titleInput) titleInput.addEventListener("input", saveActiveNote);
-if (bodyInput) bodyInput.addEventListener("input", saveActiveNote);
+if (titleInput) titleInput.addEventListener("input", () => saveActiveNote());
 
 if (toggleFlashcardBtn) {
     toggleFlashcardBtn.addEventListener("click", () => {
@@ -73,13 +102,12 @@ function createNewNote() {
     const newNote: Note = {
         id: uuidv4(),
         title: "",
-        body: "",
+        body: "", // Will store HTML
         lastEdited: Date.now(),
         nextReviewDate: Date.now(),
         needsReview: false,
         categoryID: null,
     };
-
     notes.unshift(newNote);
     saveToLocalStorage();
     setActiveNote(newNote.id);
@@ -90,215 +118,58 @@ function setActiveNote(id: string) {
     const note = notes.find(n => n.id === id);
 
     if (!note) {
-        if (editorContainer) editorContainer.classList.add("hidden");
-        if (aiAssistBtn) aiAssistBtn.classList.remove("hidden");
-        if (emptyState) emptyState.classList.remove("hidden");
+        editorContainer?.classList.add("hidden");
+        emptyState?.classList.remove("hidden");
         return;
     }
 
+    // Migration logic: Convert old Markdown to HTML if necessary
+    const content = note.body.trim().startsWith('<')
+        ? note.body
+        : marked.parse(note.body || "");
+
+    editorInstance.commands.setContent(content);
+
     if (titleInput) titleInput.value = note.title;
-    if (bodyInput) bodyInput.value = note.body;
-
-    if (emptyState) emptyState.classList.add("hidden");
-    if (editorContainer) {
-        editorContainer.classList.remove("hidden");
-        editorContainer.classList.add("flex");
-    }
-
-    if (aiAssistBtn) aiAssistBtn.classList.remove("hidden");
+    emptyState?.classList.add("hidden");
+    editorContainer?.classList.replace("hidden", "flex");
+    aiAssistBtn?.classList.remove("hidden");
 
     updateFlashcardButtonUI(note.needsReview);
     renderCategorySideBar();
-
-    if (isPreviewMode && togglePreviewBtn) {
-        togglePreviewBtn.click();
-    }
-    if (titleInput) titleInput.focus();
+    titleInput?.focus();
 }
 
-function saveActiveNote() {
+function saveActiveNote(htmlContent?: string) {
     if (!activeNoteId) return;
-
     const note = notes.find(n => n.id === activeNoteId);
-    if (note && titleInput && bodyInput) {
+    if (note && titleInput) {
+        const oldTitle = note.title;
         note.title = titleInput.value;
-        note.body = bodyInput.value;
+        if (htmlContent !== undefined) note.body = htmlContent;
         note.lastEdited = Date.now();
-
         saveToLocalStorage();
-
-        const sidebarLink = document.querySelector(`[data-note-id="${activeNoteId}"] span`);
-        if (sidebarLink) {
-            sidebarLink.textContent = note.title.trim() || "Untitled";
-        }
+        if (oldTitle !== note.title) renderCategorySideBar();
     }
 }
 
 export function deleteActiveNote() {
-    if (!activeNoteId) return;
-
-    if (!confirm("Are you sure you want to delete this note?")) return;
-
+    if (!activeNoteId || !confirm("Are you sure?")) return;
     notes = notes.filter(n => n.id !== activeNoteId);
-
     saveToLocalStorage();
-
     activeNoteId = null;
-    if (titleInput) titleInput.value = "";
-    if (bodyInput) bodyInput.value = "";
-
-    if (aiAssistBtn) aiAssistBtn.classList.add("hidden");
-    if (aiSidebar) aiSidebar.classList.add("translate-x-full");
-
-    if (editorContainer) {
-        editorContainer.classList.add("hidden");
-        editorContainer.classList.remove("flex");
-    }
-    if (emptyState) emptyState.classList.remove("hidden");
-
+    editorContainer?.classList.replace("flex", "hidden");
+    emptyState?.classList.remove("hidden");
     renderCategorySideBar();
 }
 
-function updateFlashcardButtonUI(isActive: boolean) {
-    if (!toggleFlashcardBtn) return;
-    if (isActive) {
-        toggleFlashcardBtn.className = "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200";
-        toggleFlashcardBtn.innerHTML = `<span>🧠</span> Flashcard Active`;
-    } else {
-        toggleFlashcardBtn.className = "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200";
-        toggleFlashcardBtn.innerHTML = `<span>🧠</span> Enable Flashcard`;
-    }
-}
-
-/*function renderSidebar() {
-    if (!sidebarList) return;
-    sidebarList.innerHTML = "";
-    notes.sort((a, b) => b.lastEdited - a.lastEdited);
-
-    notes.forEach(note => {
-        const li = document.createElement("li");
-        const btn = document.createElement("button");
-        btn.dataset.noteId = note.id;
-
-        const isActive = note.id === activeNoteId;
-        btn.className = `w-full text-left px-3 py-2 rounded-md transition text-sm truncate ${
-            isActive ? "bg-blue-100 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-200"
-        }`;
-
-        const titleSpan = document.createElement("span");
-        titleSpan.textContent = note.title.trim() || "Untitled";
-
-        btn.appendChild(titleSpan);
-        btn.addEventListener("click", () => setActiveNote(note.id));
-
-        li.appendChild(btn);
-        sidebarList.appendChild(li);
-    });
-}
-*/
-
-// --- AI Logic Implementation ---
-
-if (generateQuizBtn) {
-    generateQuizBtn.addEventListener("click", async () => {
-        console.log("Quiz generation started!"); // Debugging log
-        if (!activeNoteId) return;
-
-        const note = notes.find(n => n.id === activeNoteId);
-        if (!note || (note.body && note.body.trim().length < 20)) {
-            alert("Please write some more notes first before generating a quiz!");
-            return;
-        }
-
-        const apiKey = localStorage.getItem("gemini_api_key");
-        if (!apiKey) {
-            alert("Please set your Gemini API key in the Settings page first!");
-            return;
-        }
-
-        const originalText = generateQuizBtn.innerHTML;
-        generateQuizBtn.innerHTML = `<span>⏳</span> Generating...`;
-        generateQuizBtn.disabled = true;
-
-        try {
-            console.log("Fetching from Gemini API..."); // Debugging log
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: `You are a strict tutor. Read the user's notes and generate exactly 10 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks (like \`\`\`json). Each object must have a 'q' property for the question and an 'a' property for the answer. Example: [{"q": "What is biology?", "a": "The study of life."}]\n\nNotes:\n${note.body}` }
-                        ]
-                    }]
-                })
-            });
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-
-            let aiResponse = data.candidates[0].content.parts[0].text;
-            aiResponse = aiResponse.replace(/```json/g, "").replace(/```/g, "").trim();
-
-            const questionsArray = JSON.parse(aiResponse);
-            console.log("Quiz generated successfully:", questionsArray); // Debugging log
-
-            // Save to the current note and redirect!
-            note.TestQuestions = questionsArray;
-            saveToLocalStorage();
-
-            alert("Quiz generated successfully! Redirecting...");
-            window.location.href = `/public/ye-quiz.html?noteId=${note.id}`;
-
-        } catch (error) {
-            console.error("AI Error:", error);
-            alert("Failed to generate quiz. Check the console for errors.");
-        } finally {
-            generateQuizBtn.innerHTML = originalText;
-            generateQuizBtn.disabled = false;
-        }
-    });
-}
-
-// Sidebar Event Listeners
-if (aiAssistBtn) {
-    aiAssistBtn.addEventListener("click", () => {
-        if (aiSidebar) aiSidebar.classList.remove("translate-x-full");
-        if (aiInput) aiInput.focus();
-    });
-}
-
-if (closeAiBtn) {
-    closeAiBtn.addEventListener("click", () => {
-        if (aiSidebar) aiSidebar.classList.add("translate-x-full");
-    });
-}
-
-function appendMessage(text: string, isUser: boolean) {
-    if (!aiChatHistory) return;
-    const msgDiv = document.createElement("div");
-
-    msgDiv.className = `p-3 rounded-xl text-sm leading-relaxed whitespace-pre-wrap ${
-        isUser
-            ? 'bg-blue-600 text-white ml-8 rounded-br-none self-end'
-            : 'bg-white border border-gray-200 text-gray-800 mr-8 rounded-bl-none shadow-sm self-start'
-    }`;
-
-    msgDiv.textContent = text;
-    aiChatHistory.appendChild(msgDiv);
-    aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
-}
-
+// AI Assistant
 if (aiForm) {
     aiForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!activeNoteId || !aiInput || !bodyInput || !aiSubmitBtn) return;
-
+        if (!activeNoteId || !aiInput || !aiSubmitBtn) return;
         const apiKey = localStorage.getItem("gemini_api_key");
-        if (!apiKey) {
-            alert("Please set your Gemini API key in the Settings page first!");
-            return;
-        }
+        if (!apiKey) return alert("Set API key first!");
 
         const promptText = aiInput.value.trim();
         if (!promptText) return;
@@ -306,7 +177,7 @@ if (aiForm) {
         aiInput.value = "";
         appendMessage(promptText, true);
 
-        const noteContent = bodyInput.value;
+        const noteContent = editorInstance.getHTML();
         const originalBtnText = aiSubmitBtn.innerText;
         aiSubmitBtn.innerText = "...";
         aiSubmitBtn.disabled = true;
@@ -316,155 +187,38 @@ if (aiForm) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: `Instructions: ${promptText}\n\nDocument Text:\n${noteContent}` }
-                        ]
-                    }]
+                    contents: [{ parts: [{ text: `Instructions: ${promptText}\n\nDocument Text:\n${noteContent}` }] }]
                 })
             });
-
             const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            appendMessage(aiResponse, false);
-
+            appendMessage(data.candidates[0].content.parts[0].text, false);
         } catch (error) {
-            console.error("AI Error:", error);
-            appendMessage("⚠️ There was an error communicating with the AI. Please double-check your API key in settings or try again.", false);
+            appendMessage("⚠️ Error communicating with AI.", false);
         } finally {
             aiSubmitBtn.innerText = originalBtnText;
             aiSubmitBtn.disabled = false;
-            aiInput.focus();
         }
     });
 }
 
-// --- Storage Utilities ---
-function saveToLocalStorage() {
-    localStorage.setItem("ye-notes", JSON.stringify(notes));
-}
-
+// Helpers
+function saveToLocalStorage() { localStorage.setItem("ye-notes", JSON.stringify(notes)); }
 function loadNotes(): Note[] {
     const saved = localStorage.getItem("ye-notes");
-    if (!saved) return [];
-
-    return JSON.parse(saved).map((n: any) => ({
-        ...n,
-        nextReviewDate: n.nextReviewDate || Date.now(),
-        needsReview: n.needsReview || false,
-        categoryId: n.categoryId || null
-    }));
+    return saved ? JSON.parse(saved).map((n: any) => ({ ...n, categoryID: n.categoryID || null })) : [];
 }
-
-//Preview Logic
-const togglePreviewBtn = document.getElementById("toggle-preview-btn");
-const notePreview = document.getElementById("note-preview");
-let isPreviewMode = false;
-
-if (togglePreviewBtn && notePreview && bodyInput) {
-    togglePreviewBtn.addEventListener("click", async () => {
-        isPreviewMode = !isPreviewMode;
-
-        if (isPreviewMode) {
-            bodyInput.classList.add("hidden");
-            notePreview.classList.remove("hidden");
-
-            togglePreviewBtn.innerHTML = `<span>✏️</span> Edit Mode`;
-            togglePreviewBtn.classList.replace("bg-gray-100", "bg-blue-100");
-            togglePreviewBtn.classList.replace("text-gray-500", "text-blue-700");
-
-            const rawText = bodyInput.value || "*Nothing written yet...*";
-            const htmlContent = await marked.parse(rawText);
-            notePreview.innerHTML = htmlContent;
-
-        } else {
-            notePreview.classList.add("hidden");
-            bodyInput.classList.remove("hidden");
-
-            togglePreviewBtn.innerHTML = `<span>👁️</span> Preview Mode`;
-            togglePreviewBtn.classList.replace("bg-blue-100", "bg-gray-100");
-            togglePreviewBtn.classList.replace("text-blue-700", "text-gray-500");
-
-            bodyInput.focus();
-        }
-    });
+function updateFlashcardButtonUI(isActive: boolean) {
+    if (!toggleFlashcardBtn) return;
+    toggleFlashcardBtn.className = isActive
+        ? "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200"
+        : "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200";
+    toggleFlashcardBtn.innerHTML = `<span>🧠</span> ${isActive ? "Flashcard Active" : "Enable Flashcard"}`;
 }
-
-//Tool Bar Logic
-const formatToolbar = document.getElementById("format-toolbar");
-
-function insertFormatting(prefix: string, suffix: string = "") {
-    if (!bodyInput || !activeNoteId) return;
-
-    const start = bodyInput.selectionStart;
-    const end = bodyInput.selectionEnd;
-    const text = bodyInput.value;
-    const selectedText = text.substring(start, end);
-
-    const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
-
-    bodyInput.value = newText;
-
-    saveActiveNote();
-
-    bodyInput.focus();
-    if (selectedText.length > 0) {
-        bodyInput.setSelectionRange(start + prefix.length, end + prefix.length);
-    } else {
-        bodyInput.setSelectionRange(start + prefix.length, start + prefix.length);
-    }
+function appendMessage(text: string, isUser: boolean) {
+    if (!aiChatHistory) return;
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `p-3 rounded-xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-blue-600 text-white ml-8 rounded-br-none self-end' : 'bg-white border border-gray-200 text-gray-800 mr-8 rounded-bl-none shadow-sm self-start'}`;
+    msgDiv.textContent = text;
+    aiChatHistory.appendChild(msgDiv);
+    aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
 }
-
-// Wire up the buttons
-document.getElementById("format-bold")?.addEventListener("click", () => insertFormatting("**", "**"));
-document.getElementById("format-italic")?.addEventListener("click", () => insertFormatting("*", "*"));
-document.getElementById("format-h1")?.addEventListener("click", () => insertFormatting("# ", ""));
-document.getElementById("format-h2")?.addEventListener("click", () => insertFormatting("## ", ""));
-document.getElementById("format-list")?.addEventListener("click", () => insertFormatting("- ", ""));
-document.getElementById("format-code")?.addEventListener("click", () => insertFormatting("`", "`"));
-document.getElementById("format-image")?.addEventListener("click", () => insertFormatting("![Image Description](", ")"));
-
-/*
-This is for uploading pictures to the database later so keep this code for migration
-
-const formatImageBtn = document.getElementById("format-image");
-const imageUploadInput = document.getElementById("image-upload-input") as HTMLInputElement | null;
-
-if (formatImageBtn && imageUploadInput) {
-    // 1. When the button is clicked, trigger the hidden file picker
-    formatImageBtn.addEventListener("click", () => {
-        imageUploadInput.click();
-    });
-
-    // 2. When the user selects an image, convert it and insert it
-    imageUploadInput.addEventListener("change", (event) => {
-        const target = event.target as HTMLInputElement;
-        const file = target.files?.[0];
-
-        if (!file) return;
-
-        // Ensure the file isn't massive (Optional safety check: 2MB limit)
-        if (file.size > 2 * 1024 * 1024) {
-            alert("This image is too large! Please select an image under 2MB to save local storage space.");
-            target.value = "";
-            return;
-        }
-
-        // Read the file as a Base64 string
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const base64Image = e.target?.result as string;
-
-            // Insert the Markdown syntax with the massive Base64 string hidden inside
-            insertFormatting(`\n![${file.name}](${base64Image})\n`, "");
-        };
-        reader.readAsDataURL(file);
-
-        // Reset the input so they can upload the exact same file again if needed
-        target.value = "";
-    });
-}
-
- */
