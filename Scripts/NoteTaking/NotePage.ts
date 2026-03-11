@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
+import "./ImportingFiles";
 
-// --- Types ---
 export type Note = {
     id: string;
     title: string;
@@ -212,7 +212,7 @@ if (generateQuizBtn) {
                 body: JSON.stringify({
                     contents: [{
                         parts: [
-                            { text: `You are a strict tutor. Read the user's notes and generate exactly 3 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks (like \`\`\`json). Each object must have a 'q' property for the question and an 'a' property for the answer. Example: [{"q": "What is biology?", "a": "The study of life."}]\n\nNotes:\n${note.body}` }
+                            { text: `You are a strict tutor. Read the user's notes and generate exactly 10 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks (like \`\`\`json). Each object must have a 'q' property for the question and an 'a' property for the answer. Example: [{"q": "What is biology?", "a": "The study of life."}]\n\nNotes:\n${note.body}` }
                         ]
                     }]
                 })
@@ -340,3 +340,6 @@ function loadNotes(): Note[] {
         needsReview: n.needsReview || false
     }));
 }
+
+
+
