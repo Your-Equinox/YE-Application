@@ -65,7 +65,7 @@ const noNoteMessage = document.getElementById("noNoteMessage")!;
 const recallTitle = document.getElementById("recallTitle")!;
 const revealNoteBtn = document.getElementById("revealNoteBtn")!;
 const recallBody = document.getElementById("recallBody")!;
-const confidenceBtns = document.querySelectorAll<HTMLButtonElement>(".confidence-btn");
+const confidenceBtns = document.querySelectorAll<HTMLButtonElement>(".confidence-btn")!;
 
 let dueNotes: any [] = [];
 let currentNote: any = null;
@@ -75,11 +75,9 @@ export function initialMemoryCheck() {
 
     if (savedNotes) {
         const allNotes = JSON.parse(savedNotes);
-        const now = Date.now();
 
         dueNotes = allNotes.filter((n: any) =>
             n.needsReview === true &&
-            (n.nextReviewDate || 0) <= now &&
             (n.title.trim() !== "" || n.body.trim() !== "")
         );
     }
@@ -87,7 +85,6 @@ export function initialMemoryCheck() {
     if (dueNotes.length === 0) {
         recallContainer.classList.add("hidden");
         noNoteMessage.classList.remove("hidden");
-        // Update the message to congratulate them!
         noNoteMessage.innerHTML = `<p class="mb-2 text-green-600 font-bold">🎉 All caught up!</p><p>You have no more notes to review today.</p>`;
     } else {
         noNoteMessage.classList.add("hidden");
@@ -135,11 +132,24 @@ function handleConfidenceRating(e:Event) {
 
     if (noteIndex > -1) {
         allNotes[noteIndex].nextReviewDate = newDate;
+
+        allNotes[noteIndex].needsReview = false;
+
         localStorage.setItem("ye-notes", JSON.stringify(allNotes));
     }
 
+    dueNotes = dueNotes.filter((n: any) => n.id !== currentNote.id);
+
     updateDashboardUI();
-    initialMemoryCheck();
+
+    // 4. Move to the next card or finish the session
+    if (dueNotes.length === 0) {
+        recallContainer.classList.add("hidden");
+        noNoteMessage.classList.remove("hidden");
+        noNoteMessage.innerHTML = `<p class="mb-2 text-green-600 font-bold">🎉 Session Complete!</p><p>You've cleared all active flashcards.</p>`;
+    } else {
+        pickRandomNote();
+    }
 }
 
 revealNoteBtn.addEventListener("click", revealNote);
