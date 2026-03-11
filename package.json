@@ -5,8 +5,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/marked": "^5.0.2",
     "canvas-confetti": "^1.2.0",
     "mammoth": "^1.11.0",
+    "marked": "^17.0.4",
     "pdfjs-dist": "^5.5.207",
     "uuid": "^13.0.0"
   },
