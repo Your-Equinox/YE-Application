@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YE - Notes</title>
   <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <style>
+    {
+      transform: rotate(90deg);
+    }
+    #sidebar-note-list::-webkit-scrollbar {
+      display: none;
+    }
+    #sidebar-note-list {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
 </head>
 <body class="bg-white font-sans text-slate-800 h-screen flex overflow-hidden">
 
@@ -28,7 +40,7 @@
   </div>
 </aside>
 
-<main class="flex-1 flex flex-col bg-white overflow-y-auto relative">
+<main class="flex-1 flex flex-col bg-white overflow-y-auto relative min-w-0">
 
   <div id="empty-state" class="absolute inset-0 flex items-center justify-center text-gray-400 text-lg pointer-events-none">
     Select a note or create a new one to begin.
@@ -102,7 +114,5 @@
 </aside>
 
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
-<script type="module" src="/Scripts/NoteTaking/Categories.ts"></script>
-
 </body>
 </html>

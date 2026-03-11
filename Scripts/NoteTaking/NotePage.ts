@@ -108,7 +108,7 @@ function setActiveNote(id: string) {
     if (aiAssistBtn) aiAssistBtn.classList.remove("hidden");
 
     updateFlashcardButtonUI(note.needsReview);
-    renderSidebar();
+    renderCategorySideBar();
 
     if (isPreviewMode && togglePreviewBtn) {
         togglePreviewBtn.click();
@@ -156,7 +156,7 @@ export function deleteActiveNote() {
     }
     if (emptyState) emptyState.classList.remove("hidden");
 
-    renderSidebar();
+    renderCategorySideBar();
 }
 
 function updateFlashcardButtonUI(isActive: boolean) {
@@ -170,7 +170,7 @@ function updateFlashcardButtonUI(isActive: boolean) {
     }
 }
 
-function renderSidebar() {
+/*function renderSidebar() {
     if (!sidebarList) return;
     sidebarList.innerHTML = "";
     notes.sort((a, b) => b.lastEdited - a.lastEdited);
@@ -195,6 +195,7 @@ function renderSidebar() {
         sidebarList.appendChild(li);
     });
 }
+*/
 
 // --- AI Logic Implementation ---
 
