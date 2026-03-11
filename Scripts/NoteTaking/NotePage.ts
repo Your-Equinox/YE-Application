@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import "./ImportingFiles";
 import {marked} from "marked";
+import {initSidebar, renderCategorySideBar} from "./Categories";
 
 export type Note = {
     id: string;
@@ -9,6 +10,7 @@ export type Note = {
     lastEdited: number;
     nextReviewDate: number;
     needsReview: boolean;
+    categoryID: string | null;
     TestQuestions?: { q: string; a: string }[];
 };
 
@@ -37,8 +39,15 @@ const bodyInput = document.getElementById("note-body") as HTMLTextAreaElement | 
 let notes: Note[] = loadNotes();
 let activeNoteId: string | null = null;
 
-// --- Initialize ---
-renderSidebar();
+initSidebar(
+    () => notes,
+    () => activeNoteId,
+    setActiveNote,
+    saveToLocalStorage
+);
+
+renderCategorySideBar();
+
 
 // --- Event Listeners (Safely Attached) ---
 if (newNoteBtn) newNoteBtn.addEventListener("click", createNewNote);
@@ -68,6 +77,7 @@ function createNewNote() {
         lastEdited: Date.now(),
         nextReviewDate: Date.now(),
         needsReview: false,
+        categoryID: null,
     };
 
     notes.unshift(newNote);
@@ -342,7 +352,8 @@ function loadNotes(): Note[] {
     return JSON.parse(saved).map((n: any) => ({
         ...n,
         nextReviewDate: n.nextReviewDate || Date.now(),
-        needsReview: n.needsReview || false
+        needsReview: n.needsReview || false,
+        categoryId: n.categoryId || null
     }));
 }
 
@@ -386,22 +397,17 @@ const formatToolbar = document.getElementById("format-toolbar");
 function insertFormatting(prefix: string, suffix: string = "") {
     if (!bodyInput || !activeNoteId) return;
 
-    // Find exactly where the user's cursor is or what they highlighted
     const start = bodyInput.selectionStart;
     const end = bodyInput.selectionEnd;
     const text = bodyInput.value;
     const selectedText = text.substring(start, end);
 
-    // Build the new text with the markdown symbols added
     const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
 
-    // Update the textarea
     bodyInput.value = newText;
 
-    // Trigger your save function so the changes aren't lost
     saveActiveNote();
 
-    // Put the cursor back exactly where it belongs so they can keep typing smoothly
     bodyInput.focus();
     if (selectedText.length > 0) {
         bodyInput.setSelectionRange(start + prefix.length, end + prefix.length);
@@ -417,3 +423,47 @@ document.getElementById("format-h1")?.addEventListener("click", () => insertForm
 document.getElementById("format-h2")?.addEventListener("click", () => insertFormatting("## ", ""));
 document.getElementById("format-list")?.addEventListener("click", () => insertFormatting("- ", ""));
 document.getElementById("format-code")?.addEventListener("click", () => insertFormatting("`", "`"));
+document.getElementById("format-image")?.addEventListener("click", () => insertFormatting("![Image Description](", ")"));
+
+/*
+This is for uploading pictures to the database later so keep this code for migration
+
+const formatImageBtn = document.getElementById("format-image");
+const imageUploadInput = document.getElementById("image-upload-input") as HTMLInputElement | null;
+
+if (formatImageBtn && imageUploadInput) {
+    // 1. When the button is clicked, trigger the hidden file picker
+    formatImageBtn.addEventListener("click", () => {
+        imageUploadInput.click();
+    });
+
+    // 2. When the user selects an image, convert it and insert it
+    imageUploadInput.addEventListener("change", (event) => {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
+
+        if (!file) return;
+
+        // Ensure the file isn't massive (Optional safety check: 2MB limit)
+        if (file.size > 2 * 1024 * 1024) {
+            alert("This image is too large! Please select an image under 2MB to save local storage space.");
+            target.value = "";
+            return;
+        }
+
+        // Read the file as a Base64 string
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64Image = e.target?.result as string;
+
+            // Insert the Markdown syntax with the massive Base64 string hidden inside
+            insertFormatting(`\n![${file.name}](${base64Image})\n`, "");
+        };
+        reader.readAsDataURL(file);
+
+        // Reset the input so they can upload the exact same file again if needed
+        target.value = "";
+    });
+}
+
+ */
