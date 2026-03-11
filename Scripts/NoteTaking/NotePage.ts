@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import "./ImportingFiles";
+import {marked} from "marked";
 
 export type Note = {
     id: string;
@@ -98,6 +99,10 @@ function setActiveNote(id: string) {
 
     updateFlashcardButtonUI(note.needsReview);
     renderSidebar();
+
+    if (isPreviewMode && togglePreviewBtn) {
+        togglePreviewBtn.click();
+    }
     if (titleInput) titleInput.focus();
 }
 
@@ -341,5 +346,74 @@ function loadNotes(): Note[] {
     }));
 }
 
+//Preview Logic
+const togglePreviewBtn = document.getElementById("toggle-preview-btn");
+const notePreview = document.getElementById("note-preview");
+let isPreviewMode = false;
 
+if (togglePreviewBtn && notePreview && bodyInput) {
+    togglePreviewBtn.addEventListener("click", async () => {
+        isPreviewMode = !isPreviewMode;
 
+        if (isPreviewMode) {
+            bodyInput.classList.add("hidden");
+            notePreview.classList.remove("hidden");
+
+            togglePreviewBtn.innerHTML = `<span>✏️</span> Edit Mode`;
+            togglePreviewBtn.classList.replace("bg-gray-100", "bg-blue-100");
+            togglePreviewBtn.classList.replace("text-gray-500", "text-blue-700");
+
+            const rawText = bodyInput.value || "*Nothing written yet...*";
+            const htmlContent = await marked.parse(rawText);
+            notePreview.innerHTML = htmlContent;
+
+        } else {
+            notePreview.classList.add("hidden");
+            bodyInput.classList.remove("hidden");
+
+            togglePreviewBtn.innerHTML = `<span>👁️</span> Preview Mode`;
+            togglePreviewBtn.classList.replace("bg-blue-100", "bg-gray-100");
+            togglePreviewBtn.classList.replace("text-blue-700", "text-gray-500");
+
+            bodyInput.focus();
+        }
+    });
+}
+
+//Tool Bar Logic
+const formatToolbar = document.getElementById("format-toolbar");
+
+function insertFormatting(prefix: string, suffix: string = "") {
+    if (!bodyInput || !activeNoteId) return;
+
+    // Find exactly where the user's cursor is or what they highlighted
+    const start = bodyInput.selectionStart;
+    const end = bodyInput.selectionEnd;
+    const text = bodyInput.value;
+    const selectedText = text.substring(start, end);
+
+    // Build the new text with the markdown symbols added
+    const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
+
+    // Update the textarea
+    bodyInput.value = newText;
+
+    // Trigger your save function so the changes aren't lost
+    saveActiveNote();
+
+    // Put the cursor back exactly where it belongs so they can keep typing smoothly
+    bodyInput.focus();
+    if (selectedText.length > 0) {
+        bodyInput.setSelectionRange(start + prefix.length, end + prefix.length);
+    } else {
+        bodyInput.setSelectionRange(start + prefix.length, start + prefix.length);
+    }
+}
+
+// Wire up the buttons
+document.getElementById("format-bold")?.addEventListener("click", () => insertFormatting("**", "**"));
+document.getElementById("format-italic")?.addEventListener("click", () => insertFormatting("*", "*"));
+document.getElementById("format-h1")?.addEventListener("click", () => insertFormatting("# ", ""));
+document.getElementById("format-h2")?.addEventListener("click", () => insertFormatting("## ", ""));
+document.getElementById("format-list")?.addEventListener("click", () => insertFormatting("- ", ""));
+document.getElementById("format-code")?.addEventListener("click", () => insertFormatting("`", "`"));

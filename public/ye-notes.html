@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YE - Notes</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 </head>
 <body class="bg-white font-sans text-slate-800 h-screen flex overflow-hidden">
 
-<aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col h-full">
+<aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col h-full shrink-0">
   <div class="p-4 border-b border-gray-200 flex justify-between items-center">
     <a href="../index.html" class="text-sm font-medium text-gray-500 hover:text-blue-600 transition">&larr; Dashboard</a>
     <button id="new-note-btn" class="text-2xl font-light text-gray-400 hover:text-gray-800 transition px-2" title="New Note">+</button>
   </div>
+
   <ul id="sidebar-note-list" class="flex-1 overflow-y-auto p-3 space-y-1">
   </ul>
 
@@ -30,10 +31,14 @@
     Select a note from the sidebar or create a new one.
   </div>
 
-  <div id="editor-container" class="max-w-4xl w-full mx-auto p-12 hidden flex-col min-h-full">
+  <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 md:p-12 hidden flex-col min-h-full">
 
-    <div class="flex justify-between items-center mb-8">
-      <div class="flex gap-3">
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+      <div class="flex flex-wrap gap-2 md:gap-3">
+        <button id="toggle-preview-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">
+          <span>👁️</span> Preview Mode
+        </button>
+
         <button id="toggle-flashcard-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">
           <span>🧠</span> Enable Flashcard
         </button>
@@ -47,16 +52,32 @@
         </button>
       </div>
 
-      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition">Delete Note</button>
+      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition whitespace-nowrap">Delete Note</button>
     </div>
 
-    <input type="text" id="note-title" class="text-5xl font-bold w-full outline-none mb-6 placeholder-gray-200 text-gray-800 bg-transparent" placeholder="Untitled">
+    <input type="text" id="note-title" class="text-4xl md:text-5xl font-bold w-full outline-none mb-6 placeholder-gray-200 text-gray-800 bg-transparent" placeholder="Untitled">
 
-    <textarea id="note-body" class="w-full flex-1 outline-none resize-none text-lg leading-relaxed placeholder-gray-300 text-gray-700 bg-transparent min-h-[600px]" placeholder="Start typing..."></textarea>
+    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 mb-4 bg-gray-50 border border-gray-200 p-1.5 rounded-lg transition-opacity w-fit">
+      <button id="format-h1" class="px-2.5 py-1 text-sm font-bold text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Heading 1">H1</button>
+      <button id="format-h2" class="px-2.5 py-1 text-sm font-semibold text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Heading 2">H2</button>
+      <div class="w-px h-5 bg-gray-300 mx-1"></div>
+      <button id="format-bold" class="px-2.5 py-1 text-sm font-bold text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Bold">B</button>
+      <button id="format-italic" class="px-2.5 py-1 text-sm italic text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition font-serif" title="Italic">I</button>
+      <div class="w-px h-5 bg-gray-300 mx-1"></div>
+      <button id="format-list" class="px-2.5 py-1 text-sm text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition flex items-center gap-1" title="Bullet List">
+        <span class="text-lg leading-none">•</span> List
+      </button>
+      <button id="format-code" class="px-2.5 py-1 text-sm font-mono text-gray-700 hover:bg-white hover:shadow-sm hover:text-blue-600 rounded transition" title="Inline Code">Code </button>
+    </div>
+
+    <textarea id="note-body" class="w-full flex-1 outline-none resize-none text-lg leading-relaxed placeholder-gray-300 text-gray-700 bg-transparent min-h-[500px]" placeholder="Start typing..."></textarea>
+
+    <div id="note-preview" class="w-full flex-1 text-lg leading-relaxed bg-transparent min-h-[500px] hidden prose prose-blue max-w-none pb-12"></div>
 
   </div>
 
 </main>
+
 <aside id="ai-sidebar" class="fixed top-0 right-0 w-80 md:w-96 h-full bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col z-50">
   <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
     <h3 class="font-bold text-gray-800 flex items-center gap-2"><span>✨</span> AI Assistant</h3>
@@ -74,7 +95,6 @@
     </form>
   </div>
 </aside>
-
 
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
 <script type="module" src="/Scripts/NoteTaking/ImportingFiles.ts"></script>
