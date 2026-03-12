@@ -14,19 +14,24 @@
 <body class="bg-gray-100 font-sans text-slate-800 p-4 md:p-8">
 
 <div class="flex justify-between items-end mb-6">
-  <h2 class="text-3xl font-bold text-slate-800">My Dashboard</h2>
+  <h2 class="text-3xl font-bold text-slate-800">Your Equinox Dashboard</h2>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-6xl mx-auto">
 
   <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-5 rounded-xl shadow-md">
-    <p class="text-sm font-medium text-blue-100 uppercase tracking-wider mb-1">Tasks Completed (Month)</p>
-    <p id="stat-tasks" class="text-4xl font-extrabold">0</p>
+    <p class="text-sm font-medium text-blue-100 uppercase tracking-wider mb-1">Tasks Completed (Day)</p>
+    <p id="stat-task-day" class="text-4xl font-extrabold">0</p>
   </div>
 
   <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-5 rounded-xl shadow-md">
-    <p class="text-sm font-medium text-green-100 uppercase tracking-wider mb-1">Learning Streak</p>
-    <p id="stat-streak" class="text-4xl font-extrabold">0 <span class="text-lg font-medium opacity-80">days</span></p>
+    <p class="text-sm font-medium text-green-100 uppercase tracking-wider mb-1">Task Completed (Week)</p>
+    <p id="stat-task-week" class="text-4xl font-extrabold">0 <span class="text-lg font-medium opacity-80"></span></p>
+  </div>
+
+  <div class="bg-gradient-to-br from-pink-500 to-pink-600 text-white p-5 rounded-xl shadow-md">
+    <p class="text-sm font-medium text-green-100 uppercase tracking-wider mb-1">Task Completed (Month)</p>
+    <p id="stat-task-month" class="text-4xl font-extrabold">0 <span class="text-lg font-medium opacity-80"></span></p>
   </div>
 
   <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-5 rounded-xl shadow-md">

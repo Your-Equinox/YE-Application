@@ -160,6 +160,5 @@ revealNoteBtn.addEventListener("click", revealNote);
 confidenceBtns.forEach(btn => btn.addEventListener("click", handleConfidenceRating));
 
 
-// Initialize both features when the script loads
 loadDailyIntention();
 initialMemoryCheck();

@@ -39,9 +39,6 @@ export function initSidebar(
     }
 }
 
-/**
- * The main render loop for the sidebar
- */
 export function renderCategorySideBar() {
     const list = document.getElementById("sidebar-note-list");
     if (!list) return;
@@ -148,9 +145,7 @@ function createNoteItem(note: Note, activeId: string | null) {
     return li;
 }
 
-/**
- * Logic for dropping a note into a category
- */
+
 function handleDrop(e: DragEvent, catId: string | null) {
     e.preventDefault();
     const noteId = e.dataTransfer?.getData("text/plain");

@@ -1,25 +1,58 @@
-import { tasks, saveTasks, taskList, addListItem } from "./AddTasks";
-import {TasksCompletedIncrements} from "../ActiveLearningTools/Dashboard/Stats";
+import { TasksCompletedIncrements } from '../ActiveLearningTools/Dashboard/Stats.js';
 
-export const deleteTask = document.querySelector<HTMLButtonElement>("#delete-task")!;
+// DOM Elements
+const deleteTaskBtn = document.getElementById('delete-task') as HTMLButtonElement | null;
+const taskList = document.getElementById('task-list') as HTMLUListElement | null;
 
-deleteTask.addEventListener("click", () => {
+export function initDeleteTasks() {
+    if (!deleteTaskBtn || !taskList) return;
 
-    // 1. Count how many are checked off
-    const completedTasksCount = tasks.filter(task => task.completed).length;
+    deleteTaskBtn.addEventListener('click', () => {
+        // Find all checkboxes inside the task list that are checked
+        const checkboxes = taskList.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked');
+        const completedCount = checkboxes.length;
 
-    // 2. Send that number to our new Stats tracker!
-    if (completedTasksCount > 0) {
-        TasksCompletedIncrements(completedTasksCount);
-    }
+        if (completedCount === 0) {
+            alert("Please select at least one task to mark as complete.");
+            return;
+        }
 
-    // 3. Keep only the unfinished tasks (Your original logic)
-    const remainingTasks = tasks.filter(task => !task.completed);
+        // 2. Update the dashboard stats!
+        TasksCompletedIncrements(completedCount);
 
-    tasks.length = 0;
-    remainingTasks.forEach((task) => tasks.push(task));
+        // 3. Remove the completed tasks from the screen
+        checkboxes.forEach(checkbox => {
+            // Assuming the checkbox is inside an <li> element
+            const listItem = checkbox.closest('li');
+            if (listItem) {
+                listItem.remove();
+            }
+        });
 
-    saveTasks();
-    taskList.innerHTML = "";
-    tasks.forEach(addListItem);
-});
+        // 4. Update your local storage to remove these tasks permanently
+        updateLocalStorageAfterDeletion();
+    });
+}
+
+// Helper function to sync your remaining tasks back to local storage
+function updateLocalStorageAfterDeletion() {
+    if (!taskList) return;
+
+    // Grab all the remaining text labels/spans next to the unchecked checkboxes
+    const remainingTasks: string[] = [];
+    const remainingItems = taskList.querySelectorAll('li');
+
+    remainingItems.forEach(item => {
+        // Adjust this selector based on how you render your task text (e.g., a <span> or <label>)
+        const textElement = item.querySelector('span');
+        if (textElement && textElement.textContent) {
+            remainingTasks.push(textElement.textContent);
+        }
+    });
+
+    // Save the remaining tasks back to whatever key you use (e.g., 'ye-tasks')
+    localStorage.setItem('ye-tasks', JSON.stringify(remainingTasks));
+}
+
+// Initialize the event listener
+initDeleteTasks();
