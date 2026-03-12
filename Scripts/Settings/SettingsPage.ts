@@ -21,8 +21,12 @@ navButtons.forEach((btn, index) => {
     });
 });
 
-// Loading Reminder Settings
-loadReminderSettings();
+// Loading Reminder Settings - PROTECTED FROM CRASHES
+try {
+    loadReminderSettings();
+} catch (error) {
+    console.warn("Could not load reminders. Safe to purge.", error);
+}
 
 // AI API Key
 const apiKeyInput = document.querySelector<HTMLInputElement>("#gemini-api-key");
@@ -55,11 +59,11 @@ const importFileInput = document.querySelector<HTMLInputElement>("#import-file")
 // PURGE LOGIC
 if (purgeBtn) {
     purgeBtn.addEventListener("click", () => {
-        const confirmed = window.confirm("⚠️ Are you sure...");
+        const confirmed = window.confirm("⚠️ Are you sure you want to permanently delete all your data? This cannot be undone.");
         if (confirmed) {
             localStorage.clear();
             alert("All data has been successfully deleted.");
-            window.location.href = "/index.html";
+            window.location.href = "../index.html";
         }
     });
 }
@@ -93,7 +97,7 @@ if (exportBtn) {
     });
 }
 
-// IMPORT LOGIC
+// IMPORT LOGIC - WITH FIXED REDIRECT PATH
 if (importBtn && importFileInput) {
     importBtn.addEventListener("click", () => {
         importFileInput.click();
@@ -112,30 +116,22 @@ if (importBtn && importFileInput) {
                 const content = e.target?.result as string;
                 const importedData = JSON.parse(content);
 
-                if (importedData.notes) {
-                    localStorage.setItem("ye-notes", JSON.stringify(importedData.notes));
-                }
-                if (importedData.tasks) {
-                    localStorage.setItem("tasks", JSON.stringify(importedData.tasks));
-                }
-                if (importedData.reminders) {
-                    localStorage.setItem("reminders", JSON.stringify(importedData.reminders));
-                }
+                if (importedData.notes) localStorage.setItem("ye-notes", JSON.stringify(importedData.notes));
+                if (importedData.tasks) localStorage.setItem("tasks", JSON.stringify(importedData.tasks));
+                if (importedData.reminders) localStorage.setItem("reminders", JSON.stringify(importedData.reminders));
                 if (importedData.settings && importedData.settings.geminiApiKey) {
                     localStorage.setItem("gemini_api_key", importedData.settings.geminiApiKey);
                 }
 
                 alert("Backup restored successfully! Returning to Dashboard.");
-                window.location.href = "/index.html";
+                window.location.href = "../index.html";
 
             } catch (error) {
                 console.error("Error importing file:", error);
-                alert("Failed to read the backup file. Please make sure it is a valid Your Equinox JSON export.");
+                alert("Failed to read the backup file.");
             }
-
             target.value = "";
         };
-
         reader.readAsText(file);
     });
 }

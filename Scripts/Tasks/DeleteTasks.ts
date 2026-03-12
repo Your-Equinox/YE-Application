@@ -1,37 +1,58 @@
 import { TasksCompletedIncrements } from '../ActiveLearningTools/Dashboard/Stats.js';
 
 // DOM Elements
-const deleteTaskBtn = document.getElementById('delete-task') as HTMLButtonElement | null;
+const completeTaskBtn = document.getElementById('task-complete') as HTMLButtonElement | null;
+const removeTaskBtn = document.getElementById('remove-task-btn') as HTMLButtonElement | null; // Added new button
 const taskList = document.getElementById('task-list') as HTMLUListElement | null;
 
 export function initDeleteTasks() {
-    if (!deleteTaskBtn || !taskList) return;
+    if (!taskList) return;
 
-    deleteTaskBtn.addEventListener('click', () => {
-        // Find all checkboxes inside the task list that are checked
-        const checkboxes = taskList.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked');
-        const completedCount = checkboxes.length;
-
-        if (completedCount === 0) {
-            alert("Please select at least one task to mark as complete.");
-            return;
-        }
-
-        // 2. Update the dashboard stats!
-        TasksCompletedIncrements(completedCount);
-
-        // 3. Remove the completed tasks from the screen
-        checkboxes.forEach(checkbox => {
-            // Assuming the checkbox is inside an <li> element
-            const listItem = checkbox.closest('li');
-            if (listItem) {
-                listItem.remove();
-            }
+    // --- 1. TASK COMPLETE BUTTON (Adds to Stats) ---
+    if (completeTaskBtn) {
+        completeTaskBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleTaskRemoval(true); // true = yes, add to stats
         });
+    }
 
-        // 4. Update your local storage to remove these tasks permanently
-        updateLocalStorageAfterDeletion();
+    // --- 2. REMOVE TASK BUTTON (Does NOT Add to Stats) ---
+    if (removeTaskBtn) {
+        removeTaskBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevents the form from refreshing the page
+            handleTaskRemoval(false); // false = no, do not add to stats
+        });
+    }
+}
+
+// Shared logic for both buttons so we don't write the same code twice
+function handleTaskRemoval(isCompleted: boolean) {
+    if (!taskList) return;
+
+    // Find all checkboxes inside the task list that are checked
+    const checkboxes = taskList.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked');
+    const selectedCount = checkboxes.length;
+
+    if (selectedCount === 0) {
+        alert("Please select at least one task.");
+        return;
+    }
+
+    // ONLY update the dashboard stats if the user clicked "Task Complete"
+    if (isCompleted) {
+        TasksCompletedIncrements(selectedCount);
+    }
+
+    // Remove the selected tasks from the screen
+    checkboxes.forEach(checkbox => {
+        const listItem = checkbox.closest('li');
+        if (listItem) {
+            listItem.remove();
+        }
     });
+
+    // Update your local storage to remove these tasks permanently
+    updateLocalStorageAfterDeletion();
 }
 
 // Helper function to sync your remaining tasks back to local storage
@@ -54,5 +75,5 @@ function updateLocalStorageAfterDeletion() {
     localStorage.setItem('ye-tasks', JSON.stringify(remainingTasks));
 }
 
-// Initialize the event listener
+// Initialize the event listeners
 initDeleteTasks();
