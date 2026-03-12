@@ -120,5 +120,15 @@
   </div>
 </main>
 
-<script type="module" src="../Scripts/Settings/SettingsPage.ts"></script></body>
+<dialog id="custom-confirm-modal" class="p-6 rounded-xl shadow-2xl border border-red-200 backdrop:bg-slate-900 backdrop:bg-opacity-50">
+  <h2 class="text-xl font-bold mb-4 text-red-600">⚠️ Purge All Data</h2>
+  <p class="mb-6 text-gray-700">Are you sure you want to permanently delete all your data? This cannot be undone.</p>
+  <div class="flex justify-end gap-3">
+    <button id="cancel-purge-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md">Cancel</button>
+    <button id="confirm-purge-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Delete Everything</button>
+  </div>
+</dialog>
+
+<script type="module" src="../Scripts/Settings/SettingsPage.ts"></script>
+</body>
 </html>

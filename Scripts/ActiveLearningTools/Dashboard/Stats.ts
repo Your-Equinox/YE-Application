@@ -74,11 +74,17 @@ export function loadStats(): YeStats {
         }
     }
 
+    // Save directly to localStorage to prevent the updateDashboardUI infinite loop
     if (statsChanged) {
         localStorage.setItem('ye-stats', JSON.stringify(stats));
     }
 
     return stats;
+}
+
+export function saveStats(stats: YeStats) {
+    localStorage.setItem('ye-stats', JSON.stringify(stats));
+    updateDashboardUI();
 }
 
 export function TasksCompletedIncrements(amount: number) {
@@ -88,11 +94,8 @@ export function TasksCompletedIncrements(amount: number) {
     stats.tasksCompletedMonth += amount;
     saveStats(stats);
 }
-export function saveStats(stats: YeStats) {
-    localStorage.setItem('ye-stats', JSON.stringify(stats));
-    updateDashboardUI();
-}
 
+// Helper function to get the current week number of the year
 function getWeekNumber(d: Date): number {
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     const dayNum = date.getUTCDay() || 7;

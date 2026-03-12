@@ -12,15 +12,15 @@ export function initDeleteTasks() {
     if (completeTaskBtn) {
         completeTaskBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            handleTaskRemoval(true); // true = yes, add to stats
+            handleTaskRemoval(true);
         });
     }
 
     // --- 2. REMOVE TASK BUTTON (Does NOT Add to Stats) ---
     if (removeTaskBtn) {
         removeTaskBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevents the form from refreshing the page
-            handleTaskRemoval(false); // false = no, do not add to stats
+            e.preventDefault();
+            handleTaskRemoval(false);
         });
     }
 }

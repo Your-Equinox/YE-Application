@@ -57,14 +57,24 @@ const importBtn = document.querySelector<HTMLButtonElement>("#import-btn");
 const importFileInput = document.querySelector<HTMLInputElement>("#import-file");
 
 // PURGE LOGIC
-if (purgeBtn) {
+const customConfirmModal = document.querySelector<HTMLDialogElement>("#custom-confirm-modal");
+const confirmPurgeBtn = document.querySelector<HTMLButtonElement>("#confirm-purge-btn");
+const cancelPurgeBtn = document.querySelector<HTMLButtonElement>("#cancel-purge-btn");
+
+if (purgeBtn && customConfirmModal && confirmPurgeBtn && cancelPurgeBtn) {
     purgeBtn.addEventListener("click", () => {
-        const confirmed = window.confirm("⚠️ Are you sure you want to permanently delete all your data? This cannot be undone.");
-        if (confirmed) {
-            localStorage.clear();
-            alert("All data has been successfully deleted.");
-            window.location.href = "../index.html";
-        }
+        customConfirmModal.showModal();
+    });
+
+    cancelPurgeBtn.addEventListener("click", () => {
+        customConfirmModal.close();
+    });
+
+    confirmPurgeBtn.addEventListener("click", () => {
+        localStorage.clear();
+        customConfirmModal.close();
+        alert("All data has been successfully deleted.");
+        window.location.href = "../index.html";
     });
 }
 
@@ -75,6 +85,7 @@ if (exportBtn) {
             notes: JSON.parse(localStorage.getItem("ye-notes") || "[]"),
             tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
             reminders: JSON.parse(localStorage.getItem("reminders") || "[]"),
+            stats: JSON.parse(localStorage.getItem("ye-stats") || "[]"),
             settings: {
                 geminiApiKey: localStorage.getItem("gemini_api_key") || ""
             }
@@ -97,7 +108,7 @@ if (exportBtn) {
     });
 }
 
-// IMPORT LOGIC - WITH FIXED REDIRECT PATH
+// IMPORT LOGIC
 if (importBtn && importFileInput) {
     importBtn.addEventListener("click", () => {
         importFileInput.click();
@@ -124,7 +135,7 @@ if (importBtn && importFileInput) {
                 }
 
                 alert("Backup restored successfully! Returning to Dashboard.");
-                window.location.href = "../index.html";
+                window.location.href = "./index.html";
 
             } catch (error) {
                 console.error("Error importing file:", error);
