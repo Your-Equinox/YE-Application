@@ -102,8 +102,12 @@ function pickRandomNote() {
     currentNote = dueNotes[randomIndex];
 
     recallTitle.textContent = currentNote.title.trim() || "Untitled Note";
-    recallBody.textContent = currentNote.body.trim() || "(No body text written)";
-}
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = currentNote.body || "";
+    const plainText = tempDiv.textContent || tempDiv.innerText || "";
+
+    recallBody.textContent = plainText.trim() || "(No body text written)";}
 
 function revealNote(){
     revealNoteBtn.classList.add("hidden");
