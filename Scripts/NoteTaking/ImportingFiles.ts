@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 import * as mammoth from "mammoth";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjslib from "pdfjs-dist";
+import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 
 // Importing docx and pdf files
 const importDocumentBtn = document.querySelector<HTMLButtonElement>("#importDocument-btn");
 const importFileInput = document.querySelector<HTMLInputElement>("#import-file");
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+pdfjslib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 if (importDocumentBtn && importFileInput) {
     importDocumentBtn.addEventListener("click", () => {
@@ -69,7 +70,7 @@ async function handleDocxImport(file: File) {
 
 async function handlePdfImport(file: File) {
     const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pdf = await pdfjslib.getDocument({ data: arrayBuffer }).promise;
     let fullText = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {

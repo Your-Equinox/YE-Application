@@ -10,6 +10,7 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import {BubbleMenu} from '@tiptap/extension-bubble-menu';
 import { initSidebar, renderCategorySideBar } from "./Categories";
 
+
 // --- Global Types & State ---
 declare global {
     interface Window {

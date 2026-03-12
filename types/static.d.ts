@@ -57,3 +57,8 @@ declare module '*.png' {
 }
 
 /* CUSTOM: ADD YOUR OWN HERE */
+
+declare module '*?url' {
+  const src: string;
+  export default src;
+}
