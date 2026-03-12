@@ -1,4 +1,5 @@
-// Declare dayjs from the CDN
+import {saveTasks} from "../Tasks/AddTasks";
+
 declare const dayjs: any;
 
 // Define Types for TypeScript
@@ -102,6 +103,82 @@ function syncReminders() {
 
 // Run the sync when the script loads
 syncReminders();
+
+// Interactive Reminder Logic
+export function openCalendarReminderModal(defaultDate: any) {
+    // 1. Fetch the elements EXACTLY when the modal needs to open
+    const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
+    const calTime = document.getElementById("cal-reminder-time") as HTMLInputElement | null;
+    const calTitle = document.getElementById("cal-reminder-title") as HTMLInputElement | null;
+
+    if (!calModal || !calTime || !calTitle) {
+        console.error("Calendar modal elements not found on this page.");
+        return;
+    }
+
+    // Pre-fill the time based on where the user clicked
+    calTime.value = defaultDate.format("YYYY-MM-DDTHH:mm");
+    calTitle.value = "";
+
+    calModal.showModal();
+    calTitle.focus();
+}
+
+// 2. Use Global Event Delegation for the Cancel Button
+document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target && target.id === "cal-close-modal") {
+        const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
+        if (calModal) calModal.close();
+    }
+});
+
+// 3. Use Global Event Delegation for the Form Submit
+document.addEventListener("submit", (e) => {
+    const target = e.target as HTMLElement;
+
+    // Only intercept if it is our specific calendar form
+    if (target && target.id === "calendar-reminder-form") {
+        e.preventDefault();
+
+        const calTitle = document.getElementById("cal-reminder-title") as HTMLInputElement | null;
+        const calTime = document.getElementById("cal-reminder-time") as HTMLInputElement | null;
+        const calColor = document.getElementById("cal-reminder-color") as HTMLInputElement | null;
+        const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
+
+        if (!calTitle || !calTime || !calColor || !calModal) return;
+
+        // FIX: Bulletproof ID generation that won't crash on unsecure local networks
+        const uniqueId = (window.crypto && window.crypto.randomUUID)
+            ? window.crypto.randomUUID()
+            : `rem-${Date.now()}`;
+
+        const newReminder = {
+            id: uniqueId,
+            title: calTitle.value.trim(),
+            completed: false,
+            createdAt: new Date().toISOString(),
+            remindAt: new Date(calTime.value).toISOString(),
+            reminderSent: false,
+            notifyOffset: 0,
+            colorClass: "custom-color",
+            colorHex: calColor.value
+        };
+
+        // Save to database
+        const savedRemindersStr = localStorage.getItem("reminders");
+        const savedReminders = savedRemindersStr ? JSON.parse(savedRemindersStr) : [];
+        savedReminders.push(newReminder);
+        localStorage.setItem("reminders", JSON.stringify(savedReminders));
+
+        // Instantly sync and redraw calendar
+        syncReminders();
+        renderApp();
+
+        calModal.close();
+    }
+});
+
 
 // Helper Utilities
 const Utils = {
@@ -490,6 +567,22 @@ const DragManager = {
             if (target) {
                 target.start = s.tentativeStart.format("YYYY-MM-DD HH:mm");
                 target.end = s.tentativeEnd.format("YYYY-MM-DD HH:mm");
+
+                const savedRemindersStr = localStorage.getItem("reminders");
+                if (savedRemindersStr) {
+                    const savedReminders = JSON.parse(savedRemindersStr);
+
+                    const reminderIndex = savedReminders.findIndex((r:any) => r.id === s.event.id);
+
+                    if (reminderIndex > -1 ){
+                        savedReminders[reminderIndex].remindAt = s.tentativeStart.toDate().toISOString();
+
+                        savedReminders[reminderIndex].reminderSent = false;
+
+                        localStorage.setItem("reminders", JSON.stringify(savedReminders));
+                    }
+                }
+
             }
             s.renderCallback();
         }
@@ -593,8 +686,14 @@ function renderMonthView(container: HTMLElement) {
 
         weekDays.forEach((d: any) => {
             const cell = document.createElement("div");
-            cell.className = "month-cell p-1";
+            cell.className = "month-cell p-1 cursor-pointer hover:bg-gray-50 transition-colors";
             cell.innerHTML = `<div class="text-right text-xs ${d.date.month() === state.currentDate.month() ? "text-gray-700" : "text-gray-300"}">${d.date.date()}</div>`;
+
+            cell.onclick = (e) => {
+                if ((e.target as HTMLElement).closest('.event-base')) return;
+                openCalendarReminderModal(d.date.hour(12).minute(0));
+            };
+
             row.appendChild(cell);
         });
 
@@ -651,8 +750,21 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
 
     columns.forEach((colData: any) => {
         const col = document.createElement("div");
-        col.className = "day-column";
+        col.className = "day-column cursor-pointer";
         col.dataset.date = colData.dateStr;
+
+        col.onclick = (e) => {
+            if ((e.target as HTMLElement).closest('.event-base')) return;
+
+            const rect = col.getBoundingClientRect();
+            const relY = e.clientY - rect.top;
+
+            const rawMins = (relY/ Utils.getCellHeight()) * 60;
+
+            const snappedMins = Math.max(0, Math.min(1440, Math.floor(rawMins / 30) * 30));
+
+            openCalendarReminderModal(colData.date.hour(0).minute(snappedMins));
+        }
 
         const layout = CalendarEngine.calculateTimeLayout(state.events, colData.dateStr);
         layout.forEach((item: any) => {
