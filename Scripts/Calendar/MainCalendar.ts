@@ -1,5 +1,3 @@
-// Scripts/Calendar/Calendar.ts
-
 // Declare dayjs from the CDN
 declare const dayjs: any;
 
@@ -257,8 +255,8 @@ const CalendarEngine = {
 
             return {
                 origin: e,
-                startIdx: displayStart.diff(weekStart, "day"),
-                span: displayEnd.diff(displayStart, "day") + 1,
+                startIdx: displayStart.startOf("day").diff(weekStart.startOf("day"), "day"),
+                span: displayEnd.startOf("day").diff(displayStart.startOf("day"), "day") + 1,
                 isStart: !s.isBefore(weekStart),
                 isEnd: !end.isAfter(weekEnd),
                 slot: 0
@@ -590,7 +588,7 @@ function renderMonthView(container: HTMLElement) {
     const weeks = CalendarEngine.generateMonthGrid(state.currentDate);
     weeks.forEach((weekDays) => {
         const row = document.createElement("div");
-        row.className = "month-row grid grid-cols-7";
+        row.className = "month-row grid grid-cols-7 relative";
         row.dataset.date = weekDays[0].dateStr;
 
         weekDays.forEach((d: any) => {
@@ -600,7 +598,7 @@ function renderMonthView(container: HTMLElement) {
             row.appendChild(cell);
         });
 
-        const layout = CalendarEngine.calculateMonthLayout(state.events, weekDays[0].date, weekDays[6].date);
+        const layout = CalendarEngine.calculateMonthLayout(state.events, weekDays[0].date.startOf("day"), weekDays[6].date.endOf('day'));
         layout.forEach((item) => {
             const el = document.createElement("div");
             el.style.backgroundColor = item.origin.rawColor;
