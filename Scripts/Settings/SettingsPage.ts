@@ -21,8 +21,12 @@ navButtons.forEach((btn, index) => {
     });
 });
 
-// Loading Reminder Settings
-loadReminderSettings();
+// Loading Reminder Settings - PROTECTED FROM CRASHES
+try {
+    loadReminderSettings();
+} catch (error) {
+    console.warn("Could not load reminders. Safe to purge.", error);
+}
 
 // AI API Key
 const apiKeyInput = document.querySelector<HTMLInputElement>("#gemini-api-key");
@@ -53,14 +57,24 @@ const importBtn = document.querySelector<HTMLButtonElement>("#import-btn");
 const importFileInput = document.querySelector<HTMLInputElement>("#import-file");
 
 // PURGE LOGIC
-if (purgeBtn) {
+const customConfirmModal = document.querySelector<HTMLDialogElement>("#custom-confirm-modal");
+const confirmPurgeBtn = document.querySelector<HTMLButtonElement>("#confirm-purge-btn");
+const cancelPurgeBtn = document.querySelector<HTMLButtonElement>("#cancel-purge-btn");
+
+if (purgeBtn && customConfirmModal && confirmPurgeBtn && cancelPurgeBtn) {
     purgeBtn.addEventListener("click", () => {
-        const confirmed = window.confirm("⚠️ Are you sure...");
-        if (confirmed) {
-            localStorage.clear();
-            alert("All data has been successfully deleted.");
-            window.location.href = "/index.html";
-        }
+        customConfirmModal.showModal();
+    });
+
+    cancelPurgeBtn.addEventListener("click", () => {
+        customConfirmModal.close();
+    });
+
+    confirmPurgeBtn.addEventListener("click", () => {
+        localStorage.clear();
+        customConfirmModal.close();
+        alert("All data has been successfully deleted.");
+        window.location.href = "../index.html";
     });
 }
 
@@ -71,6 +85,7 @@ if (exportBtn) {
             notes: JSON.parse(localStorage.getItem("ye-notes") || "[]"),
             tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
             reminders: JSON.parse(localStorage.getItem("reminders") || "[]"),
+            stats: JSON.parse(localStorage.getItem("ye-stats") || "[]"),
             settings: {
                 geminiApiKey: localStorage.getItem("gemini_api_key") || ""
             }
@@ -112,30 +127,22 @@ if (importBtn && importFileInput) {
                 const content = e.target?.result as string;
                 const importedData = JSON.parse(content);
 
-                if (importedData.notes) {
-                    localStorage.setItem("ye-notes", JSON.stringify(importedData.notes));
-                }
-                if (importedData.tasks) {
-                    localStorage.setItem("tasks", JSON.stringify(importedData.tasks));
-                }
-                if (importedData.reminders) {
-                    localStorage.setItem("reminders", JSON.stringify(importedData.reminders));
-                }
+                if (importedData.notes) localStorage.setItem("ye-notes", JSON.stringify(importedData.notes));
+                if (importedData.tasks) localStorage.setItem("tasks", JSON.stringify(importedData.tasks));
+                if (importedData.reminders) localStorage.setItem("reminders", JSON.stringify(importedData.reminders));
                 if (importedData.settings && importedData.settings.geminiApiKey) {
                     localStorage.setItem("gemini_api_key", importedData.settings.geminiApiKey);
                 }
 
                 alert("Backup restored successfully! Returning to Dashboard.");
-                window.location.href = "/index.html";
+                window.location.href = "./index.html";
 
             } catch (error) {
                 console.error("Error importing file:", error);
-                alert("Failed to read the backup file. Please make sure it is a valid Your Equinox JSON export.");
+                alert("Failed to read the backup file.");
             }
-
             target.value = "";
         };
-
         reader.readAsText(file);
     });
 }

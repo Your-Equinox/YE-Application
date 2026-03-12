@@ -42,33 +42,35 @@ const emptyState = document.getElementById("empty-state");
 const editorContainer = document.getElementById("editor-container");
 const titleInput = document.getElementById("note-title") as HTMLInputElement | null;
 
-const editorInstance = new Editor({
-    element: document.querySelector('#tiptap-editor')!,
-    extensions: [
-        StarterKit,
-        (Table as any).configure({
-            resizable: true,
-            lastColumnResizable: false
-        }),
-        TableRow,
-        TableHeader,
-        TableCell,
-        BubbleMenu.configure({
-            element: document.querySelector('#table-bubble-menu') as HTMLElement,
-            // We use 'editor' to check state; other params are optional
-            shouldShow: ({ editor }) => {
-                // Return true only if the cursor is in a table AND the user is actually clicking/typing
-                return editor.isActive('table') && editor.isFocused;
-            },
-        }),
-    ],
-    content: '',
-    onUpdate: ({ editor }) => {
-        // Automatically save HTML to our storage function
-        saveActiveNote(editor.getHTML());
-    },
-});
-window.editor = editorInstance;
+const editorElement = document.querySelector('#tiptap-editor');
+let editorInstance: Editor;
+
+if (editorElement) {
+    editorInstance = new Editor({
+        element: editorElement,
+        extensions: [
+            StarterKit,
+            (Table as any).configure({
+                resizable: true,
+                lastColumnResizable: false
+            }),
+            TableRow,
+            TableHeader,
+            TableCell,
+            BubbleMenu.configure({
+                element: document.querySelector('#table-bubble-menu') as HTMLElement,
+                shouldShow: ({ editor }) => {
+                    return editor.isActive('table') && editor.isFocused;
+                },
+            }),
+        ],
+        content: '',
+        onUpdate: ({ editor }) => {
+            saveActiveNote(editor.getHTML());
+        },
+    });
+    window.editor = editorInstance;
+}
 
 // Sidebar Initialization
 initSidebar(
@@ -157,11 +159,24 @@ function saveActiveNote(htmlContent?: string) {
 
 export function deleteActiveNote() {
     if (!activeNoteId || !confirm("Are you sure?")) return;
+
+    // Reload notes first to prevent overwriting newly imported data
+    notes = loadNotes();
+
     notes = notes.filter(n => n.id !== activeNoteId);
     saveToLocalStorage();
     activeNoteId = null;
-    editorContainer?.classList.replace("flex", "hidden");
-    emptyState?.classList.remove("hidden");
+
+    // Safely force UI update
+    if (editorContainer) {
+        editorContainer.classList.remove("flex");
+        editorContainer.classList.add("hidden");
+    }
+
+    if (emptyState) {
+        emptyState.classList.remove("hidden");
+    }
+
     renderCategorySideBar();
 }
 

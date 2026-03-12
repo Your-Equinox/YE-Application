@@ -54,6 +54,7 @@ async function handleJsonBackup(file: File) {
     if (importedData.notes) localStorage.setItem("ye-notes", JSON.stringify(importedData.notes));
     if (importedData.tasks) localStorage.setItem("tasks", JSON.stringify(importedData.tasks));
     if (importedData.reminders) localStorage.setItem("reminders", JSON.stringify(importedData.reminders));
+    if (importedData.stats) localStorage.setItem("ye-stats", JSON.stringify(importedData.stats));
     if (importedData.settings?.geminiApiKey) localStorage.setItem("gemini_api_key", importedData.settings.geminiApiKey);
 
     alert("Backup restored successfully! Returning to Dashboard.");
