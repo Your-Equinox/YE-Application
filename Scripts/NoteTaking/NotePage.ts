@@ -123,6 +123,8 @@ function setActiveNote(id: string) {
         return;
     }
 
+    if (titleInput) titleInput.value = note.title;
+
     // Migration logic: Convert old Markdown to HTML if necessary
     const content = note.body.trim().startsWith('<')
         ? note.body
@@ -163,7 +165,82 @@ export function deleteActiveNote() {
     renderCategorySideBar();
 }
 
-// AI Assistant
+// --- AI Logic Implementation ---
+
+if (generateQuizBtn) {
+    generateQuizBtn.addEventListener("click", async () => {
+        console.log("Quiz generation started!"); // Debugging log
+        if (!activeNoteId) return;
+
+        const note = notes.find(n => n.id === activeNoteId);
+        if (!note || (note.body && note.body.trim().length < 20)) {
+            alert("Please write some more notes first before generating a quiz!");
+            return;
+        }
+
+        const apiKey = localStorage.getItem("gemini_api_key");
+        if (!apiKey) {
+            alert("Please set your Gemini API key in the Settings page first!");
+            return;
+        }
+
+        const originalText = generateQuizBtn.innerHTML;
+        generateQuizBtn.innerHTML = `<span>⏳</span> Generating...`;
+        generateQuizBtn.disabled = true;
+
+        try {
+            console.log("Fetching from Gemini API..."); // Debugging log
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: `You are a strict tutor. Read the user's notes and generate exactly 10 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks (like \`\`\`json). Each object must have a 'q' property for the question and an 'a' property for the answer. Example: [{"q": "What is biology?", "a": "The study of life."}]\n\nNotes:\n${note.body}` }
+                        ]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
+
+            let aiResponse = data.candidates[0].content.parts[0].text;
+            aiResponse = aiResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+
+            const questionsArray = JSON.parse(aiResponse);
+            console.log("Quiz generated successfully:", questionsArray); // Debugging log
+
+            // Save to the current note and redirect!
+            note.TestQuestions = questionsArray;
+            saveToLocalStorage();
+
+            alert("Quiz generated successfully! Redirecting...");
+            window.location.href = `/public/ye-quiz.html?noteId=${note.id}`;
+
+        } catch (error) {
+            console.error("AI Error:", error);
+            alert("Failed to generate quiz. Check the console for errors.");
+        } finally {
+            generateQuizBtn.innerHTML = originalText;
+            generateQuizBtn.disabled = false;
+        }
+    });
+}
+
+// Sidebar Event Listeners
+if (aiAssistBtn) {
+    aiAssistBtn.addEventListener("click", () => {
+        if (aiSidebar) aiSidebar.classList.remove("translate-x-full");
+        if (aiInput) aiInput.focus();
+    });
+}
+
+if (closeAiBtn) {
+    closeAiBtn.addEventListener("click", () => {
+        if (aiSidebar) aiSidebar.classList.add("translate-x-full");
+    });
+}
 if (aiForm) {
     aiForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -207,6 +284,7 @@ function loadNotes(): Note[] {
     const saved = localStorage.getItem("ye-notes");
     return saved ? JSON.parse(saved).map((n: any) => ({ ...n, categoryID: n.categoryID || null })) : [];
 }
+
 function updateFlashcardButtonUI(isActive: boolean) {
     if (!toggleFlashcardBtn) return;
     toggleFlashcardBtn.className = isActive
@@ -221,4 +299,8 @@ function appendMessage(text: string, isUser: boolean) {
     msgDiv.textContent = text;
     aiChatHistory.appendChild(msgDiv);
     aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
+}
+
+if (aiChatHistory && aiChatHistory.children.length === 0) {
+    appendMessage("Hello I am your personal study buddy!! How can I help you with your notes today?", false);
 }
