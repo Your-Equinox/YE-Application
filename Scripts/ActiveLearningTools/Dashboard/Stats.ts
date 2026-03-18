@@ -3,6 +3,7 @@ export const statTaskDay = document.getElementById('stat-task-day');
 export const statTaskWeek = document.getElementById('stat-task-week');
 export const statTaskMonth = document.getElementById('stat-task-month');
 export const statReview = document.getElementById('stat-review');
+export const dashboardUserName = document.getElementById('dashboard-user-name'); // <-- Add this line
 
 // Data Structures
 type YeStats = {
@@ -107,6 +108,10 @@ function getWeekNumber(d: Date): number {
 export function updateDashboardUI() {
     const stats = loadStats();
 
+    if (dashboardUserName) {
+        const savedName = localStorage.getItem("DisplayName");
+        dashboardUserName.textContent = savedName || "Name";
+    }
     // 3. Add `|| 0` safety nets so UI never crashes if a property is missing
     if (statTaskDay) statTaskDay.textContent = (stats.taskCompletedDay || 0).toString();
     if (statTaskWeek) statTaskWeek.textContent = (stats.taskCompletedWeek || 0).toString();

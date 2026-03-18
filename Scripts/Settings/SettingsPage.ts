@@ -28,6 +28,42 @@ try {
     console.warn("Could not load reminders. Safe to purge.", error);
 }
 
+// --- Display Name Logic ---
+const displayNameInput = document.getElementById("display-name") as HTMLInputElement;
+const saveNameBtn = document.getElementById("save-name-btn") as HTMLButtonElement;
+const nameStatus = document.getElementById("name-status") as HTMLParagraphElement;
+
+// 1. Load the saved name when the page loads
+if (displayNameInput) {
+    // Using || '' ensures it doesn't print "null" in the input box if no name is saved yet
+    displayNameInput.value = localStorage.getItem("DisplayName") || "";
+}
+
+// 2. Handle saving when the button is clicked
+if (saveNameBtn && displayNameInput && nameStatus) {
+    saveNameBtn.addEventListener("click", () => {
+        const newName = displayNameInput.value.trim();
+
+        if (newName) {
+            localStorage.setItem("DisplayName", newName);
+
+            // Briefly show the success message
+            nameStatus.classList.remove("hidden");
+            setTimeout(() => nameStatus.classList.add("hidden"), 3000);
+        } else {
+            // If they clear the input and hit save, remove it from storage
+            localStorage.removeItem("DisplayName");
+        }
+    });
+}
+
+// --- Dashboard Greeting Logic ---
+const dashboardUserName = document.getElementById("dashboard-user-name");
+const savedName = localStorage.getItem("DisplayName");
+
+if (dashboardUserName) {
+    dashboardUserName.textContent = savedName ? savedName : "User";
+}
 // AI API Key
 const apiKeyInput = document.querySelector<HTMLInputElement>("#gemini-api-key");
 const saveApiKeyBtn = document.querySelector<HTMLButtonElement>("#save-api-key-btn");

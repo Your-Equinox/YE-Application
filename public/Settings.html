@@ -40,16 +40,29 @@
       <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">General Account</h2>
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
-          <input type="text" placeholder="Your Name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="display-name">Display Name</label>
+          <div class="flex gap-2">
+            <input type="text" id="display-name" placeholder="Your Name" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            <button id="save-name-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
+              Save Name
+            </button>
+          </div>
+          <p id="name-status" class="text-green-600 text-sm mt-2 hidden">✓ Name saved successfully.</p>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Theme Preference</label>
-          <select class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
-            <option>System Default</option>
-            <option>Light Mode</option>
-            <option>Dark Mode</option>
-          </select>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="theme-preference">Theme Preference</label>
+          <div class="flex gap-2">
+            <select id="theme-preference" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
+              <option value="system">System Default</option>
+              <option value="light">Light Mode</option>
+              <option value="dark">Dark Mode</option>
+            </select>
+            <button id="save-theme-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
+              Save Preference
+            </button>
+          </div>
+          <p id="theme-status" class="text-green-600 text-sm mt-2 hidden">✓ Theme preference saved.</p>
         </div>
       </div>
     </section>
