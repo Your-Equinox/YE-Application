@@ -178,8 +178,25 @@
 
     <section id="general" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">General Account</h2>
-      <div class="space-y-4">
-        <div>
+      <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Switch between light and dark mode">
+        <svg id="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
+          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+          <line x1="4" y1="4" x2="6" y2="6" stroke="currentColor" stroke-width="2"/>
+          <line x1="18" y1="18" x2="20" y2="20" stroke="currentColor" stroke-width="2"/>
+          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
+          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+          <line x1="4" y1="20" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+          <line x1="18" y1="6" x2="20" y2="4" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <svg id="moon-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      </button>
+
+  <div class="space-y-4">
+    <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" for="display-name">Display Name</label>
           <div class="flex gap-2">
             <input type="text" id="display-name" placeholder="Your Name" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
@@ -190,21 +207,8 @@
           <p id="name-status" class="text-green-600 text-sm mt-2 hidden">✓ Name saved successfully.</p>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="theme-preference">Theme Preference</label>
-          <div class="flex gap-2">
-            <select id="theme-preference" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
-              <option value="system">System Default</option>
-              <option value="light">Light Mode</option>
-              <option value="dark">Dark Mode</option>
-            </select>
-            <button id="save-theme-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
-              Save Preference
-            </button>
-          </div>
           <p id="theme-status" class="text-green-600 text-sm mt-2 hidden">✓ Theme preference saved.</p>
         </div>
-      </div>
     </section>
 
     <section id="notifications" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
