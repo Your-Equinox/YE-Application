@@ -5,6 +5,146 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings - Your Equinox</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+
+    :root {
+      --bg-primary: #f3f4f6;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+      --sidebar-bg: #ffffff;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+      --card-bg: #ffffff;
+      --hover-bg: #f3f4f6;
+    }
+
+    .dark-mode {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --sidebar-bg: #1f2937;
+      --accent-color: #60a5fa;
+      --accent-hover: #3b82f6;
+      --card-bg: #374151;
+      --hover-bg: #4b5563;
+    }
+
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.2s ease;
+    }
+
+
+    aside {
+      background-color: var(--sidebar-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    aside h1 {
+      color: var(--text-primary) !important;
+    }
+
+
+    nav button {
+      color: var(--text-secondary) !important;
+    }
+
+    nav button.bg-gray-100 {
+      background-color: var(--hover-bg) !important;
+      color: var(--text-primary) !important;
+    }
+
+    nav button:hover:not(.bg-gray-100) {
+      background-color: var(--hover-bg) !important;
+    }
+
+    section.bg-white,
+    .bg-white {
+      background-color: var(--card-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    section h2 {
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    section p,
+    .text-gray-600 {
+      color: var(--text-secondary) !important;
+    }
+
+    .text-gray-700 {
+      color: var(--text-secondary) !important;
+    }
+
+    .text-gray-900 {
+      color: var(--text-primary) !important;
+    }
+
+
+    input, select {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    input::placeholder {
+      color: var(--text-secondary) !important;
+    }
+
+
+    .border-gray-300 {
+      border-color: var(--border-color) !important;
+    }
+
+    a.border-gray-300 {
+      color: var(--text-primary) !important;
+    }
+
+    a.border-gray-300:hover {
+      background-color: var(--hover-bg) !important;
+    }
+
+
+    .bg-white.border {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .bg-white.border:hover {
+      background-color: var(--hover-bg) !important;
+    }
+
+
+    *:focus-visible {
+      outline: 3px solid var(--accent-color);
+      outline-offset: 2px;
+    }
+
+
+    button, a, input, select {
+      transition: all 0.2s ease;
+    }
+
+
+    dialog {
+      background-color: var(--card-bg);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .text-red-600 {
+      color: #ef4444 !important;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 h-screen flex overflow-hidden">
 
