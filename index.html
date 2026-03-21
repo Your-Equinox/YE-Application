@@ -161,5 +161,15 @@
 <script type="module" src="/Scripts/Calendar/MainCalendar.ts"></script>
 <script type= "module" src= "/Scripts/ActiveLearningTools/Dashboard/Stats.ts"></script>
 <script type= "module" src= "/Scripts/ActiveLearningTools/LearningTools/FlashCards.ts"></script>
+
+<script>
+  fetch('/logo.html')
+          .then(response => response.text())
+          .then(html => {
+            document.getElementById('logo-placeholder').innerHTML = html;
+          })
+          .catch(error => console.error('Error loading logo:', error));
+</script>
+
 </body>
 </html>
