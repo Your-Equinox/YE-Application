@@ -34,9 +34,10 @@
     }
 
 
+
     body {
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
+      background-color: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
       transition: background-color 0.3s ease, color 0.2s ease;
     }
 
@@ -64,8 +65,8 @@
       background-color: var(--hover-bg) !important;
     }
 
-    section.bg-white,
-    .bg-white {
+
+    section {
       background-color: var(--card-bg) !important;
       border-color: var(--border-color) !important;
     }
@@ -75,17 +76,17 @@
       border-color: var(--border-color) !important;
     }
 
-    section p,
-    .text-gray-600 {
+    section p {
       color: var(--text-secondary) !important;
     }
 
-    .text-gray-700 {
-      color: var(--text-secondary) !important;
-    }
 
-    .text-gray-900 {
+    .text-gray-900, .text-gray-800, .text-gray-700, .font-bold {
       color: var(--text-primary) !important;
+    }
+
+    .text-gray-600, .text-gray-500, .text-sm, label {
+      color: var(--text-secondary) !important;
     }
 
 
@@ -100,12 +101,9 @@
     }
 
 
-    .border-gray-300 {
-      border-color: var(--border-color) !important;
-    }
-
     a.border-gray-300 {
       color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
     }
 
     a.border-gray-300:hover {
@@ -121,6 +119,25 @@
 
     .bg-white.border:hover {
       background-color: var(--hover-bg) !important;
+    }
+
+
+    .theme-toggle-btn {
+      background: var(--border-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+    .theme-toggle-btn:hover {
+      transform: scale(1.05);
+      background: var(--hover-bg);
     }
 
 
@@ -143,6 +160,14 @@
 
     .text-red-600 {
       color: #ef4444 !important;
+    }
+
+
+    .dark-mode .flex-1,
+    .dark-mode .overflow-y-auto,
+    .dark-mode .max-w-3xl,
+    .dark-mode .space-y-12 {
+      background-color: transparent !important;
     }
   </style>
 </head>
@@ -285,7 +310,45 @@
     <button id="confirm-purge-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Delete Everything</button>
   </div>
 </dialog>
+<script>
 
+  const themeToggle = document.getElementById('theme-toggle-btn');
+  const sunIcon = document.getElementById('sun-icon');
+  const moonIcon = document.getElementById('moon-icon');
+
+
+  const savedTheme = localStorage.getItem('theme');
+
+
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    if (sunIcon) sunIcon.style.display = 'none';
+    if (moonIcon) moonIcon.style.display = 'block';
+  } else {
+    document.body.classList.remove('dark-mode');
+    if (sunIcon) sunIcon.style.display = 'block';
+    if (moonIcon) moonIcon.style.display = 'none';
+  }
+
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+
+      document.body.classList.toggle('dark-mode');
+
+
+      if (document.body.classList.contains('dark-mode')) {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  }
+</script>
 <script type="module" src="../Scripts/Settings/SettingsPage.ts"></script>
 </body>
 </html>
