@@ -114,27 +114,45 @@ reminderForm.addEventListener("submit", (e) => {
 // 6. Core Data & Display Functions
 export function displayReminder(reminder: Reminder) {
     const item = document.createElement("li");
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
+    item.className = "flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition";
 
+    const left = document.createElement("div");
+    left.className = "flex items-center gap-3";
+
+    const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = reminder.completed;
+    checkbox.className = "w-4 h-4 accent-blue-500 cursor-pointer";
 
     checkbox.addEventListener("change", () => {
         reminder.completed = checkbox.checked;
         saveReminders();
     });
 
+    const text = document.createElement("span");
+    text.className = `text-sm ${
+        reminder.completed
+            ? "line-through text-gray-400"
+            : "text-gray-700"
+    }`;
+
     let displayText = reminder.title;
 
     if (reminder.remindAt) {
         const formattedTime = reminder.remindAt.toLocaleString();
-        displayText += ` (${formattedTime})`;
+        displayText += ` • ${formattedTime}`;
     }
 
-    label.append(checkbox, displayText);
-    item.append(label);
+    text.textContent = displayText;
 
+    left.append(checkbox, text);
+
+    // color indicator (nice UI touch)
+    const colorDot = document.createElement("div");
+    colorDot.className = "w-3 h-3 rounded-full";
+    colorDot.style.backgroundColor = reminder.colorHex;
+
+    item.append(left, colorDot);
     reminderList.append(item);
 }
 
