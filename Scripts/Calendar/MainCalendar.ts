@@ -604,13 +604,12 @@ export function renderApp() {
 
     app.innerHTML = "";
     const container = document.createElement("div");
-    container.className = "w-full max-w-6xl bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col overflow-hidden";
+    container.className = "w-full max-w-6xl bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"; 
     container.style.maxHeight = "90vh";
 
     // --- Header ---
     const header = document.createElement("div");
-    header.className = "flex justify-between items-center p-4 border-b border-gray-200 bg-white";
-
+   header.className = "flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100"; 
     // Create a group for the Back Button and Title
     const titleGroup = document.createElement("div");
     titleGroup.className = "flex items-center gap-4";
@@ -629,7 +628,7 @@ export function renderApp() {
     titleGroup.appendChild(title);
 
     const viewSwitch = document.createElement("div");
-    viewSwitch.className = "flex bg-gray-100 p-1 rounded-lg";
+    viewSwitch.className = "flex bg-gray-200/60 backdrop-blur-sm p-1 rounded-xl";
     ["month", "week", "day"].forEach((v) => {
         const btn = document.createElement("button");
         btn.className = `px-3 py-1 text-sm rounded-md transition ${state.currentView === v ? "bg-white shadow text-blue-600 font-medium" : "text-gray-500 hover:text-gray-700"}`;
@@ -686,7 +685,7 @@ function renderMonthView(container: HTMLElement) {
 
         weekDays.forEach((d: any) => {
             const cell = document.createElement("div");
-            cell.className = "month-cell p-1 cursor-pointer hover:bg-gray-50 transition-colors";
+            cell.className = "month-cell p-2 cursor-pointer hover:bg-blue-50 rounded-lg transition-all"; 
             cell.innerHTML = `<div class="text-right text-xs ${d.date.month() === state.currentDate.month() ? "text-gray-700" : "text-gray-300"}">${d.date.date()}</div>`;
 
             cell.onclick = (e) => {
@@ -759,7 +758,7 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
             const rect = col.getBoundingClientRect();
             const relY = e.clientY - rect.top;
 
-            const rawMins = (relY/ Utils.getCellHeight()) * 60;
+            const rawMins = (relY/ getCellHeight: () => 80;
 
             const snappedMins = Math.max(0, Math.min(1440, Math.floor(rawMins / 30) * 30));
 
