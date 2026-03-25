@@ -6,6 +6,138 @@
   <title>Your Equinox - Pro Editor</title>
   <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
   <style>
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+      --accent-color: #3b82f6;
+      --sidebar-bg: #f9fafb;
+      --card-bg: #ffffff;
+    }
+
+    .dark-mode {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --accent-color: #60a5fa;
+      --sidebar-bg: #1f2937;
+      --card-bg: #374151;
+    }
+
+    body {
+      background-color: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
+      transition: all 0.3s ease;
+    }
+
+    /* Sidebar */
+    aside.bg-gray-50 {
+      background-color: var(--sidebar-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    /* Main content */
+    main.bg-white {
+      background-color: var(--bg-primary) !important;
+    }
+
+    /* Cards and containers */
+    .bg-white, .bg-gray-50, .bg-gray-100 {
+      background-color: var(--bg-secondary) !important;
+    }
+
+    /* Text colors */
+    .text-slate-800, .text-gray-800, .text-gray-700, .text-gray-900 {
+      color: var(--text-primary) !important;
+    }
+
+    .text-gray-600, .text-gray-500, .text-gray-400 {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Borders */
+    .border-gray-200, .border-gray-300, .border-gray-100 {
+      border-color: var(--border-color) !important;
+    }
+
+    /* Input fields */
+    input, textarea, select {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Buttons */
+    .bg-gray-100, .bg-gray-50 {
+      background-color: var(--bg-secondary) !important;
+    }
+
+    /* Editor specific */
+    .ProseMirror {
+      color: var(--text-primary) !important;
+      background-color: transparent !important;
+    }
+
+    .prose table {
+      border-color: var(--border-color) !important;
+    }
+    .prose table td, .prose table th {
+      border-color: var(--border-color) !important;
+      background-color: var(--card-bg) !important;
+      color: var(--text-primary) !important;
+    }
+    .prose table th {
+      background-color: var(--bg-secondary) !important;
+    }
+
+    /* Code blocks */
+    .prose :not(pre) > code {
+      background-color: var(--bg-secondary) !important;
+    }
+    .prose pre {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+    }
+
+
+    /* Format toolbar */
+    #format-toolbar {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+    }
+    #format-toolbar button {
+      color: var(--text-primary) !important;
+    }
+    #format-toolbar button:hover {
+      background-color: var(--border-color) !important;
+    }
+
+    /* Table bubble menu */
+    #table-bubble-menu {
+      background-color: var(--card-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    /* Empty state */
+    #empty-state {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Transitions */
+    button, a, input, select {
+      transition: all 0.2s ease;
+    }
+  </style>
+  <style>
     /* 1. Category Folder Styling */
     .rotate-90 { transform: rotate(90deg); }
     .transition-transform { transition: transform 0.2s ease-in-out; }
@@ -155,6 +287,32 @@
   </div>
 </aside>
 
+<script>
+
+  function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+
+  loadTheme();
+
+
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'theme') {
+      if (e.newValue === 'dark') {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+  });
+</script>
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
 </body>
 </html>
