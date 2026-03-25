@@ -11,7 +11,7 @@ navButtons.forEach((btn, index) => {
             b.classList.add('text-gray-600');
         });
 
-        btn.classList.add('bg-gray-100', 'text-gray-900');
+        btn.classList.add('bg-blue-50', 'text-blue-600', 'rounded-lg');
         btn.classList.remove('text-gray-600');
 
         sections.forEach(sec => sec.classList.add('hidden'));

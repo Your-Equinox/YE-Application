@@ -304,14 +304,18 @@ function loadNotes(): Note[] {
 function updateFlashcardButtonUI(isActive: boolean) {
     if (!toggleFlashcardBtn) return;
     toggleFlashcardBtn.className = isActive
-        ? "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200"
+        ? "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md ..."
         : "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200";
     toggleFlashcardBtn.innerHTML = `<span>🧠</span> ${isActive ? "Flashcard Active" : "Enable Flashcard"}`;
 }
 function appendMessage(text: string, isUser: boolean) {
     if (!aiChatHistory) return;
     const msgDiv = document.createElement("div");
-    msgDiv.className = `p-3 rounded-xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-blue-600 text-white ml-8 rounded-br-none self-end' : 'bg-white border border-gray-200 text-gray-800 mr-8 rounded-bl-none shadow-sm self-start'}`;
+    msgDiv.className = `p-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap max-w-[80%] ${
+    isUser
+        ? 'bg-blue-500 text-white ml-auto rounded-br-md shadow'
+        : 'bg-gray-50 border border-gray-200 text-gray-800 mr-auto rounded-bl-md shadow-sm'
+}`;
     msgDiv.textContent = text;
     aiChatHistory.appendChild(msgDiv);
     aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
