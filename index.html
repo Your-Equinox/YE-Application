@@ -10,6 +10,59 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+  <style>
+    /* Theme Variables */
+    :root {
+      --bg-primary: #f3f4f6;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+      --accent-color: #3b82f6;
+    }
+
+    .dark-mode {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --accent-color: #60a5fa;
+    }
+
+    body {
+      background-color: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
+      transition: all 0.3s ease;
+    }
+
+
+    .bg-gray-100, .bg-white, .bg-gray-50 {
+      background-color: var(--bg-secondary) !important;
+    }
+
+
+    .text-slate-800, .text-gray-900, .text-gray-800, .text-gray-700 {
+      color: var(--text-primary) !important;
+    }
+
+    .text-gray-600, .text-gray-500, .text-gray-400 {
+      color: var(--text-secondary) !important;
+    }
+
+
+    fieldset, .bg-white, .rounded.shadow {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+
+    input, select, textarea {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans text-slate-800 p-4 md:p-8">
 
@@ -164,6 +217,32 @@
 <div class="w-full max-w-6xl mx-auto mb-4">
   <a href="/public/Settings.html" style="color: blue; text-decoration: underline; font-weight: 500;">Settings </a>
 </div>
+<script>
+
+  function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+
+  loadTheme();
+
+
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'theme') {
+      if (e.newValue === 'dark') {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+  });
+</script>
 <script type="module" src="/Scripts/Tasks/AddTasks.ts"></script>
 <script type="module" src="/Scripts/Tasks/DeleteTasks.ts"></script>
 <script type="module" src="/Scripts/Reminders/AddReminder.ts"></script>
@@ -172,6 +251,5 @@
 <script type="module" src="/Scripts/Calendar/MainCalendar.ts"></script>
 <script type= "module" src= "/Scripts/ActiveLearningTools/Dashboard/Stats.ts"></script>
 <script type= "module" src= "/Scripts/ActiveLearningTools/LearningTools/FlashCards.ts"></script>
-
 </body>
 </html>
