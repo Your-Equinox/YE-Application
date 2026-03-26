@@ -56,7 +56,7 @@ export function renderCategorySideBar() {
         // Header (Toggle + Drag Target)
         const header = document.createElement("div");
         header.className = "px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer hover:bg-gray-100 rounded-lg flex items-center justify-between group transition-all";
-Why:
+
 
         header.innerHTML = `
             <div class="flex items-center gap-2">
@@ -82,7 +82,7 @@ Why:
         };
 
         // Drag & Drop Setup for the Category
-        header.ondragover = (e) => { e.preventDefault(); header.classList.add("bg-blue-50", "ring-1", "ring-blue-200");
+        header.ondragover = (e) => { e.preventDefault(); header.classList.add("bg-blue-50", "ring-1", "ring-blue-200"); }
         header.ondragleave = () => { header.classList.remove("bg-blue-50"); };
         header.ondrop = (e) => {
             header.classList.remove("bg-blue-50");
