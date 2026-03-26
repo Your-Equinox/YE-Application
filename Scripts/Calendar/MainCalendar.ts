@@ -758,7 +758,7 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
             const rect = col.getBoundingClientRect();
             const relY = e.clientY - rect.top;
 
-            const rawMins = (relY/ getCellHeight: () => 80;
+            const rawMins = (relY/ Utils.getCellHeight()) * 80;
 
             const snappedMins = Math.max(0, Math.min(1440, Math.floor(rawMins / 30) * 30));
 
