@@ -1,19 +1,17 @@
-import {reminderList, saveReminders, reminders, displayReminder, isPastDue} from "./AddReminder";
+import { reminderList, reminders, displayReminder, isPastDue } from "./AddReminder";
+import { deleteReminder, deleteExpiredAndCompletedReminders } from "../Supabase/ReminderService";
 
-export const deleteReminders = document.querySelector<HTMLButtonElement>("#delete-reminders")!;
+const deleteReminders = document.querySelector<HTMLButtonElement>("#delete-reminders")!;
 
-// Deleting Reminders Button
-deleteReminders.addEventListener("click", () => {
+deleteReminders.addEventListener("click", async () => {
+    // Delete from Supabase first
+    await deleteExpiredAndCompletedReminders();
 
-    const remainingReminders = reminders.filter(reminder => {
-        return !reminder.completed && !isPastDue(reminder);
-    });
-
+    // Filter local array to only keep active, not past due reminders
+    const remaining = reminders.filter(r => !r.completed && !isPastDue(r));
     reminders.length = 0;
-    remainingReminders.forEach((reminder) => reminders.push(reminder));
-    saveReminders();
+    remaining.forEach(r => reminders.push(r));
 
     reminderList.innerHTML = "";
     reminders.forEach(displayReminder);
-
 });

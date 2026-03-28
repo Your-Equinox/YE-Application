@@ -118,7 +118,7 @@
   </form>
 </fieldset>
 <div class="w-full max-w-6xl mx-auto mb-4 flex gap-6">
-  <a href="/public/ye-notes.html" style="color: blue; text-decoration: underline; font-weight: 500;"> 📝My notes</a>
+  <a href="/pages/ye-notes.html" style="color: blue; text-decoration: underline; font-weight: 500;"> 📝My notes</a>
 </div>
 
 <fieldset class="mb-8 bg-white p-5 rounded-lg shadow border-t-4 border-purple-500">
@@ -126,7 +126,7 @@
 
   <div id="noNoteMessage" class="text-center text-gray-400 text-sm py-6 hidden">
     <p class="mb-2">You haven't written any notes yet!</p>
-    <a href="/public/ye-notes.html" class="text-purple-500 underline">Go write something</a> to activate your memory checks.
+    <a href="/pages/ye-notes.html" class="text-purple-500 underline">Go write something</a> to activate your memory checks.
   </div>
 
   <div class="flex flex-col h-full">
@@ -166,7 +166,7 @@
 </fieldset>
 
 <div class="w-full max-w-6xl mx-auto mb-4">
-  <a href="/public/ye-calendar.html" style="color: blue; text-decoration: underline; font-weight: 500;">📅 View Full-Screen Calendar</a>
+  <a href="/pages/ye-calendar.html" style="color: blue; text-decoration: underline; font-weight: 500;">📅 View Full-Screen Calendar</a>
 </div>
 
 <div id="app" class="w-full max-w-6xl mx-auto flex flex-col items-center"></div>
@@ -215,7 +215,7 @@
   </form>
 </dialog>
 <div class="w-full max-w-6xl mx-auto mb-4">
-  <a href="/public/Settings.html" style="color: blue; text-decoration: underline; font-weight: 500;">Settings </a>
+  <a href="/pages/Settings.html" style="color: blue; text-decoration: underline; font-weight: 500;">Settings </a>
 </div>
 <script>
 
@@ -243,6 +243,7 @@
     }
   });
 </script>
+<script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="/Scripts/Tasks/AddTasks.ts"></script>
 <script type="module" src="/Scripts/Tasks/DeleteTasks.ts"></script>
 <script type="module" src="/Scripts/Reminders/AddReminder.ts"></script>

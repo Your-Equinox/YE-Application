@@ -6,6 +6,7 @@
     "target": "esnext",
     "moduleResolution": "node",
     "jsx": "preserve",
+    "types": ["vite/client"],
     "baseUrl": "./",
     /* paths - import rewriting/resolving */
     "paths": {
