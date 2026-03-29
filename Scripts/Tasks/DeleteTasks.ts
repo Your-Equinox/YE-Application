@@ -1,35 +1,33 @@
-import { TasksCompletedIncrements } from '../ActiveLearningTools/Dashboard/Stats.js';
+import { incrementTasksCompleted } from '../Supabase/StatsService';
+import { deleteTask } from '../Supabase/TaskService';
+import { updateDashboardUI } from '../ActiveLearningTools/Dashboard/Stats';
+import { tasks } from './AddTasks';
 
-// DOM Elements
 const completeTaskBtn = document.getElementById('task-complete') as HTMLButtonElement | null;
-const removeTaskBtn = document.getElementById('remove-task-btn') as HTMLButtonElement | null; // Added new button
+const removeTaskBtn = document.getElementById('remove-task-btn') as HTMLButtonElement | null;
 const taskList = document.getElementById('task-list') as HTMLUListElement | null;
 
 export function initDeleteTasks() {
     if (!taskList) return;
 
-    // --- 1. TASK COMPLETE BUTTON (Adds to Stats) ---
     if (completeTaskBtn) {
-        completeTaskBtn.addEventListener('click', (e) => {
+        completeTaskBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            handleTaskRemoval(true);
+            await handleTaskRemoval(true);
         });
     }
 
-    // --- 2. REMOVE TASK BUTTON (Does NOT Add to Stats) ---
     if (removeTaskBtn) {
-        removeTaskBtn.addEventListener('click', (e) => {
+        removeTaskBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            handleTaskRemoval(false);
+            await handleTaskRemoval(false);
         });
     }
 }
 
-// Shared logic for both buttons so we don't write the same code twice
-function handleTaskRemoval(isCompleted: boolean) {
+async function handleTaskRemoval(isCompleted: boolean) {
     if (!taskList) return;
 
-    // Find all checkboxes inside the task list that are checked
     const checkboxes = taskList.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked');
     const selectedCount = checkboxes.length;
 
@@ -38,42 +36,30 @@ function handleTaskRemoval(isCompleted: boolean) {
         return;
     }
 
-    // ONLY update the dashboard stats if the user clicked "Task Complete"
-    if (isCompleted) {
-        TasksCompletedIncrements(selectedCount);
+    // Collect IDs of selected tasks before removing from DOM
+    const selectedTitles: string[] = [];
+    checkboxes.forEach(checkbox => {
+        const label = checkbox.closest('label') || checkbox.parentElement;
+        if (label) selectedTitles.push(label.textContent?.trim() || "");
+        checkbox.closest('li')?.remove();
+    });
+
+    // Find matching tasks and delete from Supabase
+    const toDelete = tasks.filter(t => selectedTitles.includes(t.title.trim()));
+    for (const task of toDelete) {
+        await deleteTask(task.id);
     }
 
-    // Remove the selected tasks from the screen
-    checkboxes.forEach(checkbox => {
-        const listItem = checkbox.closest('li');
-        if (listItem) {
-            listItem.remove();
-        }
+    // Remove from local array
+    toDelete.forEach(t => {
+        const idx = tasks.indexOf(t);
+        if (idx > -1) tasks.splice(idx, 1);
     });
 
-    // Update your local storage to remove these tasks permanently
-    updateLocalStorageAfterDeletion();
+    if (isCompleted) {
+        await incrementTasksCompleted(selectedCount);
+        await updateDashboardUI();
+    }
 }
 
-// Helper function to sync your remaining tasks back to local storage
-function updateLocalStorageAfterDeletion() {
-    if (!taskList) return;
-
-    // Grab all the remaining text labels/spans next to the unchecked checkboxes
-    const remainingTasks: string[] = [];
-    const remainingItems = taskList.querySelectorAll('li');
-
-    remainingItems.forEach(item => {
-        // Adjust this selector based on how you render your task text (e.g., a <span> or <label>)
-        const textElement = item.querySelector('span');
-        if (textElement && textElement.textContent) {
-            remainingTasks.push(textElement.textContent);
-        }
-    });
-
-    // Save the remaining tasks back to whatever key you use (e.g., 'ye-tasks')
-    localStorage.setItem('ye-tasks', JSON.stringify(remainingTasks));
-}
-
-// Initialize the event listeners
 initDeleteTasks();

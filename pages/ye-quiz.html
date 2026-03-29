@@ -9,7 +9,7 @@
 <body class="bg-gray-50 font-sans text-slate-800 h-screen flex flex-col">
 
 <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm">
-  <a href="/public/ye-notes.html" class="text-blue-600 hover:text-blue-800 font-medium transition">&larr; Back to Notes</a>
+  <a href="/pages/ye-notes.html class="text-blue-600 hover:text-blue-800 font-medium transition">&larr; Back to Notes</a>
   <h1 id="quiz-title" class="text-xl font-bold text-gray-800">Loading Quiz...</h1>
   <div class="w-24"></div> </header>
 
@@ -17,7 +17,7 @@
 
   <div id="no-quiz-msg" class="hidden text-center text-gray-500 mt-20">
     <p class="text-xl mb-4">No quiz found for this note!</p>
-    <a href="/public/ye-notes.html" class="text-blue-500 underline">Go back and generate one.</a>
+    <a href="/pages/ye-notes.html class="text-blue-500 underline">Go back and generate one.</a>
   </div>
 
   <div id="quiz-container" class="w-full max-w-3xl space-y-6">
@@ -30,7 +30,7 @@
   </div>
 
 </main>
-
+<script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="/Scripts/ActiveLearningTools/LearningTools/Quizzes.ts"></script>
 </body>
 </html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Your Equinox</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+
+    :root {
+      --bg-primary: #f3f4f6;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+      --sidebar-bg: #ffffff;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+      --card-bg: #ffffff;
+      --hover-bg: #f3f4f6;
+    }
+
+    .dark-mode {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --sidebar-bg: #1f2937;
+      --accent-color: #60a5fa;
+      --accent-hover: #3b82f6;
+      --card-bg: #374151;
+      --hover-bg: #4b5563;
+    }
+
+
+
+    body {
+      background-color: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
+      transition: background-color 0.3s ease, color 0.2s ease;
+    }
+
+
+    aside {
+      background-color: var(--sidebar-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    aside h1 {
+      color: var(--text-primary) !important;
+    }
+
+
+    nav button {
+      color: var(--text-secondary) !important;
+    }
+
+    nav button.bg-gray-100 {
+      background-color: var(--hover-bg) !important;
+      color: var(--text-primary) !important;
+    }
+
+    nav button:hover:not(.bg-gray-100) {
+      background-color: var(--hover-bg) !important;
+    }
+
+
+    section {
+      background-color: var(--card-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    section h2 {
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    section p {
+      color: var(--text-secondary) !important;
+    }
+
+
+    .text-gray-900, .text-gray-800, .text-gray-700, .font-bold {
+      color: var(--text-primary) !important;
+    }
+
+    .text-gray-600, .text-gray-500, .text-sm, label {
+      color: var(--text-secondary) !important;
+    }
+
+
+    input, select {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    input::placeholder {
+      color: var(--text-secondary) !important;
+    }
+
+
+    a.border-gray-300 {
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    a.border-gray-300:hover {
+      background-color: var(--hover-bg) !important;
+    }
+
+
+    .bg-white.border {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .bg-white.border:hover {
+      background-color: var(--hover-bg) !important;
+    }
+
+
+    .theme-toggle-btn {
+      background: var(--border-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+    .theme-toggle-btn:hover {
+      transform: scale(1.05);
+      background: var(--hover-bg);
+    }
+
+
+    *:focus-visible {
+      outline: 3px solid var(--accent-color);
+      outline-offset: 2px;
+    }
+
+
+    button, a, input, select {
+      transition: all 0.2s ease;
+    }
+
+
+    dialog {
+      background-color: var(--card-bg);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .text-red-600 {
+      color: #ef4444 !important;
+    }
+
+
+    .dark-mode .flex-1,
+    .dark-mode .overflow-y-auto,
+    .dark-mode .max-w-3xl,
+    .dark-mode .space-y-12 {
+      background-color: transparent !important;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 h-screen flex overflow-hidden">
+
+<aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+  <div class="p-6 border-b border-gray-200">
+    <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+  </div>
+  <nav class="flex-1 p-4 space-y-2">
+    <button class="w-full text-left px-4 py-2 rounded-md bg-gray-100 text-gray-900 font-medium transition-colors hover:bg-gray-200">
+      👤 General Account
+    </button>
+    <button class="w-full text-left px-4 py-2 rounded-md text-gray-600 font-medium transition-colors hover:bg-gray-100">
+      🔔 Notifications
+    </button>
+    <button class="w-full text-left px-4 py-2 rounded-md text-gray-600 font-medium transition-colors hover:bg-gray-100">
+      ✨ AI Assistant
+    </button>
+    <button class="w-full text-left px-4 py-2 rounded-md text-gray-600 font-medium transition-colors hover:bg-gray-100">
+      🛡️ Privacy & Security
+    </button>
+  </nav>
+  <div class="p-4 border-t border-gray-200 space-y-2">
+    <a href="/index.html" class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
+      ← Back to Dashboard
+    </a>
+    <button id="logout-btn" class="block w-full text-center px-4 py-2 bg-red-50 border border-red-200 rounded-md text-red-600 hover:bg-red-100 transition font-medium">
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<main class="flex-1 overflow-y-auto p-8">
+  <div class="max-w-3xl mx-auto space-y-12">
+
+    <section id="general" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">General Account</h2>
+      <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Switch between light and dark mode">
+        <svg id="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
+          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+          <line x1="4" y1="4" x2="6" y2="6" stroke="currentColor" stroke-width="2"/>
+          <line x1="18" y1="18" x2="20" y2="20" stroke="currentColor" stroke-width="2"/>
+          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
+          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+          <line x1="4" y1="20" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+          <line x1="18" y1="6" x2="20" y2="4" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <svg id="moon-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      </button>
+
+  <div class="space-y-4">
+    <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="display-name">Display Name</label>
+          <div class="flex gap-2">
+            <input type="text" id="display-name" placeholder="Your Name" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            <button id="save-name-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
+              Save Name
+            </button>
+          </div>
+          <p id="name-status" class="text-green-600 text-sm mt-2 hidden">✓ Name saved successfully.</p>
+        </div>
+
+          <p id="theme-status" class="text-green-600 text-sm mt-2 hidden">✓ Theme preference saved.</p>
+        </div>
+    </section>
+
+    <section id="notifications" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+      <div class="flex items-center gap-2 mb-4 border-b pb-2">
+        <span class="text-xl">🔔</span>
+        <h2 class="text-xl font-bold text-gray-900">Notification Preferences</h2>
+      </div>
+      <p class="text-sm text-gray-600 mb-6">Adjust how Your Equinox alerts you about upcoming tasks and due flashcards.</p>
+      <ul id="reminderSettings" class="space-y-3"></ul>
+    </section>
+
+    <section id="ai-settings" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+      <div class="flex items-center gap-2 mb-4 border-b pb-2">
+        <span class="text-xl">✨</span>
+        <h2 class="text-xl font-bold text-gray-900">AI Assistant</h2>
+      </div>
+      <p class="text-sm text-gray-600 mb-6">Configure your connection to the Gemini API. Your Equinox runs locally, meaning your key is saved directly to your device and never sent to our servers.</p>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
+          <div class="flex gap-2">
+            <input type="password" id="gemini-api-key" placeholder="AIzaSy..." class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono">
+            <button id="save-api-key-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
+              Save Key
+            </button>
+          </div>
+          <p id="api-key-status" class="text-green-600 text-sm mt-2 hidden">✓ API Key saved successfully to local storage.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+      <div class="flex items-center gap-2 mb-4 border-b pb-2">
+        <span class="text-xl">🛡️</span>
+        <h2 class="text-xl font-bold text-gray-900">Privacy & Data Compliance</h2>
+      </div>
+      <p class="text-sm text-gray-600 mb-4">Manage how your application data is stored. These controls ensure you maintain local compliance with standards like PIPEDA and GDPR.</p>
+
+      <div class="space-y-4">
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+          <div>
+            <p class="font-medium text-gray-900 text-sm">Import Data</p>
+            <p class="text-xs text-gray-500 mt-1">Import your notes, tasks, and settings from a JSON file.</p>
+            <input type="file" id="import-file" accept=".json" class="hidden" />
+          </div>
+          <button id="import-btn" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition shadow-sm">Import Data</button>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+          <div>
+            <p class="font-medium text-gray-900 text-sm">Export Data</p>
+            <p class="text-xs text-gray-500 mt-1">Export your notes, tasks, and settings to a JSON file.</p>
+          </div>
+          <button id="export-btn" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition shadow-sm">Export Data</button>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-red-100 rounded-lg bg-red-50">
+          <div>
+            <p class="font-medium text-red-700 text-sm">Clear Application Data</p>
+            <p class="text-xs text-red-500 mt-1">Permanently delete all notes, tasks, and API keys from this browser.</p>
+          </div>
+          <button id="purge-btn" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition shadow-sm">Purge Data</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<dialog id="custom-confirm-modal" class="p-6 rounded-xl shadow-2xl border border-red-200 backdrop:bg-slate-900 backdrop:bg-opacity-50">
+  <h2 class="text-xl font-bold mb-4 text-red-600">⚠️ Purge All Data</h2>
+  <p class="mb-6 text-gray-700">Are you sure you want to permanently delete all your data? This cannot be undone.</p>
+  <div class="flex justify-end gap-3">
+    <button id="cancel-purge-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md">Cancel</button>
+    <button id="confirm-purge-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Delete Everything</button>
+  </div>
+</dialog>
+<script>
+
+  const themeToggle = document.getElementById('theme-toggle-btn');
+  const sunIcon = document.getElementById('sun-icon');
+  const moonIcon = document.getElementById('moon-icon');
+
+  // Function to apply theme and save to localStorage
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+      localStorage.setItem('theme', 'dark');
+      console.log('Theme saved: dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+      localStorage.setItem('theme', 'light');
+      console.log('Theme saved: light');
+    }
+  }
+
+
+  const savedTheme = localStorage.getItem('theme');
+  console.log('Loaded saved theme:', savedTheme);
+
+  if (savedTheme === 'dark') {
+    applyTheme(true);
+  } else {
+    applyTheme(false);
+  }
+
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+      const isDark = document.body.classList.contains('dark-mode');
+      applyTheme(!isDark);
+    });
+  }
+</script>
+<script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
+<script type="module" src="../Scripts/Settings/SettingsPage.ts"></script>
+</body>
+</html>

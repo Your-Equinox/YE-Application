@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YE - Calendar</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+
+    <link rel="stylesheet" href="/CSS/calendar.css">
+</head>
+<body class="bg-gray-100 font-sans text-slate-800">
+<div id="app" class="min-h-screen p-4 md:p-8 flex flex-col items-center"></div>
+
+<div id="drag-proxy"></div>
+
+<dialog id="calendar-reminder-modal" class="p-6 rounded-xl shadow-2xl border border-gray-200 backdrop:bg-slate-900 backdrop:bg-opacity-50 min-w-[320px]">
+    <h2 class="text-xl font-bold mb-4 text-slate-800">Add Reminder</h2>
+    <form id="calendar-reminder-form" class="flex flex-col gap-4">
+        <input type="text" id="cal-reminder-title" placeholder="What's the reminder?" class="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+        <input type="datetime-local" id="cal-reminder-time" class="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+
+        <div class="flex items-center gap-3">
+            <label for="cal-reminder-color" class="text-gray-700 font-medium">Event Color:</label>
+            <input type="color" id="cal-reminder-color" class="border border-gray-300 p-1 rounded-md cursor-pointer h-10 w-14" value="#3b82f6" />
+        </div>
+
+        <div class="flex justify-end gap-2 mt-2">
+            <button type="button" id="cal-close-modal" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition">Save</button>
+        </div>
+    </form>
+</dialog>
+
+<script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
+<script type="module" src="/Scripts/Calendar/MainCalendar.ts"></script>
+</body>
+</html>

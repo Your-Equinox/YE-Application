@@ -1,6 +1,7 @@
-import { updateDashboardUI} from "../Dashboard/Stats";
+import { updateDashboardUI } from "../Dashboard/Stats";
+import { loadNotes, saveNote } from "../../Supabase/NoteService";
 
-// Daily logic
+// Daily intention logic
 const intentionInputMode = document.getElementById("intention-input-mode")!;
 const intentionDisplayMode = document.getElementById("intention-display-mode")!;
 const intentionInput = document.querySelector<HTMLInputElement>("#daily-intention-input")!;
@@ -14,52 +15,45 @@ function loadDailyIntention() {
 
     if (saved) {
         const parsed = JSON.parse(saved);
-        // If the saved intention is from today, display it. Otherwise, clear it.
         if (parsed.date === today && parsed.text) {
             showIntentionDisplay(parsed.text);
             return;
         }
     }
-
     showIntentionInput();
 }
 
 function saveDailyIntention() {
     const text = intentionInput.value.trim();
     if (!text) return;
-
-    const data = {
+    localStorage.setItem("daily_intention", JSON.stringify({
         date: new Date().toDateString(),
-        text: text
-    };
-
-    localStorage.setItem("daily_intention", JSON.stringify(data));
+        text,
+    }));
     showIntentionDisplay(text);
 }
 
 function showIntentionDisplay(text: string) {
-    if(intentionText) intentionText.textContent = text;
-    if(intentionInputMode) intentionInputMode.classList.add("hidden");
-    if(intentionDisplayMode) intentionDisplayMode.classList.remove("hidden");
+    if (intentionText) intentionText.textContent = text;
+    if (intentionInputMode) intentionInputMode.classList.add("hidden");
+    if (intentionDisplayMode) intentionDisplayMode.classList.remove("hidden");
 }
 
 function showIntentionInput() {
-    if(intentionDisplayMode) intentionDisplayMode.classList.add("hidden");
-    if(intentionInputMode) intentionInputMode.classList.remove("hidden");
-    if(intentionInput) intentionInput.focus();
+    if (intentionDisplayMode) intentionDisplayMode.classList.add("hidden");
+    if (intentionInputMode) intentionInputMode.classList.remove("hidden");
+    if (intentionInput) intentionInput.focus();
 }
 
-if(saveIntentionBtn) saveIntentionBtn.addEventListener("click", saveDailyIntention);
-if(editIntentionBtn) editIntentionBtn.addEventListener("click", showIntentionInput);
-if(intentionInput) {
+if (saveIntentionBtn) saveIntentionBtn.addEventListener("click", saveDailyIntention);
+if (editIntentionBtn) editIntentionBtn.addEventListener("click", showIntentionInput);
+if (intentionInput) {
     intentionInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") saveDailyIntention();
     });
 }
 
-// FLASHCARD LOGIC
-
-//Constants
+// Flashcard logic
 const recallContainer = document.getElementById("recallContainer")!;
 const noNoteMessage = document.getElementById("noNoteMessage")!;
 const recallTitle = document.getElementById("recallTitle")!;
@@ -67,20 +61,16 @@ const revealNoteBtn = document.getElementById("revealNoteBtn")!;
 const recallBody = document.getElementById("recallBody")!;
 const confidenceBtns = document.querySelectorAll<HTMLButtonElement>(".confidence-btn")!;
 
-let dueNotes: any [] = [];
+let dueNotes: any[] = [];
 let currentNote: any = null;
 
-export function initialMemoryCheck() {
-    const savedNotes = localStorage.getItem("ye-notes");
+export async function initialMemoryCheck() {
+    const allNotes = await loadNotes();
 
-    if (savedNotes) {
-        const allNotes = JSON.parse(savedNotes);
-
-        dueNotes = allNotes.filter((n: any) =>
-            n.needsReview === true &&
-            (n.title.trim() !== "" || n.body.trim() !== "")
-        );
-    }
+    dueNotes = allNotes.filter((n: any) =>
+        n.needsReview === true &&
+        (n.title.trim() !== "" || n.body.trim() !== "")
+    );
 
     if (dueNotes.length === 0) {
         recallContainer.classList.add("hidden");
@@ -106,47 +96,34 @@ function pickRandomNote() {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = currentNote.body || "";
     const plainText = tempDiv.textContent || tempDiv.innerText || "";
+    recallBody.textContent = plainText.trim() || "(No body text written)";
+}
 
-    recallBody.textContent = plainText.trim() || "(No body text written)";}
-
-function revealNote(){
+function revealNote() {
     revealNoteBtn.classList.add("hidden");
     recallContainer.classList.remove("hidden");
     recallContainer.classList.add("flex");
 }
 
-function handleConfidenceRating(e:Event) {
+async function handleConfidenceRating(e: Event) {
     if (!currentNote) return;
 
     const btn = e.currentTarget as HTMLButtonElement;
     const rating = btn.dataset.rating;
 
     const ONE_DAY = 24 * 60 * 60 * 1000;
-    let daystoAdd = 1;
+    let daysToAdd = 1;
+    if (rating === "medium") daysToAdd = 3;
+    if (rating === "high") daysToAdd = 7;
 
-    if (rating === "medium") daystoAdd = 3;
-    if (rating === "high") daystoAdd = 7;
+    currentNote.nextReviewDate = Date.now() + (daysToAdd * ONE_DAY);
+    currentNote.needsReview = false;
 
-    // 1. Calculate the new future date
-    const newDate = Date.now() + (daystoAdd * ONE_DAY);
-
-    // 2. Fetch all notes, find this specific one, and update it
-    const allNotes = JSON.parse(localStorage.getItem("ye-notes") || "[]");
-    const noteIndex = allNotes.findIndex((n: any) => n.id === currentNote.id);
-
-    if (noteIndex > -1) {
-        allNotes[noteIndex].nextReviewDate = newDate;
-
-        allNotes[noteIndex].needsReview = false;
-
-        localStorage.setItem("ye-notes", JSON.stringify(allNotes));
-    }
+    await saveNote(currentNote);
+    await updateDashboardUI();
 
     dueNotes = dueNotes.filter((n: any) => n.id !== currentNote.id);
 
-    updateDashboardUI();
-
-    // 4. Move to the next card or finish the session
     if (dueNotes.length === 0) {
         recallContainer.classList.add("hidden");
         noNoteMessage.classList.remove("hidden");
@@ -158,7 +135,6 @@ function handleConfidenceRating(e:Event) {
 
 revealNoteBtn.addEventListener("click", revealNote);
 confidenceBtns.forEach(btn => btn.addEventListener("click", handleConfidenceRating));
-
 
 loadDailyIntention();
 initialMemoryCheck();
