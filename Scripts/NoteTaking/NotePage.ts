@@ -10,6 +10,8 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 import { initSidebar, renderCategorySideBar } from "./Categories";
 import { loadNotes, saveNote, deleteNote } from "../Supabase/NoteService";
+import {Image} from "@tiptap/extension-image";
+import { supabase } from '../Supabase/supabaseClient';
 
 // --- Global Types & State ---
 declare global {
@@ -40,6 +42,8 @@ const aiSubmitBtn = document.getElementById("ai-submit-btn") as HTMLButtonElemen
 const emptyState = document.getElementById("empty-state");
 const editorContainer = document.getElementById("editor-container");
 const titleInput = document.getElementById("note-title") as HTMLInputElement | null;
+const formatImageBtn = document.getElementById("format-image");
+const imageUploadInput = document.getElementById("image-upload-input") as HTMLInputElement | null;
 
 // --- Editor Setup ---
 const editorElement = document.querySelector('#tiptap-editor');
@@ -51,6 +55,7 @@ if (editorElement) {
         element: editorElement,
         extensions: [
             StarterKit,
+            Image,
             (Table as any).configure({ resizable: true, lastColumnResizable: false }),
             TableRow,
             TableHeader,
@@ -315,4 +320,69 @@ function appendMessage(text: string, isUser: boolean) {
 
 if (aiChatHistory && aiChatHistory.children.length === 0) {
     appendMessage("Hello I am your personal study buddy!! How can I help you with your notes today?", false);
+}
+
+// Importing images
+if (formatImageBtn && imageUploadInput) {
+    // Trigger the hidden file input when the button is clicked
+    formatImageBtn.addEventListener("click", () => {
+        imageUploadInput.click();
+    });
+
+    // Handle the actual file selection and upload
+    imageUploadInput.addEventListener("change", async (event) => {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
+
+        if (!file) return;
+
+        // Keep the 5MB safety check
+        if (file.size > 5 * 1024 * 1024) {
+            alert("This image is too large! Please select an image under 5MB.");
+            target.value = "";
+            return;
+        }
+
+        try {
+            // Optional: Provide UI feedback that it's uploading
+            const originalText = formatImageBtn.innerText;
+            formatImageBtn.innerText = "⏳ Uploading...";
+
+            // 1. Create a unique file path to prevent overwriting
+            const fileExt = file.name.split('.').pop();
+            const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `note-images/${uniqueFileName}`;
+
+            // 2. Upload directly to the Supabase 'images' bucket
+            const { error: uploadError } = await supabase.storage
+                .from('images')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (uploadError) throw uploadError;
+
+            // 3. Retrieve the public URL for the newly uploaded image
+            const { data: { publicUrl } } = supabase.storage
+                .from('images')
+                .getPublicUrl(filePath);
+
+            // 4. Inject the image into the Tiptap editor using the URL
+            if (editorInstance) {
+                editorInstance.chain().focus().setImage({ src: publicUrl }).run();
+            }
+
+            // Restore the button text
+            formatImageBtn.innerText = originalText;
+
+        } catch (error) {
+            console.error("Error uploading image to Supabase:", error);
+            alert("Failed to upload the image. Please check your connection and try again.");
+            formatImageBtn.innerText = "🖼️ Image";
+        } finally {
+            // Clear the input so the same file can be selected again if needed
+            target.value = "";
+        }
+    });
 }
