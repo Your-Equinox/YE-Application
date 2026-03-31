@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import type { Note } from "./NotePage";
 import { loadCategories, saveCategory, deleteCategory as deleteCategoryFromDB } from "../Supabase/CategoryService";
-import { saveNote } from "../Supabase/NoteService";
+import { saveNote, type Note } from "../Supabase/NoteService";
 
 export type Category = { id: string; name: string };
 

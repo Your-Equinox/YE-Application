@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import {loadNotes, saveNote} from "../Supabase/NoteService";
 import { loadReminders, saveReminder, deleteReminder } from "../Supabase/ReminderService";
 
 export type Reminder = {
@@ -38,6 +39,34 @@ if (closeNotificationBtn) {
 async function init() {
     reminders = await loadReminders();
     if (reminderList) reminders.forEach(displayReminder);
+
+    const allNotes = await loadNotes();
+    const upcomingReviews = allNotes.filter(n => n.nextReviewDate && !n.needsReview && n.nextReviewDate > Date.now());
+    upcomingReviews.forEach(n => {
+        reminders.push({
+            id: `review-${n.id}`, // Custom ID so it doesn't clash
+            title: `🧠 Review: ${n.title}`,
+            completed: false,
+            createdAt: new Date(),
+            remindAt: new Date(n.nextReviewDate!),
+            reminderSent: false,
+            notifyOffset: 0,
+            colorClass: "custom-color",
+            colorHex: "#a855f7" // Purple to match the flashcard theme
+        });
+    });
+
+    // 4. Sort everything chronologically so the list is organized
+    reminders.sort((a, b) => {
+        const timeA = a.remindAt ? a.remindAt.getTime() : Infinity;
+        const timeB = b.remindAt ? b.remindAt.getTime() : Infinity;
+        return timeA - timeB;
+    });
+
+    // 5. Render the list
+    if (reminderList) {
+        reminders.forEach(displayReminder);
+    }
 }
 
 init();
@@ -124,7 +153,26 @@ export function displayReminder(reminder: Reminder) {
 
     checkbox.addEventListener("change", async () => {
         reminder.completed = checkbox.checked;
-        await saveReminder(reminder);
+        if (reminder.id.startsWith("review-")) {
+            // It's a flashcard! Update the Notes database instead of Reminders
+            const noteId = reminder.id.replace("review-", ""); // Extract original note ID
+            const allNotes = await loadNotes();
+            const noteToUpdate = allNotes.find((n: any) => n.id === noteId);
+
+            if (noteToUpdate) {
+                if (checkbox.checked) {
+                    // If checked off, move it immediately to the active flashcard review queue
+                    noteToUpdate.needsReview = true;
+                } else {
+                    // If unchecked, put it back in waiting mode
+                    noteToUpdate.needsReview = false;
+                }
+                await saveNote(noteToUpdate);
+            }
+        } else {
+            // It's a normal reminder, save to Reminders database
+            await saveReminder(reminder);
+        }
     });
 
     const text = document.createElement("span");

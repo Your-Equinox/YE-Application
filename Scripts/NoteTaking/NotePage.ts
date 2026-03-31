@@ -9,7 +9,7 @@ import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 import { initSidebar, renderCategorySideBar } from "./Categories";
-import { loadNotes, saveNote, deleteNote } from "../Supabase/NoteService";
+import { loadNotes, saveNote, deleteNote, Note } from "../Supabase/NoteService";
 import {Image} from "@tiptap/extension-image";
 import { supabase } from '../Supabase/supabaseClient';
 
@@ -18,11 +18,6 @@ declare global {
     interface Window { editor: Editor; }
 }
 
-export type Note = {
-    id: string; title: string; body: string; lastEdited: number;
-    nextReviewDate: number; needsReview: boolean; categoryID: string | null;
-    TestQuestions?: { q: string; a: string }[];
-};
 
 let notes: Note[] = [];
 let activeNoteId: string | null = null;
@@ -217,7 +212,12 @@ if (generateQuizBtn) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{
-                        parts: [{ text: `You are a strict tutor. Read the user's notes and generate exactly 10 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks (like \`\`\`json). Each object must have a 'q' property for the question and an 'a' property for the answer. Example: [{"q": "What is biology?", "a": "The study of life."}]\n\nNotes:\n${note.body}` }]
+                        parts: [{ text: `You are a strict tutor. Read the user's notes and generate exactly 10 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks. 
+                         Mix the question types using these three formats:
+                         1. Multiple Choice: {"type": "mc", "q": "Question?", "a": "Correct Answer", "options": ["Wrong 1", "Correct Answer", "Wrong 2", "Wrong 3"]}
+                         2. True/False: {"type": "tf", "q": "Statement.", "a": "True or False"}
+                         3. Reveal/Flashcard: {"type": "reveal", "q": "Concept?", "a": "Detailed explanation."}
+                         Notes:\n${note.body}` }]
                     }]
                 })
             });

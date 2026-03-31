@@ -12,6 +12,8 @@ deleteReminders.addEventListener("click", async () => {
     reminders.length = 0;
     remaining.forEach(r => reminders.push(r));
 
-    reminderList.innerHTML = "";
-    reminders.forEach(displayReminder);
+    if (reminderList){
+        reminderList.innerHTML = "";
+        reminders.forEach(displayReminder);
+    }
 });
