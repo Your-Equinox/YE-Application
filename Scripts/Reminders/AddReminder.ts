@@ -48,7 +48,7 @@ async function init() {
             title: `🧠 Review: ${n.title}`,
             completed: false,
             createdAt: new Date(),
-            remindAt: new Date(n.nextReviewDate),
+            remindAt: new Date(n.nextReviewDate!),
             reminderSent: false,
             notifyOffset: 0,
             colorClass: "custom-color",

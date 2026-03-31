@@ -8,7 +8,7 @@ export type Note = {
     title: string;
     body: string;
     lastEdited: number;
-    nextReviewDate: number;
+    nextReviewDate: number | null;
     needsReview: boolean;
     categoryID: string | null;
     TestQuestions?: { q: string; a: string }[];
@@ -48,7 +48,7 @@ export async function saveNote(note: Note): Promise<void> {
         title: note.title,
         body: note.body,
         last_edited: note.lastEdited,
-        next_review_date: note.nextReviewDate,
+        next_review_date: note.nextReviewDate ?? null,
         needs_review: note.needsReview,
         category_id: note.categoryID,
         test_questions: note.TestQuestions ?? null,
