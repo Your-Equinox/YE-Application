@@ -1,6 +1,7 @@
 import { saveTask } from "../Supabase/TaskService";
 import { loadReminders, saveReminder } from "../Supabase/ReminderService";
 import type { Reminder } from "../Reminders/AddReminder";
+import {loadNotes} from "../Supabase/NoteService";
 
 declare const dayjs: any;
 
@@ -62,9 +63,31 @@ async function syncReminders() {
     state.events.push(...reminderEvents);
 }
 
+// Syncing Notes to Calendar
+async function syncReviews(){
+    const notes = await loadNotes();
+    const reviewEvents: CalendarEvent[] = notes
+        .filter((n: any) => n.nextReviewDate && !n.needsReview && n.nextReviewDate > Date.now())
+        .map((n: any) => {
+            const start = dayjs(n.nextReviewDate);
+            return {
+                id: `review-${n.id}`,
+                title: `🧠 Review: ${n.title}`,
+                start: start.format("YYYY-MM-DD HH:mm"),
+                end: start.add(30, "minute").format("YYYY-MM-DD HH:mm"), // Default 30 min block
+                color: "bg-purple-500",
+                rawColor: "#a855f7", // Using purple to match your memory check UI
+            };
+        });
+
+    state.events = state.events.filter(e => !e.title.startsWith("🧠 Review:"));
+    state.events.push(...reviewEvents);
+}
+
 // Init: load reminders then render
 async function init() {
     await syncReminders();
+    await syncReviews()
     renderApp();
 }
 
@@ -603,3 +626,4 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
     state.currentDate = dayjs();
     renderApp();
 };
+

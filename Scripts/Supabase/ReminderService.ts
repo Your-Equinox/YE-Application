@@ -1,6 +1,10 @@
 import { supabase } from "./supabaseClient";
 import type { Reminder } from "../Reminders/AddReminder";
 
+export async function saveRemidner(reminder:Reminder): Promise<void> {
+    if (reminder.id.startsWith("review-")) return;
+}
+
 export async function loadReminders(): Promise<Reminder[]> {
     const { data, error } = await supabase
         .from("reminders")
@@ -45,6 +49,9 @@ export async function saveReminder(reminder: Reminder): Promise<void> {
 }
 
 export async function deleteReminder(id: string): Promise<void> {
+
+    if (id.startsWith("review-")) return;
+
     const { error } = await supabase.from("reminders").delete().eq("id", id);
     if (error) console.error("Failed to delete reminder:", error.message);
 }

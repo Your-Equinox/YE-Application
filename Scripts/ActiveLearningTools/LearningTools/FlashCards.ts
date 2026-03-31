@@ -5,7 +5,7 @@ import { loadNotes, saveNote } from "../../Supabase/NoteService";
 const intentionInputMode = document.getElementById("intention-input-mode")!;
 const intentionDisplayMode = document.getElementById("intention-display-mode")!;
 const intentionInput = document.querySelector<HTMLInputElement>("#daily-intention-input")!;
-const intentionText = document.getElementById("intention-text")!;
+const intentionText     = document.getElementById("intention-text")!;
 const saveIntentionBtn = document.getElementById("save-intention-btn")!;
 const editIntentionBtn = document.getElementById("edit-intention-btn")!;
 
@@ -66,6 +66,20 @@ let currentNote: any = null;
 
 export async function initialMemoryCheck() {
     const allNotes = await loadNotes();
+    const now = Date.now();
+    let requiresSave = true;
+
+    for (const n of allNotes){
+        if (!n.needsReview && n.nextReviewDate && now >= n.nextReviewDate) {
+            n.needsReview = true;
+            await saveNote(n);
+            requiresSave = true;
+        }
+    }
+
+    if (requiresSave){
+        await updateDashboardUI();
+    }
 
     dueNotes = allNotes.filter((n: any) =>
         n.needsReview === true &&
@@ -112,18 +126,28 @@ async function handleConfidenceRating(e: Event) {
     const rating = btn.dataset.rating;
 
     const ONE_DAY = 24 * 60 * 60 * 1000;
-    let daysToAdd = 1;
-    if (rating === "medium") daysToAdd = 3;
-    if (rating === "high") daysToAdd = 7;
 
-    currentNote.nextReviewDate = Date.now() + (daysToAdd * ONE_DAY);
-    currentNote.needsReview = false;
+    // Check if the user wants to dismiss this card permanently
+    if (rating === "not-required") {
+        currentNote.nextReviewDate = null; // Removes the date so calendar/reminders ignore it
+        currentNote.needsReview = false;
+    } else {
+        // Otherwise, calculate the future date
+        let daysToAdd = 1;
+        if (rating === "medium") daysToAdd = 3;
+        if (rating === "high") daysToAdd = 7;
+
+        currentNote.nextReviewDate = Date.now() + (daysToAdd * ONE_DAY);
+        currentNote.needsReview = false;
+    }
 
     await saveNote(currentNote);
     await updateDashboardUI();
 
+    // Remove the note from the current queue
     dueNotes = dueNotes.filter((n: any) => n.id !== currentNote.id);
 
+    // Check if the session is done
     if (dueNotes.length === 0) {
         recallContainer.classList.add("hidden");
         noNoteMessage.classList.remove("hidden");
