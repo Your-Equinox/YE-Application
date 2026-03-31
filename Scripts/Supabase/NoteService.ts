@@ -3,6 +3,13 @@
 */
 import { supabase } from "./supabaseClient";
 
+export type QuizQuestion = {
+    type?: "reveal" | "tf" | "mc";
+    q: string;
+    a: string;
+    options?: string[];
+};
+
 export type Note = {
     id: string;
     title: string;
@@ -11,7 +18,7 @@ export type Note = {
     nextReviewDate: number | null;
     needsReview: boolean;
     categoryID: string | null;
-    TestQuestions?: { q: string; a: string }[];
+    TestQuestions?: QuizQuestion[];
 };
 
 export async function loadNotes(): Promise<Note[]> {
