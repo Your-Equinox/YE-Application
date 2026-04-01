@@ -386,3 +386,28 @@ if (formatImageBtn && imageUploadInput) {
         }
     });
 }
+
+// Dark mode accessibility
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+
+loadTheme();
+
+
+window.addEventListener('storage', function(e) {
+    if (e.key === 'theme') {
+        if (e.newValue === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+});

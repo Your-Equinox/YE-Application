@@ -98,33 +98,6 @@
     </form>
   </div>
 </aside>
-
-<script>
-
-  function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-  }
-
-
-  loadTheme();
-
-
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'theme') {
-      if (e.newValue === 'dark') {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-      }
-    }
-  });
-</script>
 <script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
 </body>

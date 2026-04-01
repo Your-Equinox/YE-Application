@@ -157,3 +157,40 @@ if (exportBtn) {
         URL.revokeObjectURL(url);
     });
 }
+
+// Darkmode accessibilty
+const themeToggle = document.getElementById('theme-toggle-btn');
+const sunIcon = document.getElementById('sun-icon');
+const moonIcon = document.getElementById('moon-icon');
+
+function applyTheme(isDark: boolean) {
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (moonIcon) moonIcon.style.display = 'block';
+        localStorage.setItem('theme', 'dark');
+        console.log('Theme saved: dark');
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (moonIcon) moonIcon.style.display = 'none';
+        localStorage.setItem('theme', 'light');
+        console.log('Theme saved: light');
+    }
+}
+
+const savedTheme = localStorage.getItem('theme');
+console.log('Loaded saved theme:', savedTheme);
+
+if (savedTheme === 'dark') {
+    applyTheme(true);
+} else {
+    applyTheme(false);
+}
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+        const isDark = document.body.classList.contains('dark-mode');
+        applyTheme(!isDark);
+    });
+}
