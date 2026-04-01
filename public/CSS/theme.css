@@ -120,3 +120,64 @@ button, a {
 .dark-mode .space-y-12 {
     background-color: transparent !important;
 }
+
+/* 1. Category Folder Styling */
+.rotate-90 { transform: rotate(90deg); }
+.transition-transform { transition: transform 0.2s ease-in-out; }
+
+/* 2. Tiptap Table Styling */
+.prose table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    margin: 2rem 0;
+    border: 1px solid #e2e8f0;
+}
+.prose table td, .prose table th {
+    min-width: 1em;
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    vertical-align: top;
+    box-sizing: border-box;
+    position: relative;
+}
+.prose table th {
+    font-weight: bold;
+    background-color: #f8fafc;
+    text-align: left;
+}
+
+/* 3. Code Styling (Inline & Block) */
+.prose :not(pre) > code {
+    background-color: #f1f5f9;
+    color: #ef4444;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-family: ui-monospace, monospace;
+}
+.prose pre {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+}
+.prose pre code {
+    background: none;
+    color: inherit;
+    font-size: 0.875rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* 4. Editor Surface & Bubble Menu */
+.ProseMirror { outline: none !important; min-height: 600px; }
+
+#table-bubble-menu {
+    display: flex;
+    /* Tiptap handles visibility via the BubbleMenu extension */
+}
+
+/* Sidebar Scrollbar Hide */
+#sidebar-note-list::-webkit-scrollbar { display: none; }
+#sidebar-note-list { -ms-overflow-style: none; scrollbar-width: none; }
