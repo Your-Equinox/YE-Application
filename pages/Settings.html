@@ -5,171 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings - Your Equinox</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-
-    :root {
-      --bg-primary: #f3f4f6;
-      --bg-secondary: #ffffff;
-      --text-primary: #1f2937;
-      --text-secondary: #4b5563;
-      --border-color: #e5e7eb;
-      --sidebar-bg: #ffffff;
-      --accent-color: #3b82f6;
-      --accent-hover: #2563eb;
-      --card-bg: #ffffff;
-      --hover-bg: #f3f4f6;
-    }
-
-    .dark-mode {
-      --bg-primary: #111827;
-      --bg-secondary: #1f2937;
-      --text-primary: #f9fafb;
-      --text-secondary: #9ca3af;
-      --border-color: #374151;
-      --sidebar-bg: #1f2937;
-      --accent-color: #60a5fa;
-      --accent-hover: #3b82f6;
-      --card-bg: #374151;
-      --hover-bg: #4b5563;
-    }
-
-
-
-    body {
-      background-color: var(--bg-primary) !important;
-      color: var(--text-primary) !important;
-      transition: background-color 0.3s ease, color 0.2s ease;
-    }
-
-
-    aside {
-      background-color: var(--sidebar-bg) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    aside h1 {
-      color: var(--text-primary) !important;
-    }
-
-
-    nav button {
-      color: var(--text-secondary) !important;
-    }
-
-    nav button.bg-gray-100 {
-      background-color: var(--hover-bg) !important;
-      color: var(--text-primary) !important;
-    }
-
-    nav button:hover:not(.bg-gray-100) {
-      background-color: var(--hover-bg) !important;
-    }
-
-
-    section {
-      background-color: var(--card-bg) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    section h2 {
-      color: var(--text-primary) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    section p {
-      color: var(--text-secondary) !important;
-    }
-
-
-    .text-gray-900, .text-gray-800, .text-gray-700, .font-bold {
-      color: var(--text-primary) !important;
-    }
-
-    .text-gray-600, .text-gray-500, .text-sm, label {
-      color: var(--text-secondary) !important;
-    }
-
-
-    input, select {
-      background-color: var(--bg-secondary) !important;
-      color: var(--text-primary) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    input::placeholder {
-      color: var(--text-secondary) !important;
-    }
-
-
-    a.border-gray-300 {
-      color: var(--text-primary) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    a.border-gray-300:hover {
-      background-color: var(--hover-bg) !important;
-    }
-
-
-    .bg-white.border {
-      background-color: var(--bg-secondary) !important;
-      border-color: var(--border-color) !important;
-      color: var(--text-primary) !important;
-    }
-
-    .bg-white.border:hover {
-      background-color: var(--hover-bg) !important;
-    }
-
-
-    .theme-toggle-btn {
-      background: var(--border-color);
-      border: 1px solid var(--border-color);
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-primary);
-      transition: all 0.2s;
-    }
-    .theme-toggle-btn:hover {
-      transform: scale(1.05);
-      background: var(--hover-bg);
-    }
-
-
-    *:focus-visible {
-      outline: 3px solid var(--accent-color);
-      outline-offset: 2px;
-    }
-
-
-    button, a, input, select {
-      transition: all 0.2s ease;
-    }
-
-
-    dialog {
-      background-color: var(--card-bg);
-      color: var(--text-primary);
-      border-color: var(--border-color);
-    }
-
-    .text-red-600 {
-      color: #ef4444 !important;
-    }
-
-
-    .dark-mode .flex-1,
-    .dark-mode .overflow-y-auto,
-    .dark-mode .max-w-3xl,
-    .dark-mode .space-y-12 {
-      background-color: transparent !important;
-    }
-  </style>
+  <link rel="stylesheet" href="/CSS/theme.css">
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 h-screen flex overflow-hidden">
 
@@ -223,8 +59,8 @@
         </svg>
       </button>
 
-  <div class="space-y-4">
-    <div>
+      <div class="space-y-4 mt-6">
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" for="display-name">Display Name</label>
           <div class="flex gap-2">
             <input type="text" id="display-name" placeholder="Your Name" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
@@ -234,9 +70,8 @@
           </div>
           <p id="name-status" class="text-green-600 text-sm mt-2 hidden">✓ Name saved successfully.</p>
         </div>
-
-          <p id="theme-status" class="text-green-600 text-sm mt-2 hidden">✓ Theme preference saved.</p>
-        </div>
+        <p id="theme-status" class="text-green-600 text-sm mt-2 hidden">✓ Theme preference saved.</p>
+      </div>
     </section>
 
     <section id="notifications" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
@@ -313,13 +148,12 @@
     <button id="confirm-purge-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Delete Everything</button>
   </div>
 </dialog>
-<script>
 
+<script>
   const themeToggle = document.getElementById('theme-toggle-btn');
   const sunIcon = document.getElementById('sun-icon');
   const moonIcon = document.getElementById('moon-icon');
 
-  // Function to apply theme and save to localStorage
   function applyTheme(isDark) {
     if (isDark) {
       document.body.classList.add('dark-mode');
@@ -336,7 +170,6 @@
     }
   }
 
-
   const savedTheme = localStorage.getItem('theme');
   console.log('Loaded saved theme:', savedTheme);
 
@@ -345,7 +178,6 @@
   } else {
     applyTheme(false);
   }
-
 
   if (themeToggle) {
     themeToggle.addEventListener('click', function() {

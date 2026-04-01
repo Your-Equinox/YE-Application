@@ -1,0 +1,121 @@
+/* Theme Variables */
+:root {
+    --bg-primary: #f3f4f6;
+    --bg-secondary: #ffffff;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --border-color: #e5e7eb;
+    --sidebar-bg: #ffffff;
+    --accent-color: #3b82f6;
+    --accent-hover: #2563eb;
+    --card-bg: #ffffff;
+    --hover-bg: #f3f4f6;
+}
+
+.dark-mode {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --border-color: #374151;
+    --sidebar-bg: #1f2937;
+    --accent-color: #60a5fa;
+    --accent-hover: #3b82f6;
+    --card-bg: #374151;
+    --hover-bg: #4b5563;
+}
+
+/* Base Body */
+body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    transition: background-color 0.3s ease, color 0.2s ease;
+}
+
+/* Backgrounds & Borders */
+.bg-gray-100, .bg-white, .bg-gray-50, section, aside, fieldset, .rounded.shadow, dialog {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+aside h1, section h2 {
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Text Colors */
+.text-slate-800, .text-gray-900, .text-gray-800, .text-gray-700, .font-bold {
+    color: var(--text-primary) !important;
+}
+
+.text-gray-600, .text-gray-500, .text-gray-400, .text-sm, label, nav button, section p {
+    color: var(--text-secondary) !important;
+}
+
+.text-red-600 {
+    color: #ef4444 !important;
+}
+
+/* Inputs, Selects, and Textareas */
+input, select, textarea {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+    transition: all 0.2s ease;
+}
+
+input::placeholder {
+    color: var(--text-secondary) !important;
+}
+
+/* Interactive Elements & Hovers */
+nav button.bg-gray-100 {
+    background-color: var(--hover-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+nav button:hover:not(.bg-gray-100), a.border-gray-300:hover, .bg-white.border:hover {
+    background-color: var(--hover-bg) !important;
+}
+
+a.border-gray-300, .bg-white.border {
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+*:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+button, a {
+    transition: all 0.2s ease;
+}
+
+/* Settings Theme Toggle Button */
+.theme-toggle-btn {
+    background: var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.05);
+    background: var(--hover-bg);
+}
+
+/* Specific Dark Mode Layout Exceptions */
+.dark-mode .flex-1,
+.dark-mode .overflow-y-auto,
+.dark-mode .max-w-3xl,
+.dark-mode .space-y-12 {
+    background-color: transparent !important;
+}
