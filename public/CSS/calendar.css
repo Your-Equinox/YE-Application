@@ -202,9 +202,8 @@ body {
 
 /* =========================================
    DARK MODE OVERRIDES
-   ========================================= /
+   ========================================= */
 
-/ 1. Deep Dark Backgrounds /
 .dark-mode .view-container,
 .dark-mode .time-grid-container,
 .dark-mode .time-body,
@@ -214,13 +213,11 @@ body {
     background-color: #111827 !important; / Deep slate/black background /
 }
 
-/ Also catch the Tailwind classes injected by the script /
 .dark-mode .bg-white,
 .dark-mode .bg-gray-50 {
     background-color: #111827 !important;
 }
 
-/ 2. Stark White Lines for Borders /
 .dark-mode .month-row,
 .dark-mode .month-cell,
 .dark-mode .time-header,
@@ -230,19 +227,16 @@ body {
     border-color: rgba(255, 255, 255, 0.6) !important; / Highly visible white /
 }
 
-/ 3. Force the dynamically injected script lines to be white /
 .dark-mode .day-column > div[style="border-top"],
 .dark-mode .time-axis-label[style="border-top"] {
     border-top-color: rgba(255, 255, 255, 0.6) !important;
     opacity: 1 !important;
 }
 
-/ 4. White text for the time labels /
 .dark-mode .time-axis-label {
     color: #ffffff !important;
 }
 
-/ 5. White horizontal repeating grid lines /
 .dark-mode .day-column {
     background: repeating-linear-gradient(
             to bottom,
@@ -252,7 +246,6 @@ body {
     ) !important;
 }
 
-/ Make the drag-and-drop ghost look better on dark backgrounds */
 .dark-mode .ghost-event {
     background-color: rgba(96, 165, 250, 0.2);
     border-color: rgba(96, 165, 250, 1);
