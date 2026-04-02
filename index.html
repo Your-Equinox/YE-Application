@@ -56,19 +56,19 @@
     <div class="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 w-full border-t border-white/20 pt-8">
       <div class="bg-black/20 backdrop-blur-md border border-white/20 p-5 rounded-2xl text-center shadow-xl hover:-translate-y-1 transition-transform">
         <p class="text-4xl font-black mb-1 drop-shadow-lg" id="stat-task-day">0</p>
-        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Tasks Done Today</p>
+        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Done Today</p>
       </div>
       <div class="bg-black/20 backdrop-blur-md border border-white/20 p-5 rounded-2xl text-center shadow-xl hover:-translate-y-1 transition-transform">
         <p class="text-4xl font-black mb-1 drop-shadow-lg" id="stat-task-week">0</p>
-        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Tasks Done This Week</p>
+        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Done This Week</p>
       </div>
       <div class="bg-black/20 backdrop-blur-md border border-white/20 p-5 rounded-2xl text-center shadow-xl hover:-translate-y-1 transition-transform">
         <p class="text-4xl font-black mb-1 drop-shadow-lg" id="stat-task-month">0</p>
-        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Tasks Done This Month</p>
+        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Done This Month</p>
       </div>
-      <div class="bg-white/20 backdrop-blur-md border border-white/40 p-5 rounded-2xl text-center shadow-2xl hover:-translate-y-1 transition-transform">
+      <div class="bg-black/20 backdrop-blur-md border border-white/20 p-5 rounded-2xl text-center shadow-xl hover:-translate-y-1 transition-transform">
         <p class="text-4xl font-black mb-1 drop-shadow-lg" id="stat-review">0</p>
-        <p class="text-xs font-bold uppercase tracking-widest text-white/90">Reviews To Complete</p>
+        <p class="text-xs font-bold uppercase tracking-widest text-white/80">Reviews Due</p>
       </div>
     </div>
   </header>
@@ -77,8 +77,10 @@
 
     <div class="lg:col-span-7 flex flex-col gap-8">
 
-      <section class="flare-card card-day">
-        <div class="flex justify-between items-center mb-6">
+      <section class="flare-card card-day overflow-hidden group">
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-700 pointer-events-none"></div>
+
+        <div class="flex justify-between items-center mb-6 relative z-10">
           <h2 class="text-2xl font-bold flex items-center gap-3">
             <span class="bg-gradient-to-br from-amber-400 to-orange-500 text-transparent bg-clip-text">☼</span>
             Action Core
@@ -89,16 +91,18 @@
           </div>
         </div>
 
-        <form id="task-form" class="flex gap-3 mb-6 relative group">
+        <form id="task-form" class="flex gap-3 mb-6 relative z-10 group/form">
           <input type="text" id="task-title" placeholder="New objective..." class="flare-input w-full px-5 py-3.5 pr-16" />
-          <button type="submit" id="add-task-btn" class="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 rounded-xl font-bold shadow-md hover:shadow-lg transition-all transform group-hover:scale-105">+</button>
+          <button type="submit" id="add-task-btn" class="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 rounded-xl font-bold shadow-md hover:shadow-lg transition-all transform group-hover/form:scale-105">+</button>
         </form>
 
-        <ul id="task-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2 font-medium text-slate-700 dark:text-slate-300"></ul>
+        <ul id="task-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2 font-medium text-slate-700 dark:text-slate-300 relative z-10"></ul>
       </section>
 
-      <section class="flare-card card-twilight">
-        <div class="flex justify-between items-center mb-6">
+      <section class="flare-card card-twilight overflow-hidden group">
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl group-hover:bg-pink-500/20 transition-all duration-700 pointer-events-none"></div>
+
+        <div class="flex justify-between items-center mb-6 relative z-10">
           <h2 class="text-2xl font-bold flex items-center gap-3">
             <span class="bg-gradient-to-br from-rose-400 to-pink-500 text-transparent bg-clip-text">❖</span>
             Timeline Alerts
@@ -106,7 +110,7 @@
           <button type="button" id="delete-reminders" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 transition shadow-sm">Clear Past Due</button>
         </div>
 
-        <form id="reminder-form" class="flex flex-wrap gap-3 mb-6">
+        <form id="reminder-form" class="flex flex-wrap gap-3 mb-6 relative z-10">
           <input type="text" id="reminder-title" placeholder="Event label..." class="flare-input flex-1 min-w-[200px] px-5 py-3.5" required />
           <input type="datetime-local" id="reminder-time" class="flare-input px-5 py-3.5 w-full sm:w-auto" required />
           <div class="flex gap-3">
@@ -115,7 +119,7 @@
           </div>
         </form>
 
-        <ul id="reminder-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2 font-medium text-slate-700 dark:text-slate-300"></ul>
+        <ul id="reminder-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2 font-medium text-slate-700 dark:text-slate-300 relative z-10"></ul>
       </section>
 
     </div>
@@ -123,7 +127,7 @@
     <div class="lg:col-span-5 flex flex-col gap-8">
 
       <section class="flare-card card-night overflow-hidden group h-full">
-        <div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700"></div>
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700 pointer-events-none"></div>
 
         <div class="flex items-center gap-3 mb-6 relative z-10">
           <span class="bg-gradient-to-br from-indigo-500 to-purple-600 text-transparent bg-clip-text text-2xl">☾</span>
@@ -160,12 +164,15 @@
     </div>
 
     <div class="lg:col-span-12">
-      <section class="flare-card card-calendar p-6 flex flex-col min-h-[500px]">
+      <section class="flare-card card-calendar p-6 flex flex-col min-h-[500px] overflow-hidden group">
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all duration-700 pointer-events-none"></div>
+
         <div class="flex items-center gap-3 mb-6 relative z-10 border-b border-slate-200 dark:border-slate-800 pb-4">
           <span class="bg-gradient-to-br from-blue-400 to-cyan-500 text-transparent bg-clip-text text-2xl">📅</span>
           <h2 class="text-2xl font-bold">Timeline Command</h2>
         </div>
-        <div id="app" class="w-full h-full flex-1 rounded-xl overflow-hidden"></div>
+
+        <div id="app" class="w-full h-full flex-1 rounded-xl relative z-10"></div>
       </section>
     </div>
 
@@ -198,12 +205,10 @@
   <form id="calendar-reminder-form" class="flex flex-col gap-5">
     <input type="text" id="cal-reminder-title" placeholder="Event details..." class="flare-input p-4 text-base w-full font-medium" required />
     <input type="datetime-local" id="cal-reminder-time" class="flare-input p-4 text-base w-full font-medium" required />
-
     <div class="flex items-center justify-between p-4 flare-input w-full">
       <label for="cal-reminder-color" class="font-bold text-sm text-slate-500">Color Label</label>
       <input type="color" id="cal-reminder-color" class="cursor-pointer h-8 w-10 border-none p-0 rounded-lg bg-transparent shadow-sm" value="#8b5cf6" />
     </div>
-
     <div class="flex justify-end gap-3 mt-4">
       <button type="button" id="cal-close-modal" class="px-5 py-3 text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Cancel</button>
       <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">Save Event</button>
