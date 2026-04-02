@@ -3,316 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Equinox - Pro Editor</title>
-  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-  <style>
+  <title>Your Equinox - Notes</title>
 
-    :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f9fafb;
-      --text-primary: #1f2937;
-      --text-secondary: #4b5563;
-      --border-color: #e5e7eb;
-      --accent-color: #3b82f6;
-      --sidebar-bg: #f9fafb;
-      --card-bg: #ffffff;
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+  <style>
+    body {
+      background-color: #f9fafb;
     }
 
     .dark-mode {
-      --bg-primary: #111827;
-      --bg-secondary: #1f2937;
-      --text-primary: #f9fafb;
-      --text-secondary: #9ca3af;
-      --border-color: #374151;
-      --accent-color: #60a5fa;
-      --sidebar-bg: #1f2937;
-      --card-bg: #374151;
+      background-color: #111827;
+      color: white;
     }
 
-    body {
-      background-color: var(--bg-primary) !important;
-      color: var(--text-primary) !important;
-      transition: all 0.3s ease;
+    .editor-container {
+      max-width: 800px;
+      margin: auto;
     }
 
-    /* Sidebar */
-    aside.bg-gray-50 {
-      background-color: var(--sidebar-bg) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    /* Main content */
-    main.bg-white {
-      background-color: var(--bg-primary) !important;
-    }
-
-    /* Cards and containers */
-    .bg-white, .bg-gray-50, .bg-gray-100 {
-      background-color: var(--bg-secondary) !important;
-    }
-
-    /* Text colors */
-    .text-slate-800, .text-gray-800, .text-gray-700, .text-gray-900 {
-      color: var(--text-primary) !important;
-    }
-
-    .text-gray-600, .text-gray-500, .text-gray-400 {
-      color: var(--text-secondary) !important;
-    }
-
-    /* Borders */
-    .border-gray-200, .border-gray-300, .border-gray-100 {
-      border-color: var(--border-color) !important;
-    }
-
-    /* Input fields */
-    input, textarea, select {
-      background-color: var(--bg-secondary) !important;
-      color: var(--text-primary) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    input::placeholder, textarea::placeholder {
-      color: var(--text-secondary) !important;
-    }
-
-    /* Buttons */
-    .bg-gray-100, .bg-gray-50 {
-      background-color: var(--bg-secondary) !important;
-    }
-
-    /* Editor specific */
     .ProseMirror {
-      color: var(--text-primary) !important;
-      background-color: transparent !important;
+      outline: none;
+      min-height: 500px;
     }
 
-    .prose table {
-      border-color: var(--border-color) !important;
+    .sidebar-scroll::-webkit-scrollbar {
+      display: none;
     }
-    .prose table td, .prose table th {
-      border-color: var(--border-color) !important;
-      background-color: var(--card-bg) !important;
-      color: var(--text-primary) !important;
-    }
-    .prose table th {
-      background-color: var(--bg-secondary) !important;
-    }
-
-    /* Code blocks */
-    .prose :not(pre) > code {
-      background-color: var(--bg-secondary) !important;
-    }
-    .prose pre {
-      background: var(--bg-secondary) !important;
-      color: var(--text-primary) !important;
-    }
-
-
-    /* Format toolbar */
-    #format-toolbar {
-      background-color: var(--bg-secondary) !important;
-      border-color: var(--border-color) !important;
-    }
-    #format-toolbar button {
-      color: var(--text-primary) !important;
-    }
-    #format-toolbar button:hover {
-      background-color: var(--border-color) !important;
-    }
-
-    /* Table bubble menu */
-    #table-bubble-menu {
-      background-color: var(--card-bg) !important;
-      border-color: var(--border-color) !important;
-    }
-
-    /* Empty state */
-    #empty-state {
-      color: var(--text-secondary) !important;
-    }
-
-    /* Transitions */
-    button, a, input, select {
-      transition: all 0.2s ease;
-    }
-  </style>
-  <style>
-    /* 1. Category Folder Styling */
-    .rotate-90 { transform: rotate(90deg); }
-    .transition-transform { transition: transform 0.2s ease-in-out; }
-
-    /* 2. Tiptap Table Styling */
-    .prose table {
-      border-collapse: collapse;
-      table-layout: fixed;
-      width: 100%;
-      margin: 2rem 0;
-      border: 1px solid #e2e8f0;
-    }
-    .prose table td, .prose table th {
-      min-width: 1em;
-      border: 1px solid #e2e8f0;
-      padding: 8px 12px;
-      vertical-align: top;
-      box-sizing: border-box;
-      position: relative;
-    }
-    .prose table th {
-      font-weight: bold;
-      background-color: #f8fafc;
-      text-align: left;
-    }
-
-    /* 3. Code Styling (Inline & Block) */
-    .prose :not(pre) > code {
-      background-color: #f1f5f9;
-      color: #ef4444;
-      padding: 0.2rem 0.4rem;
-      border-radius: 0.25rem;
-      font-family: ui-monospace, monospace;
-    }
-    .prose pre {
-      background: #1e293b;
-      color: #f8fafc;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin: 1.5rem 0;
-      overflow-x: auto;
-    }
-    .prose pre code {
-      background: none;
-      color: inherit;
-      font-size: 0.875rem;
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    }
-
-    /* 4. Editor Surface & Bubble Menu */
-    .ProseMirror { outline: none !important; min-height: 600px; }
-
-    #table-bubble-menu {
-      display: flex;
-      /* Tiptap handles visibility via the BubbleMenu extension */
-    }
-
-    /* Sidebar Scrollbar Hide */
-    #sidebar-note-list::-webkit-scrollbar { display: none; }
-    #sidebar-note-list { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-white font-sans text-slate-800 h-screen flex overflow-hidden">
 
-<aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col h-full shrink-0">
-  <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-    <a href="../index.html" class="text-sm font-medium text-gray-500 hover:text-blue-600 transition">&larr; Dashboard</a>
-    <div class="flex items-center gap-1">
-      <button id="new-category-btn" class="text-xl font-light text-gray-400 hover:text-blue-600 transition px-2" title="New Category">📁</button>
-      <button id="new-note-btn" class="text-2xl font-light text-gray-400 hover:text-gray-800 transition px-2" title="New Note">+</button>
-    </div>
+<body class="font-sans flex h-screen overflow-hidden">
+
+<!-- Sidebar -->
+<aside class="w-64 bg-white border-r flex flex-col">
+
+  <div class="p-5 border-b flex justify-between items-center">
+    <a href="../index.html" class="text-sm text-gray-500 hover:text-blue-500">← Dashboard</a>
+    <button id="new-note-btn" class="text-xl font-bold text-blue-500 hover:scale-110 transition">+</button>
   </div>
 
-  <div id="sidebar-note-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-  </div>
+  <div id="sidebar-note-list" class="flex-1 overflow-y-auto p-3 space-y-2 sidebar-scroll"></div>
 
-  <div class="p-4 border-t border-gray-200 bg-gray-50">
-    <input type="file" id="import-file" class="hidden" accept=".json,.docx,.pdf,.txt,.md">
-    <button id="importDocument-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition shadow-sm">
-      <span>📥</span> Import Notes
+  <div class="p-4 border-t">
+    <button id="importDocument-btn" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+      Import Notes
     </button>
   </div>
+
 </aside>
 
-<main class="flex-1 flex flex-col bg-white overflow-y-auto relative min-w-0">
+<!-- Main -->
+<main class="flex-1 flex flex-col relative">
 
-  <div id="empty-state" class="absolute inset-0 flex items-center justify-center text-gray-400 text-lg pointer-events-none">
-    Select a note or create a new one to begin.
+  <!-- Top Bar -->
+  <div class="flex justify-between items-center px-8 py-4 border-b bg-white sticky top-0 z-10">
+
+    <div class="flex gap-3">
+      <button id="toggle-flashcard-btn" class="bg-gray-100 px-3 py-1 rounded-lg text-sm hover:bg-gray-200">🧠 Flashcards</button>
+      <button id="generate-quiz-btn" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-sm hover:bg-blue-200">🤖 Quiz</button>
+      <button id="ai-assist-btn" class="bg-purple-100 text-purple-600 px-3 py-1 rounded-lg text-sm hover:bg-purple-200">✨ AI</button>
+    </div>
+
+    <button id="delete-note-btn" class="text-red-500 text-sm hover:underline">Delete</button>
+
   </div>
 
-  <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 md:p-12 hidden flex-col min-h-full">
+  <!-- Empty State -->
+  <div id="empty-state" class="absolute inset-0 flex items-center justify-center text-gray-400 text-lg">
+    Select or create a note to begin
+  </div>
 
-    <div class="flex justify-between items-center mb-8">
-      <div class="flex gap-2">
-        <button id="toggle-flashcard-btn" class="px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">🧠 Flashcards</button>
-        <button id="generate-quiz-btn" class="px-3 py-1.5 rounded-md text-sm font-medium transition bg-blue-100 text-blue-700 hover:bg-blue-200">🤖 Generate Quiz</button>
-        <button id="ai-assist-btn" class="hidden px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200">✨ AI Assistant</button>
-      </div>
-      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition">Delete Note</button>
+  <!-- Editor -->
+  <div id="editor-container" class="editor-container p-8 hidden flex-col w-full">
+
+    <input
+            type="text"
+            id="note-title"
+            placeholder="Untitled"
+            class="text-4xl font-bold mb-6 outline-none bg-transparent"
+    />
+
+    <!-- Toolbar -->
+    <div id="format-toolbar" class="flex gap-2 mb-6 bg-white border p-2 rounded-xl shadow-sm sticky top-20 z-10">
+
+      <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1 hover:bg-gray-100 rounded">H1</button>
+      <button onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="px-3 py-1 hover:bg-gray-100 rounded">H2</button>
+
+      <div class="w-px bg-gray-300 mx-2"></div>
+
+      <button onclick="editor.chain().focus().toggleBold().run()" class="px-3 py-1 font-bold hover:bg-gray-100 rounded">B</button>
+      <button onclick="editor.chain().focus().toggleItalic().run()" class="px-3 py-1 italic hover:bg-gray-100 rounded">I</button>
+
+      <div class="w-px bg-gray-300 mx-2"></div>
+
+      <button onclick="editor.chain().focus().toggleCodeBlock().run()" class="px-3 py-1 hover:bg-gray-100 rounded">Code</button>
+      <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2 }).run()" class="px-3 py-1 hover:bg-gray-100 rounded">Table</button>
+
     </div>
 
-    <input type="text" id="note-title" class="text-5xl font-bold w-full outline-none mb-6 placeholder-gray-100 text-gray-800 bg-transparent" placeholder="Untitled">
-
-    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 mb-6 bg-gray-50 border border-gray-200 p-1.5 rounded-lg w-fit sticky top-4 z-20 shadow-sm">
-      <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1 text-sm font-bold text-gray-600 hover:bg-white rounded transition">H1</button>
-      <button onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="px-3 py-1 text-sm font-semibold text-gray-600 hover:bg-white rounded transition">H2</button>
-
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-
-      <button onclick="editor.chain().focus().toggleBold().run()" class="px-3 py-1 text-sm font-bold text-gray-600 hover:bg-white rounded transition">B</button>
-      <button onclick="editor.chain().focus().toggleItalic().run()" class="px-3 py-1 text-sm italic font-serif text-gray-600 hover:bg-white rounded transition">I</button>
-
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-
-      <button onclick="editor.chain().focus().toggleCodeBlock().run()" class="px-3 py-1 text-sm font-mono text-gray-600 hover:bg-white rounded transition">Code</button>
-
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-
-      <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()" class="px-3 py-1 text-sm text-gray-600 hover:bg-white rounded transition">📊 Table</button>
-    </div>
-
-    <div id="table-bubble-menu" class="flex items-center gap-1 bg-white border border-gray-200 shadow-xl p-1.5 rounded-lg z-50">
-      <button onclick="editor.chain().focus().addRowAfter().run()" class="px-2 py-1 text-[11px] font-bold text-green-600 hover:bg-green-50 rounded transition">+ Row</button>
-      <button onclick="editor.chain().focus().addColumnAfter().run()" class="px-2 py-1 text-[11px] font-bold text-blue-600 hover:bg-blue-50 rounded transition">+ Col</button>
-      <div class="w-px h-4 bg-gray-200 mx-1"></div>
-      <button onclick="editor.chain().focus().deleteRow().run()" class="px-2 py-1 text-[11px] text-red-500 hover:bg-red-50 rounded transition">Del Row</button>
-      <button onclick="editor.chain().focus().deleteColumn().run()" class="px-2 py-1 text-[11px] text-red-500 hover:bg-red-50 rounded transition">Del Col</button>
-      <button onclick="editor.chain().focus().deleteTable().run()" class="px-2 py-1 text-[11px] text-gray-400 hover:text-red-600 transition">🗑️</button>
-    </div>
-
-    <div id="tiptap-editor" class="w-full flex-1 prose prose-slate prose-blue max-w-none bg-transparent pb-24"></div>
+    <!-- Editor -->
+    <div id="tiptap-editor" class="prose max-w-none"></div>
 
   </div>
+
 </main>
 
-<aside id="ai-sidebar" class="fixed top-0 right-0 w-80 md:w-96 h-full bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col z-50">
-  <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-    <h3 class="font-bold text-gray-800 flex items-center gap-2"><span>✨</span> AI Assistant</h3>
-    <button id="close-ai-btn" class="text-gray-400 hover:text-gray-700 text-2xl leading-none transition">&times;</button>
+<!-- AI Sidebar -->
+<aside id="ai-sidebar" class="fixed top-0 right-0 w-80 h-full bg-white border-l shadow-lg transform translate-x-full transition-transform duration-300 flex flex-col">
+
+  <div class="p-4 border-b flex justify-between">
+    <h3 class="font-bold">AI Assistant</h3>
+    <button id="close-ai-btn">✕</button>
   </div>
-  <div id="ai-chat-history" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 flex flex-col"></div>
-  <div class="p-4 border-t border-gray-200 bg-white">
+
+  <div id="ai-chat-history" class="flex-1 p-4 overflow-y-auto"></div>
+
+  <div class="p-4 border-t">
     <form id="ai-form" class="flex gap-2">
-      <input type="text" id="ai-input" placeholder="How can I help you study today!" class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" required>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700" id="ai-submit-btn">Send</button>
+      <input id="ai-input" class="flex-1 border rounded px-2 py-1" placeholder="Ask something..." />
+      <button class="bg-blue-500 text-white px-3 rounded">Send</button>
     </form>
   </div>
+
 </aside>
 
 <script>
-
   function loadTheme() {
     const savedTheme = localStorage.getItem('theme');
-
     if (savedTheme === 'dark') {
       document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
     }
   }
-
-
   loadTheme();
-
-
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'theme') {
-      if (e.newValue === 'dark') {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-      }
-    }
-  });
 </script>
+
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
+
 </body>
 </html>
