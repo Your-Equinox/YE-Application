@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="katex" level="application" />
     <orderEntry type="library" name="KaTeX" level="application" />
+    <orderEntry type="library" name="dayjs" level="application" />
   </component>
 </module>
