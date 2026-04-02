@@ -6,6 +6,9 @@
   <title>Your Equinox - Pro Editor</title>
 
   <link rel="stylesheet" href="/CSS/theme.css">
+  <link rel="stylesheet" href="/CSS/math.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" integrity="sha512-fHwaWebuwA7NSF5m/z8ZcPt0jF6SEv8E+YgPTKA081yZD04CjNzeGtzRgwRzXAOz8hE20SzeS5mXkS2bS2QkHg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-pink-500 selection:text-white">
@@ -49,7 +52,7 @@
       <button id="delete-note-btn" class="text-red-500 hover:text-red-700 text-sm font-bold transition bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl border border-red-100">Delete Note</button>
     </div>
 
-    <input type="text" id="note-title" class="text-5xl md:text-6xl font-black tracking-tight w-full outline-none mb-8 placeholder-slate-200 text-slate-800 bg-transparent" placeholder="Untitled">
+    <label for="note-title"></label><input type="text" id="note-title" class="text-5xl md:text-6xl font-black tracking-tight w-full outline-none mb-8 placeholder-slate-200 text-slate-800 bg-transparent" placeholder="Untitled">
 
     <div id="format-toolbar" class="flex flex-wrap items-center gap-1 glass-toolbar p-2 rounded-2xl w-fit fixed bottom-12 left-1/2 transform -translate-x-1/2 z-[60] shadow-2xl">
       <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1.5 text-sm font-black text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">H1</button>
@@ -63,7 +66,15 @@
       <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">📊 Table</button>
       <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
       <button id="format-image" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">🖼️ Image</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().insertBlockMath({ latex: 'a^2 + b^2 = c^2' }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">∑ Math</button>
       <input type="file" id="image-upload-input" accept="image/*" class="hidden">
+    </div>
+
+    <div id="math-bubble-menu" class="flex items-center gap-2 glass-toolbar p-2 rounded-xl z-50 w-fit shadow-xl" style="visibility: hidden; position: absolute;">
+      <span class="text-sm font-black text-slate-400 ml-1">∑</span>
+      <input type="text" id="math-editor-input" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none w-64 text-slate-800 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono" placeholder="Enter LaTeX... (e.g. x^2)">
+      <button id="math-update-btn" class="px-4 py-1.5 text-xs font-bold bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg transition shadow-sm hover:shadow-md">Save</button>
     </div>
 
     <div id="table-bubble-menu" class="flex items-center gap-1 glass-toolbar p-1.5 rounded-xl z-50 w-fit" style="visibility: hidden; position: absolute;">
@@ -90,7 +101,7 @@
   <div id="ai-chat-history" class="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col"></div>
   <div class="p-5 border-t border-slate-200 bg-white/40">
     <form id="ai-form" class="flex gap-2 relative">
-      <input type="text" id="ai-input" placeholder="Ask anything..." class="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white/80" required>
+      <label for="ai-input"></label><input type="text" id="ai-input" placeholder="Ask anything..." class="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white/80" required>
       <button type="submit" class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-5 py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition-all flare-btn" id="ai-submit-btn">Send</button>
     </form>
   </div>
@@ -98,7 +109,6 @@
 
 <script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
-<script type="module" src="Scripts/Settings/Theme.ts"></script>
 
 </body>
 </html>

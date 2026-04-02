@@ -212,3 +212,22 @@ html.dark-mode body, body.dark-mode {
 .dark-mode .prose a {
     color: #f8fafc !important;
 }
+
+/* =========================================
+ INTENTION BAR DARK MODE
+   ========================================= */
+/* Resting state for the intention bar */
+.dark-mode #daily-intention-input {
+    background-color: rgba(30, 41, 59, 0.8) !important;
+    color: #f8fafc !important;
+}
+
+/* Active (clicked/typing) state for the intention bar */
+.dark-mode #daily-intention-input:focus {
+    background-color: #020617 !important; /* Deep black/midnight */
+    color: #f8fafc !important; /* Keeps text white */
+    outline: none !important;
+    /* Replaces the bright pink ring with a sleek neon purple ring */
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.4) !important;
+}
+
