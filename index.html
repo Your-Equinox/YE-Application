@@ -7,12 +7,61 @@
 
   <link rel="stylesheet" href="/Styles/modal.css">
   <link rel="stylesheet" href="/CSS/calendar.css">
-  <link rel="stylesheet" href="/CSS/theme.css">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
   <style>
+    /* Theme Variables */
+    :root {
+      --bg-primary: #f3f4f6;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+      --accent-color: #3b82f6;
+    }
 
+    .dark-mode {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --accent-color: #60a5fa;
+    }
+
+    body {
+      background-color: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
+      transition: all 0.3s ease;
+    }
+
+
+    .bg-gray-100, .bg-white, .bg-gray-50 {
+      background-color: var(--bg-secondary) !important;
+    }
+
+
+    .text-slate-800, .text-gray-900, .text-gray-800, .text-gray-700 {
+      color: var(--text-primary) !important;
+    }
+
+    .text-gray-600, .text-gray-500, .text-gray-400 {
+      color: var(--text-secondary) !important;
+    }
+
+
+    fieldset, .bg-white, .rounded.shadow {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+
+    input, select, textarea {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
   </style>
 </head>
 <body class="bg-gray-100 font-sans text-slate-800 p-4 md:p-8">
@@ -58,20 +107,6 @@
 
 </div><ul id="list"></ul>
 
-<div class="w-full max-w-6xl mx-auto mb-6 bg-white p-5 rounded-xl shadow border-l-4 border-blue-500">
-  <h3 class="font-bold text-slate-800 mb-3">Daily Intention</h3>
-
-  <div id="intention-input-mode" class="flex gap-2">
-    <input type="text" id="daily-intention-input" placeholder="What is your main focus for today?" class="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-    <button id="save-intention-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition">Save</button>
-  </div>
-
-  <div id="intention-display-mode" class="hidden flex justify-between items-center bg-blue-50 p-3 rounded border border-blue-100">
-    <p class="text-blue-800 font-medium italic">"<span id="intention-text"></span>"</p>
-    <button id="edit-intention-btn" class="text-sm text-blue-500 hover:text-blue-700 underline px-2">Edit</button>
-  </div>
-
-</div>
 <fieldset class="mb-4 bg-white p-4 rounded shadow">
   <legend class="font-bold">Your Tasks</legend>
   <form id="task-form">
@@ -83,7 +118,7 @@
   </form>
 </fieldset>
 <div class="w-full max-w-6xl mx-auto mb-4 flex gap-6">
-  <a href="/pages/ye-notes.html" style="color: blue; text-decoration: underline; font-weight: 500;"> 📝My notes</a>
+  <a href="/public/ye-notes.html" style="color: blue; text-decoration: underline; font-weight: 500;"> 📝My notes</a>
 </div>
 
 <fieldset class="mb-8 bg-white p-5 rounded-lg shadow border-t-4 border-purple-500">
@@ -91,7 +126,7 @@
 
   <div id="noNoteMessage" class="text-center text-gray-400 text-sm py-6 hidden">
     <p class="mb-2">You haven't written any notes yet!</p>
-    <a href="/pages/ye-notes.html" class="text-purple-500 underline">Go write something</a> to activate your memory checks.
+    <a href="/public/ye-notes.html" class="text-purple-500 underline">Go write something</a> to activate your memory checks.
   </div>
 
   <div class="flex flex-col h-full">
@@ -107,7 +142,6 @@
         <button class="confidence-btn flex-1 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium py-2 rounded transition" data-rating="low">Hard (1 Day)</button>
         <button class="confidence-btn flex-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-sm font-medium py-2 rounded transition" data-rating="medium">Good (3 Days)</button>
         <button class="confidence-btn flex-1 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium py-2 rounded transition" data-rating="high">Easy (7 Days)</button>
-        <button class="confidence-btn flex-1 bg-grey-100 hover:bg-grey-200 text-grey-700 text-sm font-medium py-2 rounded transition" data-rating="not-required">Not Required</button>
       </div>
     </div>
   </div>
@@ -132,7 +166,7 @@
 </fieldset>
 
 <div class="w-full max-w-6xl mx-auto mb-4">
-  <a href="/pages/ye-calendar.html" style="color: blue; text-decoration: underline; font-weight: 500;">📅 View Full-Screen Calendar</a>
+  <a href="/public/ye-calendar.html" style="color: blue; text-decoration: underline; font-weight: 500;">📅 View Full-Screen Calendar</a>
 </div>
 
 <div id="app" class="w-full max-w-6xl mx-auto flex flex-col items-center"></div>
@@ -181,7 +215,7 @@
   </form>
 </dialog>
 <div class="w-full max-w-6xl mx-auto mb-4">
-  <a href="/pages/Settings.html" style="color: blue; text-decoration: underline; font-weight: 500;">Settings </a>
+  <a href="/public/Settings.html" style="color: blue; text-decoration: underline; font-weight: 500;">Settings </a>
 </div>
 <script>
 
@@ -209,7 +243,6 @@
     }
   });
 </script>
-<script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="/Scripts/Tasks/AddTasks.ts"></script>
 <script type="module" src="/Scripts/Tasks/DeleteTasks.ts"></script>
 <script type="module" src="/Scripts/Reminders/AddReminder.ts"></script>
