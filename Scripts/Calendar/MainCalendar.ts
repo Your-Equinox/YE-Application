@@ -627,3 +627,4 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
     renderApp();
 };
 
+if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark-mode');

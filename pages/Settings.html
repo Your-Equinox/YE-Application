@@ -4,152 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings - Your Equinox</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="stylesheet" href="/CSS/theme.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
-<body class="bg-gray-100 font-sans text-gray-800 h-screen flex overflow-hidden">
+<body class="h-screen flex overflow-hidden selection:bg-pink-500 selection:text-white">
 
-<aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-  <div class="p-6 border-b border-gray-200">
-    <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+<aside class="w-72 glass-panel border-r border-y-0 border-l-0 flex flex-col z-10">
+  <div class="p-8 border-b border-gray-200 dark:border-slate-700">
+    <h1 class="text-3xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text tracking-tight">Settings</h1>
   </div>
-  <nav class="flex-1 p-4 space-y-2">
-    <button class="w-full text-left px-4 py-2 rounded-md bg-gray-100 text-gray-900 font-medium transition-colors hover:bg-gray-200">
-      👤 General Account
+  <nav class="flex-1 p-6 space-y-3">
+    <button class="w-full text-left px-5 py-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold transition-all shadow-md hover:scale-[1.02]">
+      👤 General
     </button>
-    <button class="w-full text-left px-4 py-2 rounded-md text-gray-600 font-medium transition-colors hover:bg-gray-100">
+    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
       🔔 Notifications
     </button>
-    <button class="w-full text-left px-4 py-2 rounded-md text-gray-600 font-medium transition-colors hover:bg-gray-100">
+    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
       ✨ AI Assistant
     </button>
-    <button class="w-full text-left px-4 py-2 rounded-md text-gray-600 font-medium transition-colors hover:bg-gray-100">
-      🛡️ Privacy & Security
+    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
+      🛡️ Privacy
     </button>
   </nav>
-  <div class="p-4 border-t border-gray-200 space-y-2">
-    <a href="/index.html" class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
-      ← Back to Dashboard
+  <div class="p-6 border-t border-gray-200 dark:border-slate-700 space-y-3">
+    <a href="/index.html" class="block w-full text-center px-5 py-3 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+      &larr; Dashboard
     </a>
-    <button id="logout-btn" class="block w-full text-center px-4 py-2 bg-red-50 border border-red-200 rounded-md text-red-600 hover:bg-red-100 transition font-medium">
+    <button id="logout-btn" class="block w-full text-center px-5 py-3 bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition font-bold">
       Sign Out
     </button>
   </div>
 </aside>
 
-<main class="flex-1 overflow-y-auto p-8">
-  <div class="max-w-3xl mx-auto space-y-12">
+<main class="flex-1 overflow-y-auto p-8 md:p-12 relative z-0">
+  <div class="max-w-3xl mx-auto space-y-8">
 
-    <section id="general" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">General Account</h2>
-      <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Switch between light and dark mode">
-        <svg id="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
-          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
-          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
-          <line x1="4" y1="4" x2="6" y2="6" stroke="currentColor" stroke-width="2"/>
-          <line x1="18" y1="18" x2="20" y2="20" stroke="currentColor" stroke-width="2"/>
-          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
-          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
-          <line x1="4" y1="20" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
-          <line x1="18" y1="6" x2="20" y2="4" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <svg id="moon-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"/>
-        </svg>
-      </button>
+    <section id="general" class="glass-panel rounded-3xl p-8">
+      <div class="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <h2 class="text-2xl font-black">General Account</h2>
+        <button id="theme-toggle-btn" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform" aria-label="Switch mode">
+          <svg id="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
 
-      <div class="space-y-4 mt-6">
+      <div class="space-y-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="display-name">Display Name</label>
-          <div class="flex gap-2">
-            <input type="text" id="display-name" placeholder="Your Name" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-            <button id="save-name-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
-              Save Name
+          <label class="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-2" for="display-name">Display Name</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="display-name" placeholder="Your Name" class="flare-input flex-1 px-5 py-3 rounded-xl font-medium">
+            <button id="save-name-btn" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+              Save
             </button>
           </div>
-          <p id="name-status" class="text-green-600 text-sm mt-2 hidden">✓ Name saved successfully.</p>
+          <p id="name-status" class="text-emerald-500 font-bold text-sm mt-3 hidden">✓ Name updated.</p>
         </div>
-        <p id="theme-status" class="text-green-600 text-sm mt-2 hidden">✓ Theme preference saved.</p>
+        <p id="theme-status" class="text-emerald-500 font-bold text-sm mt-3 hidden">✓ Theme saved.</p>
       </div>
     </section>
 
-    <section id="notifications" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
-      <div class="flex items-center gap-2 mb-4 border-b pb-2">
-        <span class="text-xl">🔔</span>
-        <h2 class="text-xl font-bold text-gray-900">Notification Preferences</h2>
+    <section id="notifications" class="glass-panel rounded-3xl p-8 hidden">
+      <div class="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <span class="text-3xl text-pink-500">🔔</span>
+        <h2 class="text-2xl font-black">Notifications</h2>
       </div>
-      <p class="text-sm text-gray-600 mb-6">Adjust how Your Equinox alerts you about upcoming tasks and due flashcards.</p>
-      <ul id="reminderSettings" class="space-y-3"></ul>
+      <p class="text-slate-500 font-medium mb-8">Manage how Your Equinox alerts you about due reviews and timed events.</p>
+      <ul id="reminderSettings" class="space-y-4 font-medium"></ul>
     </section>
 
-    <section id="ai-settings" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
-      <div class="flex items-center gap-2 mb-4 border-b pb-2">
-        <span class="text-xl">✨</span>
-        <h2 class="text-xl font-bold text-gray-900">AI Assistant</h2>
+    <section id="ai-settings" class="glass-panel rounded-3xl p-8 hidden">
+      <div class="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <span class="text-3xl text-purple-500">✨</span>
+        <h2 class="text-2xl font-black">AI Assistant</h2>
       </div>
-      <p class="text-sm text-gray-600 mb-6">Configure your connection to the Gemini API. Your Equinox runs locally, meaning your key is saved directly to your device and never sent to our servers.</p>
-      <div class="space-y-4">
+      <p class="text-slate-500 font-medium mb-8">Configure your local API connection. Keys are stored safely in browser LocalStorage.</p>
+      <div class="space-y-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
-          <div class="flex gap-2">
-            <input type="password" id="gemini-api-key" placeholder="AIzaSy..." class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono">
-            <button id="save-api-key-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm">
-              Save Key
+          <label class="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Gemini API Key</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="password" id="gemini-api-key" placeholder="AIzaSy..." class="flare-input flex-1 px-5 py-3 rounded-xl font-mono tracking-wider">
+            <button id="save-api-key-btn" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+              Store Key
             </button>
           </div>
-          <p id="api-key-status" class="text-green-600 text-sm mt-2 hidden">✓ API Key saved successfully to local storage.</p>
+          <p id="api-key-status" class="text-emerald-500 font-bold text-sm mt-3 hidden">✓ API Key secured locally.</p>
         </div>
       </div>
     </section>
 
-    <section id="privacy" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
-      <div class="flex items-center gap-2 mb-4 border-b pb-2">
-        <span class="text-xl">🛡️</span>
-        <h2 class="text-xl font-bold text-gray-900">Privacy & Data Compliance</h2>
+    <section id="privacy" class="glass-panel rounded-3xl p-8 hidden">
+      <div class="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <span class="text-3xl text-emerald-500">🛡️</span>
+        <h2 class="text-2xl font-black">Privacy & Data</h2>
       </div>
-      <p class="text-sm text-gray-600 mb-4">Manage how your application data is stored. These controls ensure you maintain local compliance with standards like PIPEDA and GDPR.</p>
+      <p class="text-slate-500 font-medium mb-8">Maintain local compliance and full ownership of your data exports.</p>
 
       <div class="space-y-4">
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-2 border-slate-100 dark:border-slate-800 rounded-2xl bg-white/50 dark:bg-slate-800/30 gap-4">
           <div>
-            <p class="font-medium text-gray-900 text-sm">Import Data</p>
-            <p class="text-xs text-gray-500 mt-1">Import your notes, tasks, and settings from a JSON file.</p>
+            <p class="font-bold text-lg">Import Data</p>
+            <p class="text-sm text-slate-500 font-medium mt-1">Restore from a backup JSON.</p>
             <input type="file" id="import-file" accept=".json" class="hidden" />
           </div>
-          <button id="import-btn" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition shadow-sm">Import Data</button>
+          <button id="import-btn" class="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 transition shadow-sm w-full sm:w-auto">Import</button>
         </div>
 
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-2 border-slate-100 dark:border-slate-800 rounded-2xl bg-white/50 dark:bg-slate-800/30 gap-4">
           <div>
-            <p class="font-medium text-gray-900 text-sm">Export Data</p>
-            <p class="text-xs text-gray-500 mt-1">Export your notes, tasks, and settings to a JSON file.</p>
+            <p class="font-bold text-lg">Export Data</p>
+            <p class="text-sm text-slate-500 font-medium mt-1">Download full JSON snapshot.</p>
           </div>
-          <button id="export-btn" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition shadow-sm">Export Data</button>
+          <button id="export-btn" class="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 transition shadow-sm w-full sm:w-auto">Export</button>
         </div>
 
-        <div class="flex items-center justify-between p-4 border border-red-100 rounded-lg bg-red-50">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-2 border-red-100 dark:border-red-900/30 rounded-2xl bg-red-50/50 dark:bg-red-500/5 gap-4">
           <div>
-            <p class="font-medium text-red-700 text-sm">Clear Application Data</p>
-            <p class="text-xs text-red-500 mt-1">Permanently delete all notes, tasks, and API keys from this browser.</p>
+            <p class="font-bold text-lg text-red-600 dark:text-red-400">Nuclear Option</p>
+            <p class="text-sm text-red-500 font-medium mt-1">Permanently wipe all browser data.</p>
           </div>
-          <button id="purge-btn" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition shadow-sm">Purge Data</button>
+          <button id="purge-btn" class="px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-bold hover:shadow-lg hover:-translate-y-1 transition-all w-full sm:w-auto">Purge</button>
         </div>
       </div>
     </section>
   </div>
 </main>
 
-<dialog id="custom-confirm-modal" class="p-6 rounded-xl shadow-2xl border border-red-200 backdrop:bg-slate-900 backdrop:bg-opacity-50">
-  <h2 class="text-xl font-bold mb-4 text-red-600">⚠️ Purge All Data</h2>
-  <p class="mb-6 text-gray-700">Are you sure you want to permanently delete all your data? This cannot be undone.</p>
-  <div class="flex justify-end gap-3">
-    <button id="cancel-purge-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md">Cancel</button>
-    <button id="confirm-purge-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Delete Everything</button>
+<dialog id="custom-confirm-modal" class="glass-panel p-8 rounded-3xl min-w-[320px] max-w-md w-full m-auto border-t-8 border-t-red-500 backdrop:bg-slate-900/60 shadow-[0_20px_60px_-15px_rgba(239,68,68,0.3)]">
+  <div class="text-6xl text-center mb-4">⚠️</div>
+  <h2 class="text-2xl font-black mb-2 text-red-600 text-center">Purge Data</h2>
+  <p class="mb-8 text-slate-600 dark:text-slate-300 font-medium text-center">This will destroy all tasks, notes, and settings stored in this browser. Proceed?</p>
+  <div class="flex flex-col sm:flex-row justify-end gap-3">
+    <button id="cancel-purge-btn" class="px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-white rounded-xl font-bold transition">Cancel</button>
+    <button id="confirm-purge-btn" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-lg">Destroy</button>
   </div>
 </dialog>
-
 <script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="../Scripts/Settings/SettingsPage.ts"></script>
 </body>

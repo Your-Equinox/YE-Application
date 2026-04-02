@@ -202,8 +202,21 @@ if (generateQuizBtn) {
             return;
         }
 
+        // Ask the user how many questions they want
+        const countInput = prompt("How many questions would you like to generate? (e.g., 5, 10, 15)", "5");
+
+        // If they click 'Cancel', stop the process
+        if (countInput === null) return;
+
+        // Convert their input to a number and ensure it is valid
+        const numQuestions = parseInt(countInput, 10);
+        if (isNaN(numQuestions) || numQuestions < 1 || numQuestions > 30) {
+            alert("Please enter a valid number between 1 and 30.");
+            return;
+        }
+
         const originalText = generateQuizBtn.innerHTML;
-        generateQuizBtn.innerHTML = `<span>⏳</span> Generating...`;
+        generateQuizBtn.innerHTML = `<span>⏳</span> Generating ${numQuestions}...`;
         generateQuizBtn.disabled = true;
 
         try {
@@ -212,12 +225,15 @@ if (generateQuizBtn) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{
-                        parts: [{ text: `You are a strict tutor. Read the user's notes and generate exactly 10 self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks. 
-                         Mix the question types using these three formats:
-                         1. Multiple Choice: {"type": "mc", "q": "Question?", "a": "Correct Answer", "options": ["Wrong 1", "Correct Answer", "Wrong 2", "Wrong 3"]}
-                         2. True/False: {"type": "tf", "q": "Statement.", "a": "True or False"}
-                         3. Reveal/Flashcard: {"type": "reveal", "q": "Concept?", "a": "Detailed explanation."}
-                         Notes:\n${note.body}` }]
+                        parts: [{
+                            // Inject the user's requested number directly into the AI prompt
+                            text: `You are a strict tutor. Read the user's notes and generate exactly ${numQuestions} self-test questions based on the content. You MUST return ONLY a valid JSON array of objects. Do NOT wrap the response in markdown blocks. 
+                            Mix the question types using these three formats:
+                            1. Multiple Choice: {"type": "mc", "q": "Question?", "a": "Correct Answer", "options": ["Wrong 1", "Correct Answer", "Wrong 2", "Wrong 3"]}
+                            2. True/False: {"type": "tf", "q": "Statement.", "a": "True or False"}
+                            3. Reveal/Flashcard: {"type": "reveal", "q": "Concept?", "a": "Detailed explanation."}
+                            Notes:\n${note.body}`
+                        }]
                     }]
                 })
             });
@@ -247,8 +263,11 @@ if (generateQuizBtn) {
 // --- AI Sidebar ---
 if (aiAssistBtn) {
     aiAssistBtn.addEventListener("click", () => {
-        aiSidebar?.classList.remove("translate-x-full");
-        aiInput?.focus();
+        aiSidebar?.classList.toggle("translate-x-full");
+
+        if (!aiSidebar?.classList.contains("translate-x-full")) {
+            aiInput?.focus();
+        }
     });
 }
 
@@ -387,27 +406,4 @@ if (formatImageBtn && imageUploadInput) {
     });
 }
 
-// Dark mode accessibility
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-    }
-}
-
-
-loadTheme();
-
-
-window.addEventListener('storage', function(e) {
-    if (e.key === 'theme') {
-        if (e.newValue === 'dark') {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-    }
-});
+if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark-mode');

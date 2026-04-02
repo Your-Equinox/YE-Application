@@ -4,101 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Equinox - Pro Editor</title>
-  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
   <link rel="stylesheet" href="/CSS/theme.css">
-
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 </head>
-<body class="bg-white font-sans text-slate-800 h-screen flex overflow-hidden">
+<body class="h-screen flex overflow-hidden selection:bg-pink-500 selection:text-white">
 
-<aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col h-full shrink-0">
-  <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-    <a href="../index.html" class="text-sm font-medium text-gray-500 hover:text-blue-600 transition">&larr; Dashboard</a>
+<aside class="w-64 glass-panel flex flex-col h-full shrink-0 z-20 shadow-xl">
+  <div class="p-5 border-b border-gray-200 flex justify-between items-center">
+    <a href="../index.html" class="text-sm font-bold text-slate-500 hover:text-indigo-500 transition-colors flex items-center gap-2">
+      <span>&larr;</span> Dashboard
+    </a>
     <div class="flex items-center gap-1">
-      <button id="new-category-btn" class="text-xl font-light text-gray-400 hover:text-blue-600 transition px-2" title="New Category">📁</button>
-      <button id="new-note-btn" class="text-2xl font-light text-gray-400 hover:text-gray-800 transition px-2" title="New Note">+</button>
+      <button id="new-category-btn" class="p-2 rounded-lg text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 transition-all" title="New Category">📁</button>
+      <button id="new-note-btn" class="p-2 rounded-lg text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 transition-all text-xl leading-none" title="New Note">+</button>
     </div>
   </div>
 
-  <div id="sidebar-note-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-  </div>
+  <div id="sidebar-note-list" class="flex-1 overflow-y-auto p-4 space-y-2 font-medium"></div>
 
-  <div class="p-4 border-t border-gray-200 bg-gray-50">
+  <div class="p-5 border-t border-gray-200">
     <input type="file" id="import-file" class="hidden" accept=".json,.docx,.pdf,.txt,.md">
-    <button id="importDocument-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition shadow-sm">
+    <button id="importDocument-btn" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-white transition shadow-sm">
       <span>📥</span> Import Notes
     </button>
   </div>
 </aside>
 
-<main class="flex-1 flex flex-col bg-white overflow-y-auto relative min-w-0">
+<main class="flex-1 flex flex-col overflow-y-auto relative min-w-0 bg-transparent">
 
-  <div id="empty-state" class="absolute inset-0 flex items-center justify-center text-gray-400 text-lg pointer-events-none">
-    Select a note or create a new one to begin.
+  <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 pointer-events-none z-10">
+    <div class="text-6xl mb-4 opacity-50">📝</div>
+    <p class="text-lg font-medium">Select a note or create a new one to begin.</p>
   </div>
 
-  <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 md:p-12 hidden flex-col min-h-full">
+  <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 md:p-12 hidden flex-col min-h-full relative z-10">
 
-    <div class="flex justify-between items-center mb-8">
-      <div class="flex gap-2">
-        <button id="toggle-flashcard-btn" class="px-3 py-1.5 rounded-md text-sm font-medium transition bg-gray-100 text-gray-500 hover:bg-gray-200">🧠 Flashcards</button>
-        <button id="generate-quiz-btn" class="px-3 py-1.5 rounded-md text-sm font-medium transition bg-blue-100 text-blue-700 hover:bg-blue-200">🤖 Generate Quiz</button>
-        <button id="ai-assist-btn" class="hidden px-3 py-1.5 rounded-md text-sm font-medium transition bg-purple-100 text-purple-700 hover:bg-purple-200">✨ AI Assistant</button>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+      <div class="flex flex-wrap gap-2">
+        <button id="toggle-flashcard-btn" class="px-4 py-2 rounded-xl text-sm font-bold transition-all bg-indigo-50 text-indigo-600 hover:bg-indigo-100 shadow-sm border border-indigo-100">🧠 Flashcards</button>
+        <button id="generate-quiz-btn" class="px-4 py-2 rounded-xl text-sm font-bold transition-all bg-blue-50 text-blue-600 hover:bg-blue-100 shadow-sm border border-blue-100">🤖 Generate Quiz</button>
+        <button id="ai-assist-btn" class="hidden px-4 py-2 rounded-xl text-sm font-bold transition-all bg-purple-50 text-purple-600 hover:bg-purple-100 shadow-sm border border-purple-100">✨ AI Assistant</button>
       </div>
-      <button id="delete-note-btn" class="text-red-400 hover:text-red-600 text-sm font-medium transition">Delete Note</button>
+      <button id="delete-note-btn" class="text-red-500 hover:text-red-700 text-sm font-bold transition bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl border border-red-100">Delete Note</button>
     </div>
 
-    <input type="text" id="note-title" class="text-5xl font-bold w-full outline-none mb-6 placeholder-gray-100 text-gray-800 bg-transparent" placeholder="Untitled">
+    <input type="text" id="note-title" class="text-5xl md:text-6xl font-black tracking-tight w-full outline-none mb-8 placeholder-slate-200 text-slate-800 bg-transparent" placeholder="Untitled">
 
-    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 mb-6 bg-gray-50 border border-gray-200 p-1.5 rounded-lg w-fit sticky top-4 z-20 shadow-sm">
-      <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1 text-sm font-bold text-gray-600 hover:bg-white rounded transition">H1</button>
-      <button onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="px-3 py-1 text-sm font-semibold text-gray-600 hover:bg-white rounded transition">H2</button>
-
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-
-      <button onclick="editor.chain().focus().toggleBold().run()" class="px-3 py-1 text-sm font-bold text-gray-600 hover:bg-white rounded transition">B</button>
-      <button onclick="editor.chain().focus().toggleItalic().run()" class="px-3 py-1 text-sm italic font-serif text-gray-600 hover:bg-white rounded transition">I</button>
-
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-
-      <button onclick="editor.chain().focus().toggleCodeBlock().run()" class="px-3 py-1 text-sm font-mono text-gray-600 hover:bg-white rounded transition">Code</button>
-
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-
-      <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()" class="px-3 py-1 text-sm text-gray-600 hover:bg-white rounded transition">📊 Table</button>
-      <div class="w-px h-5 bg-gray-300 mx-1"></div>
-      <button id="format-image" class="px-3 py-1 text-sm text-gray-600 hover:bg-white rounded transition">🖼️ Image</button>
+    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 glass-toolbar p-2 rounded-2xl w-fit fixed bottom-12 left-1/2 transform -translate-x-1/2 z-[60] shadow-2xl">
+      <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1.5 text-sm font-black text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">H1</button>
+      <button onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">H2</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().toggleBold().run()" class="px-3 py-1.5 text-sm font-black text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">B</button>
+      <button onclick="editor.chain().focus().toggleItalic().run()" class="px-3 py-1.5 text-sm italic font-serif text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">I</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().toggleCodeBlock().run()" class="px-3 py-1.5 text-sm font-mono font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">Code</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">📊 Table</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button id="format-image" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">🖼️ Image</button>
       <input type="file" id="image-upload-input" accept="image/*" class="hidden">
-
     </div>
 
-    <div id="table-bubble-menu" class="flex items-center gap-1 bg-white border border-gray-200 shadow-xl p-1.5 rounded-lg z-50">
-      <button onclick="editor.chain().focus().addRowAfter().run()" class="px-2 py-1 text-[11px] font-bold text-green-600 hover:bg-green-50 rounded transition">+ Row</button>
-      <button onclick="editor.chain().focus().addColumnAfter().run()" class="px-2 py-1 text-[11px] font-bold text-blue-600 hover:bg-blue-50 rounded transition">+ Col</button>
-      <div class="w-px h-4 bg-gray-200 mx-1"></div>
-      <button onclick="editor.chain().focus().deleteRow().run()" class="px-2 py-1 text-[11px] text-red-500 hover:bg-red-50 rounded transition">Del Row</button>
-      <button onclick="editor.chain().focus().deleteColumn().run()" class="px-2 py-1 text-[11px] text-red-500 hover:bg-red-50 rounded transition">Del Col</button>
-      <button onclick="editor.chain().focus().deleteTable().run()" class="px-2 py-1 text-[11px] text-gray-400 hover:text-red-600 transition">🗑️</button>
+    <div id="table-bubble-menu" class="flex items-center gap-1 glass-toolbar p-1.5 rounded-xl z-50 w-fit" style="visibility: hidden; position: absolute;">
+      <button onclick="editor.chain().focus().addRowAfter().run()" class="px-3 py-1.5 text-xs font-bold text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition">+ Row</button>
+      <button onclick="editor.chain().focus().addColumnAfter().run()" class="px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition">+ Col</button>
+      <div class="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+      <button onclick="editor.chain().focus().deleteRow().run()" class="px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">Del Row</button>
+      <button onclick="editor.chain().focus().deleteColumn().run()" class="px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">Del Col</button>
+      <button onclick="editor.chain().focus().deleteTable().run()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-red-600 transition">🗑️</button>
     </div>
 
-    <div id="tiptap-editor" class="w-full flex-1 prose prose-slate prose-blue max-w-none bg-transparent pb-24"></div>
+    <div id="tiptap-editor" class="w-full flex-1 prose prose-slate prose-lg max-w-none bg-transparent pb-24 text-lg"></div>
 
   </div>
 </main>
 
-<aside id="ai-sidebar" class="fixed top-0 right-0 w-80 md:w-96 h-full bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col z-50">
-  <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-    <h3 class="font-bold text-gray-800 flex items-center gap-2"><span>✨</span> AI Assistant</h3>
-    <button id="close-ai-btn" class="text-gray-400 hover:text-gray-700 text-2xl leading-none transition">&times;</button>
+<aside id="ai-sidebar" class="fixed top-0 right-0 w-80 md:w-96 h-full glass-panel border-l border-slate-200 transform translate-x-full transition-transform duration-300 flex flex-col z-50 shadow-2xl">
+  <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white/40">
+    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+      <span class="bg-gradient-to-br from-purple-500 to-indigo-500 text-transparent bg-clip-text">✨ AI Assistant</span>
+    </h3>
+    <button id="close-ai-btn" class="text-slate-400 hover:text-slate-700 text-2xl leading-none transition">&times;</button>
   </div>
-  <div id="ai-chat-history" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 flex flex-col"></div>
-  <div class="p-4 border-t border-gray-200 bg-white">
-    <form id="ai-form" class="flex gap-2">
-      <input type="text" id="ai-input" placeholder="How can I help you study today!" class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" required>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700" id="ai-submit-btn">Send</button>
+  <div id="ai-chat-history" class="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col"></div>
+  <div class="p-5 border-t border-slate-200 bg-white/40">
+    <form id="ai-form" class="flex gap-2 relative">
+      <input type="text" id="ai-input" placeholder="Ask anything..." class="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white/80" required>
+      <button type="submit" class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-5 py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition-all flare-btn" id="ai-submit-btn">Send</button>
     </form>
   </div>
 </aside>
+
 <script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="/Scripts/NoteTaking/NotePage.ts"></script>
+<script type="module" src="Scripts/Settings/Theme.ts"></script>
+
 </body>
 </html>
