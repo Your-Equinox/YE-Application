@@ -1,213 +1,173 @@
-/* ===== BASE ===== */
-
 body {
     -webkit-font-smoothing: antialiased;
     user-select: none;
     overflow-x: hidden;
-    background: #f8fafc;
 }
 
-/* Container */
+/* --- Common Styles --- */
 .view-container {
     min-height: 600px;
     background: white;
-    border-radius: 16px;
-    overflow: hidden;
 }
 
-/* ===== MONTH VIEW ===== */
-
+/* --- Month View Styles --- */
 .month-row {
     position: relative;
     height: 120px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid #e5e7eb;
 }
-
 .month-cell {
     height: 100%;
-    border-right: 1px solid #f1f5f9;
+    border-right: 1px solid #e5e7eb;
     position: relative;
     z-index: 1;
-    transition: background 0.2s ease;
 }
-
-.month-cell:hover {
-    background: #f8fafc;
-}
-
 .month-cell:last-child {
     border-right: none;
 }
 
-/* ===== WEEK / DAY VIEW ===== */
-
+/* --- Week/Day View Styles --- */
 .time-grid-container {
     display: flex;
     flex-direction: column;
-    height: 650px;
+    height: 600px;
     overflow-y: auto;
     position: relative;
+    scroll-behavior: auto;
 }
-
-/* Header */
 .time-header {
     display: flex;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
     background: white;
     z-index: 30;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
-
 .time-header-cell {
     flex: 1;
     text-align: center;
-    padding: 10px;
-    border-right: 1px solid #f1f5f9;
-    font-size: 13px;
-    font-weight: 500;
-    color: #475569;
+    padding: 8px;
+    border-right: 1px solid #f3f4f6;
+    font-size: 14px;
 }
-
-/* Body */
 .time-body {
     display: flex;
     position: relative;
-    min-height: 1440px;
+    min-height: 1440px; /* 24h * 60px */
 }
 
-/* ===== TIME AXIS ===== */
-
+/* Left Time Axis */
 .time-axis {
     width: 60px;
     flex-shrink: 0;
-    background: #f8fafc;
-    border-right: 1px solid #e2e8f0;
+    background: #fafafa;
+    border-right: 1px solid #e5e7eb;
     position: sticky;
     left: 0;
     z-index: 20;
 }
-
 .time-axis-label {
     height: 60px;
     position: absolute;
     width: 100%;
     text-align: right;
-    padding-right: 10px;
-    color: #94a3b8;
+    padding-right: 8px;
+    color: #9ca3af;
     font-size: 11px;
     top: -6px;
     pointer-events: none;
 }
 
-/* ===== DAY COLUMNS ===== */
-
+/* Vertical Columns */
 .day-column {
     flex: 1;
     position: relative;
-    border-right: 1px solid #f1f5f9;
-
+    border-right: 1px solid #e5e7eb;
     background: repeating-linear-gradient(
             to bottom,
             transparent 0,
             transparent 59px,
-            #f1f5f9 60px
+            #f3f4f6 60px
     );
-
-    transition: background 0.2s ease;
 }
 
-.day-column:hover {
-    background-color: rgba(59, 130, 246, 0.03);
-}
-
-/* ===== EVENTS ===== */
-
+/* --- Event Card Styles --- */
+/* Common */
 .event-base {
     position: absolute;
-    border-radius: 10px;
-    padding: 6px 8px;
+    border-radius: 4px;
+    padding: 2px 6px;
     font-size: 12px;
     color: white;
     cursor: grab;
     z-index: 10;
     overflow: hidden;
-
     white-space: nowrap;
     text-overflow: ellipsis;
-
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
-
-    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition:
+            opacity 0.2s,
+            transform 0.1s;
 }
-
-.event-base:hover {
-    transform: translateY(-1px) scale(1.01);
-}
-
 .event-base:active {
     cursor: grabbing;
-    transform: scale(0.98);
 }
-
 .event-base.is-dragging-source {
     opacity: 0.3;
-    filter: grayscale(0.4);
+    filter: grayscale(0.3);
 }
 
-/* Month view */
+/* Month View Horizontal Bar */
 .event-bar {
     height: 26px;
     line-height: 26px;
-    border-radius: 8px;
 }
 
-/* Week view */
+/* Week View Vertical Block */
 .event-block {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     line-height: 1.3;
-    padding-top: 6px;
-
-    border: 1px solid rgba(255,255,255,0.25);
+    padding-top: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
-
 .event-block .time-text {
     font-size: 10px;
-    opacity: 0.85;
-    margin-bottom: 2px;
+    opacity: 0.9;
+    margin-bottom: 0px;
 }
 
-/* ===== RESIZE HANDLES ===== */
-
+/* Resize Handles */
 .resize-handle {
     position: absolute;
     z-index: 20;
     opacity: 0;
     transition: opacity 0.2s;
 }
-
 .event-base:hover .resize-handle {
     opacity: 1;
 }
-
 .resize-handle:hover {
-    background-color: rgba(255,255,255,0.35);
+    background-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Horizontal */
+/* Month View Left/Right Handles */
 .resize-h {
     top: 0;
     bottom: 0;
-    width: 10px;
+    width: 12px;
     cursor: col-resize;
 }
+.resize-h.left {
+    left: 0;
+}
+.resize-h.right {
+    right: 0;
+}
 
-.resize-h.left { left: 0; }
-.resize-h.right { right: 0; }
-
-/* Vertical */
+/* Week View Bottom Handle */
 .resize-v {
     bottom: 0;
     left: 0;
@@ -216,60 +176,25 @@ body {
     cursor: row-resize;
 }
 
-/* ===== GHOST EVENT ===== */
-
+/* --- Ghost Element --- */
 .ghost-event {
     position: absolute;
-    background: rgba(59, 130, 246, 0.15);
-    border: 2px dashed rgba(59, 130, 246, 0.7);
-    border-radius: 10px;
+    background-color: rgba(59, 130, 246, 0.15);
+    border: 2px dashed rgba(59, 130, 246, 0.8);
+    border-radius: 4px;
     z-index: 5;
     pointer-events: none;
+    box-sizing: border-box;
 }
 
-/* ===== DRAG PROXY ===== */
-
+/* --- Drag Proxy --- */
 #drag-proxy {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-
-    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-    border-radius: 10px;
-
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
     visibility: hidden;
     opacity: 0.9;
-}
-
-/* ===== DARK MODE ===== */
-
-.dark .view-container {
-    background: #1f2937;
-}
-
-.dark .time-header {
-    background: #1f2937;
-    border-color: #374151;
-}
-
-.dark .time-axis {
-    background: #111827;
-    border-color: #374151;
-}
-
-.dark .day-column {
-    border-color: #374151;
-}
-
-.dark .month-cell:hover,
-.dark .day-column:hover {
-    background: rgba(59,130,246,0.08);
-}
-
-.dark .time-header-cell {
-    color: #cbd5f5;
-}
-
-.dark .time-axis-label {
-    color: #64748b;
+    transform-origin: top left;
 }

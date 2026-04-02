@@ -1,8 +1,10 @@
-import {saveTasks} from "../Tasks/AddTasks";
+import { saveTask } from "../Supabase/TaskService";
+import { loadReminders, saveReminder } from "../Supabase/ReminderService";
+import type { Reminder } from "../Reminders/AddReminder";
+import {loadNotes} from "../Supabase/NoteService";
 
 declare const dayjs: any;
 
-// Define Types for TypeScript
 export interface CalendarEvent {
     id: string;
     title: string;
@@ -14,13 +16,10 @@ export interface CalendarEvent {
 
 export interface CalendarState {
     currentView: "month" | "week" | "day";
-    currentDate: any; // dayjs instance
+    currentDate: any;
     events: CalendarEvent[];
 }
 
-// ==================================================================================
-//  1. Data & State Management
-// ==================================================================================
 const colorPalette = [
     { className: "bg-blue-500", hex: "#3b82f6" },
     { className: "bg-indigo-500", hex: "#6366f1" },
@@ -36,149 +35,122 @@ function pickRandom(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateRandomEvents(baseDate: any, count = 12): CalendarEvent[] {
-    const startOfWeek = baseDate.startOf("week");
-    const events: CalendarEvent[] = [];
-
-    for (let i = 0; i < count; i++) {
-        const dayOffset = Math.floor(Math.random() * 7);
-        const startHour = 8 + Math.floor(Math.random() * 9); // 8-16
-        const startMinute = Math.random() > 0.5 ? 30 : 0;
-        const durationSlots = [30, 45, 60, 75, 90, 120];
-        const duration = pickRandom(durationSlots);
-
-        const start = startOfWeek.add(dayOffset, "day").hour(startHour).minute(startMinute);
-        const end = start.add(duration, "minute");
-        const color = pickRandom(colorPalette);
-
-        events.push({
-            id: `rand-${i}-${Date.now()}`,
-            title: "string",
-            start: start.format("YYYY-MM-DD HH:mm"),
-            end: end.format("YYYY-MM-DD HH:mm"),
-            color: color.className,
-            rawColor: color.hex,
-        });
-    }
-
-    return events;
-}
-
 const state: CalendarState = {
     currentView: "week",
     currentDate: dayjs(),
     events: [],
 };
 
-// SYNC REMINDERS TO CALENDAR
-function syncReminders() {
-    const savedRemindersStr = localStorage.getItem("reminders");
-    if (savedRemindersStr) {
-        try {
-            const savedReminders = JSON.parse(savedRemindersStr);
+// Load reminders from Supabase and sync to calendar
+async function syncReminders() {
+    const reminders = await loadReminders();
 
-            const reminderEvents: CalendarEvent[] = savedReminders
-                .filter((r: any) => !r.completed && r.remindAt)
-                .map((r: any) => {
-                    const start = dayjs(r.remindAt);
-                    return {
-                        id: r.id,
-                        title: `🔔 ${r.title}`,
-                        start: start.format("YYYY-MM-DD HH:mm"),
-                        end: start.add(1, 'hour').format("YYYY-MM-DD HH:mm"),
-                        color: r.colorClass || "bg-blue-500", // Dynamically apply saved class
-                        rawColor: r.colorHex || "#3b82f6",    // Dynamically apply saved hex
-                    };
-                });
+    const reminderEvents: CalendarEvent[] = reminders
+        .filter((r: Reminder) => !r.completed && r.remindAt)
+        .map((r: Reminder) => {
+            const start = dayjs(r.remindAt);
+            return {
+                id: r.id,
+                title: `🔔 ${r.title}`,
+                start: start.format("YYYY-MM-DD HH:mm"),
+                end: start.add(1, "hour").format("YYYY-MM-DD HH:mm"),
+                color: "bg-blue-500",
+                rawColor: r.colorHex || "#3b82f6",
+            };
+        });
 
-            // Filter out old synced reminders to prevent duplicates, then add the fresh ones
-            state.events = state.events.filter(e => !e.title.startsWith("🔔 "));
-            state.events.push(...reminderEvents);
-
-        } catch (error) {
-            console.error("Failed to parse reminders for calendar sync:", error);
-        }
-    }
+    state.events = state.events.filter(e => !e.title.startsWith("🔔 "));
+    state.events.push(...reminderEvents);
 }
 
-// Run the sync when the script loads
-syncReminders();
+// Syncing Notes to Calendar
+async function syncReviews(){
+    const notes = await loadNotes();
+    const reviewEvents: CalendarEvent[] = notes
+        .filter((n: any) => n.nextReviewDate && !n.needsReview && n.nextReviewDate > Date.now())
+        .map((n: any) => {
+            const start = dayjs(n.nextReviewDate);
+            return {
+                id: `review-${n.id}`,
+                title: `🧠 Review: ${n.title}`,
+                start: start.format("YYYY-MM-DD HH:mm"),
+                end: start.add(30, "minute").format("YYYY-MM-DD HH:mm"), // Default 30 min block
+                color: "bg-purple-500",
+                rawColor: "#a855f7", // Using purple to match your memory check UI
+            };
+        });
 
-// Interactive Reminder Logic
+    state.events = state.events.filter(e => !e.title.startsWith("🧠 Review:"));
+    state.events.push(...reviewEvents);
+}
+
+// Init: load reminders then render
+async function init() {
+    await syncReminders();
+    await syncReviews()
+    renderApp();
+}
+
+window.addEventListener("reminders-updated", async () => {
+    await syncReminders();
+    renderApp();
+});
+
+init();
+
+// Calendar reminder modal
 export function openCalendarReminderModal(defaultDate: any) {
-    // 1. Fetch the elements EXACTLY when the modal needs to open
     const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
     const calTime = document.getElementById("cal-reminder-time") as HTMLInputElement | null;
     const calTitle = document.getElementById("cal-reminder-title") as HTMLInputElement | null;
 
-    if (!calModal || !calTime || !calTitle) {
-        console.error("Calendar modal elements not found on this page.");
-        return;
-    }
+    if (!calModal || !calTime || !calTitle) return;
 
-    // Pre-fill the time based on where the user clicked
     calTime.value = defaultDate.format("YYYY-MM-DDTHH:mm");
     calTitle.value = "";
-
     calModal.showModal();
     calTitle.focus();
 }
 
-// 2. Use Global Event Delegation for the Cancel Button
 document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-    if (target && target.id === "cal-close-modal") {
+    if (target?.id === "cal-close-modal") {
         const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
-        if (calModal) calModal.close();
+        calModal?.close();
     }
 });
 
-// 3. Use Global Event Delegation for the Form Submit
-document.addEventListener("submit", (e) => {
+// Calendar form submit — saves to Supabase
+document.addEventListener("submit", async (e) => {
     const target = e.target as HTMLElement;
+    if (target?.id !== "calendar-reminder-form") return;
 
-    // Only intercept if it is our specific calendar form
-    if (target && target.id === "calendar-reminder-form") {
-        e.preventDefault();
+    e.preventDefault();
 
-        const calTitle = document.getElementById("cal-reminder-title") as HTMLInputElement | null;
-        const calTime = document.getElementById("cal-reminder-time") as HTMLInputElement | null;
-        const calColor = document.getElementById("cal-reminder-color") as HTMLInputElement | null;
-        const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
+    const calTitle = document.getElementById("cal-reminder-title") as HTMLInputElement | null;
+    const calTime = document.getElementById("cal-reminder-time") as HTMLInputElement | null;
+    const calColor = document.getElementById("cal-reminder-color") as HTMLInputElement | null;
+    const calModal = document.getElementById("calendar-reminder-modal") as HTMLDialogElement | null;
 
-        if (!calTitle || !calTime || !calColor || !calModal) return;
+    if (!calTitle || !calTime || !calColor || !calModal) return;
 
-        // FIX: Bulletproof ID generation that won't crash on unsecure local networks
-        const uniqueId = (window.crypto && window.crypto.randomUUID)
-            ? window.crypto.randomUUID()
-            : `rem-${Date.now()}`;
+    const newReminder: Reminder = {
+        id: window.crypto?.randomUUID?.() ?? `rem-${Date.now()}`,
+        title: calTitle.value.trim(),
+        completed: false,
+        createdAt: new Date(),
+        remindAt: new Date(calTime.value),
+        reminderSent: false,
+        notifyOffset: 0,
+        colorClass: "custom-color",
+        colorHex: calColor.value,
+    };
 
-        const newReminder = {
-            id: uniqueId,
-            title: calTitle.value.trim(),
-            completed: false,
-            createdAt: new Date().toISOString(),
-            remindAt: new Date(calTime.value).toISOString(),
-            reminderSent: false,
-            notifyOffset: 0,
-            colorClass: "custom-color",
-            colorHex: calColor.value
-        };
-
-        // Save to database
-        const savedRemindersStr = localStorage.getItem("reminders");
-        const savedReminders = savedRemindersStr ? JSON.parse(savedRemindersStr) : [];
-        savedReminders.push(newReminder);
-        localStorage.setItem("reminders", JSON.stringify(savedReminders));
-
-        // Instantly sync and redraw calendar
-        syncReminders();
-        renderApp();
-
-        calModal.close();
-    }
+    await saveReminder(newReminder);
+    await syncReminders();
+    renderApp();
+    calModal.close();
 });
-
 
 // Helper Utilities
 const Utils = {
@@ -187,11 +159,11 @@ const Utils = {
         const end = dayjs(e.end);
         return s.isSame(end, "day");
     },
-    getCellHeight: () => 60, // 60px per hour
+    getCellHeight: () => 60,
 };
 
 // ==================================================================================
-//  2. Core Engine: Layout Calculation
+//  Core Engine: Layout Calculation
 // ==================================================================================
 const CalendarEngine = {
     generateMonthGrid: (date: any) => {
@@ -202,10 +174,7 @@ const CalendarEngine = {
         while (curr.isBefore(end)) {
             const days = [];
             for (let i = 0; i < 7; i++) {
-                days.push({
-                    date: curr,
-                    dateStr: curr.format("YYYY-MM-DD"),
-                });
+                days.push({ date: curr, dateStr: curr.format("YYYY-MM-DD") });
                 curr = curr.add(1, "day");
             }
             weeks.push(days);
@@ -216,17 +185,11 @@ const CalendarEngine = {
     generateTimeColumns: (date: any, viewType: string) => {
         const days = [];
         if (viewType === "day") {
-            days.push({
-                date: date,
-                dateStr: date.format("YYYY-MM-DD"),
-            });
+            days.push({ date: date, dateStr: date.format("YYYY-MM-DD") });
         } else {
             let curr = date.startOf("week");
             for (let i = 0; i < 7; i++) {
-                days.push({
-                    date: curr,
-                    dateStr: curr.format("YYYY-MM-DD"),
-                });
+                days.push({ date: curr, dateStr: curr.format("YYYY-MM-DD") });
                 curr = curr.add(1, "day");
             }
         }
@@ -235,40 +198,18 @@ const CalendarEngine = {
 
     calculateTimeLayout: (events: CalendarEvent[], dateStr: string) => {
         let dayEvents = events
-            .filter((e) => {
-                const s = dayjs(e.start);
-                return (
-                    s.format("YYYY-MM-DD") === dateStr &&
-                    Utils.isTimeBlockEvent(e)
-                );
-            })
-            .map((e) => {
+            .filter(e => dayjs(e.start).format("YYYY-MM-DD") === dateStr && Utils.isTimeBlockEvent(e))
+            .map(e => {
                 const s = dayjs(e.start);
                 const end = dayjs(e.end);
                 const startMin = s.hour() * 60 + s.minute();
                 const duration = end.diff(s, "minute");
-                const endMin = startMin + duration;
-
                 const top = startMin * (Utils.getCellHeight() / 60);
-                const height = Math.max(
-                    20,
-                    duration * (Utils.getCellHeight() / 60),
-                );
-
-                return {
-                    origin: e,
-                    top,
-                    height,
-                    startMin,
-                    endMin,
-                    widthPercent: 100,
-                    leftPercent: 0,
-                    colIndex: 0
-                };
+                const height = Math.max(20, duration * (Utils.getCellHeight() / 60));
+                return { origin: e, top, height, startMin, endMin: startMin + duration, widthPercent: 100, leftPercent: 0, colIndex: 0 };
             });
 
         if (dayEvents.length === 0) return [];
-
         dayEvents.sort((a, b) => a.startMin - b.startMin || b.endMin - a.endMin);
 
         const groups: any[] = [];
@@ -288,68 +229,45 @@ const CalendarEngine = {
         }
         groups.push(currentGroup);
 
-        groups.forEach((group) => {
+        groups.forEach(group => {
             const columns: number[] = [];
             group.forEach((ev: any) => {
                 let placed = false;
                 for (let i = 0; i < columns.length; i++) {
-                    if (columns[i] <= ev.startMin) {
-                        columns[i] = ev.endMin;
-                        ev.colIndex = i;
-                        placed = true;
-                        break;
-                    }
+                    if (columns[i] <= ev.startMin) { columns[i] = ev.endMin; ev.colIndex = i; placed = true; break; }
                 }
-                if (!placed) {
-                    columns.push(ev.endMin);
-                    ev.colIndex = columns.length - 1;
-                }
+                if (!placed) { columns.push(ev.endMin); ev.colIndex = columns.length - 1; }
             });
-
             const numCols = columns.length;
-            group.forEach((ev: any) => {
-                ev.widthPercent = 100 / numCols;
-                ev.leftPercent = ev.colIndex * ev.widthPercent;
-            });
+            group.forEach((ev: any) => { ev.widthPercent = 100 / numCols; ev.leftPercent = ev.colIndex * ev.widthPercent; });
         });
 
         return dayEvents;
     },
 
     calculateMonthLayout: (events: CalendarEvent[], weekStart: any, weekEnd: any) => {
-        const weekEvents = events.filter((e) => {
-            return (
-                !dayjs(e.end).isBefore(weekStart) &&
-                !dayjs(e.start).isAfter(weekEnd)
-            );
-        });
-
-        const visualItems = weekEvents.map((e) => {
+        const weekEvents = events.filter(e => !dayjs(e.end).isBefore(weekStart) && !dayjs(e.start).isAfter(weekEnd));
+        const visualItems = weekEvents.map(e => {
             const s = dayjs(e.start);
             const end = dayjs(e.end);
             const displayStart = s.isBefore(weekStart) ? weekStart : s;
             const displayEnd = end.isAfter(weekEnd) ? weekEnd : end;
-
             return {
                 origin: e,
                 startIdx: displayStart.startOf("day").diff(weekStart.startOf("day"), "day"),
                 span: displayEnd.startOf("day").diff(displayStart.startOf("day"), "day") + 1,
                 isStart: !s.isBefore(weekStart),
                 isEnd: !end.isAfter(weekEnd),
-                slot: 0
+                slot: 0,
             };
         });
 
         visualItems.sort((a, b) => a.startIdx - b.startIdx || b.span - a.span);
         const slots: number[] = [];
-        visualItems.forEach((item) => {
+        visualItems.forEach(item => {
             let i = 0;
             while (true) {
-                if (!slots[i] || slots[i] < item.startIdx) {
-                    slots[i] = item.startIdx + item.span - 1;
-                    item.slot = i;
-                    break;
-                }
+                if (!slots[i] || slots[i] < item.startIdx) { slots[i] = item.startIdx + item.span - 1; item.slot = i; break; }
                 i++;
             }
         });
@@ -358,7 +276,7 @@ const CalendarEngine = {
 };
 
 // ==================================================================================
-//  3. Drag Manager
+//  Drag Manager
 // ==================================================================================
 const DragManager = {
     state: null as any,
@@ -367,24 +285,12 @@ const DragManager = {
         el.onmousedown = (e) => {
             if (e.button !== 0) return;
             e.stopPropagation();
-
             const row = el.closest(".month-row") as HTMLElement;
             const cellW = row.offsetWidth / 7;
             let mode = "move";
             if ((e.target as HTMLElement).classList.contains("left")) mode = "resize-left";
             if ((e.target as HTMLElement).classList.contains("right")) mode = "resize-right";
-
-            this.startDrag({
-                type: "month",
-                mode,
-                event: eventData,
-                startX: e.clientX,
-                startDate: dayjs(eventData.start),
-                endDate: dayjs(eventData.end),
-                cellW,
-                renderCallback,
-                clickOffsetDays: Math.floor((e.clientX - el.getBoundingClientRect().left) / cellW),
-            });
+            this.startDrag({ type: "month", mode, event: eventData, startX: e.clientX, startDate: dayjs(eventData.start), endDate: dayjs(eventData.end), cellW, renderCallback, clickOffsetDays: Math.floor((e.clientX - el.getBoundingClientRect().left) / cellW) });
         };
     },
 
@@ -392,41 +298,24 @@ const DragManager = {
         el.onmousedown = (e) => {
             if (e.button !== 0) return;
             e.stopPropagation();
-
             const col = el.closest(".day-column") as HTMLElement;
             const colRect = col.getBoundingClientRect();
-
             let mode = "move";
             if ((e.target as HTMLElement).classList.contains("resize-v")) mode = "resize-bottom";
-
-            this.startDrag({
-                type: "time",
-                mode,
-                event: eventData,
-                startX: e.clientX,
-                startY: e.clientY,
-                startDate: dayjs(eventData.start),
-                endDate: dayjs(eventData.end),
-                colW: colRect.width,
-                renderCallback,
-                origStartMin: dayjs(eventData.start).hour() * 60 + dayjs(eventData.start).minute(),
-                origDuration: dayjs(eventData.end).diff(dayjs(eventData.start), "minute"),
-            });
+            this.startDrag({ type: "time", mode, event: eventData, startX: e.clientX, startY: e.clientY, startDate: dayjs(eventData.start), endDate: dayjs(eventData.end), colW: colRect.width, renderCallback, origStartMin: dayjs(eventData.start).hour() * 60 + dayjs(eventData.start).minute(), origDuration: dayjs(eventData.end).diff(dayjs(eventData.start), "minute") });
         };
     },
 
     startDrag(stateData: any) {
         this.state = stateData;
         document.body.style.cursor = "grabbing";
-        document.querySelectorAll(`[data-eid="${stateData.event.id}"]`).forEach((el) => el.classList.add("is-dragging-source"));
-
+        document.querySelectorAll(`[data-eid="${stateData.event.id}"]`).forEach(el => el.classList.add("is-dragging-source"));
         const proxy = document.getElementById("drag-proxy")!;
         proxy.innerHTML = stateData.event.title;
         proxy.style.backgroundColor = stateData.event.rawColor;
         proxy.style.color = "white";
         proxy.style.padding = "4px 8px";
         proxy.style.fontSize = "12px";
-
         document.addEventListener("mousemove", this.onMove);
         document.addEventListener("mouseup", this.onUp);
     },
@@ -435,13 +324,11 @@ const DragManager = {
         const self = DragManager;
         if (!self.state) return;
         const s = self.state;
-
         const proxy = document.getElementById("drag-proxy")!;
         proxy.style.visibility = "visible";
         proxy.style.left = e.clientX + 10 + "px";
         proxy.style.top = e.clientY + 10 + "px";
         proxy.style.transform = "none";
-
         if (s.type === "month") self.handleMonthMove(e, s);
         if (s.type === "time") self.handleTimeMove(e, s);
     },
@@ -449,23 +336,13 @@ const DragManager = {
     handleMonthMove(e: MouseEvent, s: any) {
         const row = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement)?.closest(".month-row") as HTMLElement;
         if (!row) return;
-
         const rowStart = dayjs(row.dataset.date);
         const cellIdx = Math.floor((e.clientX - row.getBoundingClientRect().left) / s.cellW);
         const hoverDate = rowStart.add(Math.max(0, Math.min(6, cellIdx)), "day");
-
         let newStart = s.startDate;
         let newEnd = s.endDate;
-
-        if (s.mode === "move") {
-            const duration = s.endDate.diff(s.startDate, "day");
-            newStart = hoverDate;
-            newEnd = newStart.add(duration, "day");
-        } else if (s.mode === "resize-right") {
-            newEnd = hoverDate;
-            if (newEnd.isBefore(newStart)) newEnd = newStart;
-        }
-
+        if (s.mode === "move") { const duration = s.endDate.diff(s.startDate, "day"); newStart = hoverDate; newEnd = newStart.add(duration, "day"); }
+        else if (s.mode === "resize-right") { newEnd = hoverDate; if (newEnd.isBefore(newStart)) newEnd = newStart; }
         DragManager.renderMonthGhost(newStart, newEnd);
         s.tentativeStart = newStart;
         s.tentativeEnd = newEnd;
@@ -474,51 +351,32 @@ const DragManager = {
     handleTimeMove(e: MouseEvent, s: any) {
         const col = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement)?.closest(".day-column") as HTMLElement;
         if (!col) return;
-
         const newDateBase = dayjs(col.dataset.date);
         const rect = col.getBoundingClientRect();
-
         const relY = e.clientY - rect.top;
         const rawMins = (relY / Utils.getCellHeight()) * 60;
         const snappedMins = Math.max(0, Math.min(1440, Math.round(rawMins / 15) * 15));
-
         let newStart, newEnd;
-
-        if (s.mode === "move") {
-            newStart = newDateBase.hour(0).minute(snappedMins);
-            newEnd = newStart.add(s.origDuration, "minute");
-        } else if (s.mode === "resize-bottom") {
-            newStart = s.startDate;
-            if (newDateBase.isSame(s.startDate, "day")) {
-                const endMins = Math.max(s.origStartMin + 15, snappedMins);
-                newEnd = newDateBase.hour(0).minute(endMins);
-            } else {
-                newEnd = s.endDate;
-            }
-        }
-
+        if (s.mode === "move") { newStart = newDateBase.hour(0).minute(snappedMins); newEnd = newStart.add(s.origDuration, "minute"); }
+        else if (s.mode === "resize-bottom") { newStart = s.startDate; newEnd = newDateBase.isSame(s.startDate, "day") ? newDateBase.hour(0).minute(Math.max(s.origStartMin + 15, snappedMins)) : s.endDate; }
         DragManager.renderTimeGhost(newStart, newEnd);
         s.tentativeStart = newStart;
         s.tentativeEnd = newEnd;
     },
 
     renderMonthGhost(start: any, end: any) {
-        document.querySelectorAll(".ghost-event").forEach((el) => el.remove());
-        const rows = document.querySelectorAll(".month-row");
-        rows.forEach((row) => {
+        document.querySelectorAll(".ghost-event").forEach(el => el.remove());
+        document.querySelectorAll(".month-row").forEach(row => {
             const rElement = row as HTMLElement;
             const rStart = dayjs(rElement.dataset.date);
             const rEnd = rStart.add(6, "day");
             if (!end.isBefore(rStart) && !start.isAfter(rEnd)) {
                 const dStart = start.isBefore(rStart) ? rStart : start;
                 const dEnd = end.isAfter(rEnd) ? rEnd : end;
-                const left = dStart.diff(rStart, "day") * 14.2857;
-                const width = (dEnd.diff(dStart, "day") + 1) * 14.2857;
-
                 const g = document.createElement("div");
                 g.className = "ghost-event";
-                g.style.left = left + "%";
-                g.style.width = width + "%";
+                g.style.left = dStart.diff(rStart, "day") * 14.2857 + "%";
+                g.style.width = (dEnd.diff(dStart, "day") + 1) * 14.2857 + "%";
                 g.style.top = "30px";
                 g.style.height = "26px";
                 row.appendChild(g);
@@ -527,18 +385,13 @@ const DragManager = {
     },
 
     renderTimeGhost(start: any, end: any) {
-        document.querySelectorAll(".ghost-event").forEach((el) => el.remove());
-
-        const dateStr = start.format("YYYY-MM-DD");
-        const col = document.querySelector(`.day-column[data-date="${dateStr}"]`);
+        document.querySelectorAll(".ghost-event").forEach(el => el.remove());
+        const col = document.querySelector(`.day-column[data-date="${start.format("YYYY-MM-DD")}"]`);
         if (col) {
-            const top = (start.hour() * 60 + start.minute()) * (Utils.getCellHeight() / 60);
-            const h = end.diff(start, "minute") * (Utils.getCellHeight() / 60);
-
             const g = document.createElement("div");
             g.className = "ghost-event";
-            g.style.top = top + "px";
-            g.style.height = h + "px";
+            g.style.top = (start.hour() * 60 + start.minute()) * (Utils.getCellHeight() / 60) + "px";
+            g.style.height = end.diff(start, "minute") * (Utils.getCellHeight() / 60) + "px";
             g.style.width = "90%";
             g.style.left = "5%";
             g.innerText = `${start.format("HH:mm")} - ${end.format("HH:mm")}`;
@@ -549,40 +402,33 @@ const DragManager = {
         }
     },
 
-    onUp: () => {
+    // Drag drop — saves updated reminder time to Supabase
+    onUp: async () => {
         const self = DragManager;
         if (!self.state) return;
         const s = self.state;
 
         document.body.style.cursor = "";
-
         document.getElementById("drag-proxy")!.style.visibility = "hidden";
-        document.querySelectorAll(".ghost-event").forEach((el) => el.remove());
-        document.querySelectorAll(".is-dragging-source").forEach((el) => el.classList.remove("is-dragging-source"));
+        document.querySelectorAll(".ghost-event").forEach(el => el.remove());
+        document.querySelectorAll(".is-dragging-source").forEach(el => el.classList.remove("is-dragging-source"));
         document.removeEventListener("mousemove", self.onMove);
         document.removeEventListener("mouseup", self.onUp);
 
         if (s.tentativeStart && s.tentativeEnd) {
-            const target = state.events.find((ev) => ev.id === s.event.id);
+            const target = state.events.find(ev => ev.id === s.event.id);
             if (target) {
                 target.start = s.tentativeStart.format("YYYY-MM-DD HH:mm");
                 target.end = s.tentativeEnd.format("YYYY-MM-DD HH:mm");
 
-                const savedRemindersStr = localStorage.getItem("reminders");
-                if (savedRemindersStr) {
-                    const savedReminders = JSON.parse(savedRemindersStr);
-
-                    const reminderIndex = savedReminders.findIndex((r:any) => r.id === s.event.id);
-
-                    if (reminderIndex > -1 ){
-                        savedReminders[reminderIndex].remindAt = s.tentativeStart.toDate().toISOString();
-
-                        savedReminders[reminderIndex].reminderSent = false;
-
-                        localStorage.setItem("reminders", JSON.stringify(savedReminders));
-                    }
+                // Update reminder time in Supabase if this event is a reminder
+                const allReminders = await loadReminders();
+                const matched = allReminders.find((r: Reminder) => r.id === s.event.id);
+                if (matched) {
+                    matched.remindAt = s.tentativeStart.toDate();
+                    matched.reminderSent = false;
+                    await saveReminder(matched);
                 }
-
             }
             s.renderCallback();
         }
@@ -591,33 +437,29 @@ const DragManager = {
 };
 
 // ==================================================================================
-//  4. View Rendering
+//  View Rendering
 // ==================================================================================
 const app = document.getElementById("app")!;
 
 export function renderApp() {
     let preservedScrollTop: number | null = null;
     const existingScroll = document.querySelector(".time-grid-container");
-    if (existingScroll) {
-        preservedScrollTop = existingScroll.scrollTop;
-    }
+    if (existingScroll) preservedScrollTop = existingScroll.scrollTop;
 
     app.innerHTML = "";
     const container = document.createElement("div");
-    container.className = "w-full max-w-6xl bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"; 
+    container.className = "w-full max-w-6xl bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden";
     container.style.maxHeight = "90vh";
 
-    // --- Header ---
     const header = document.createElement("div");
-   header.className = "flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100"; 
-    // Create a group for the Back Button and Title
+    header.className = "flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100";
+
     const titleGroup = document.createElement("div");
     titleGroup.className = "flex items-center gap-4";
 
-    // The Back to Dashboard Link
     const backBtn = document.createElement("a");
-    backBtn.href = "/index.html"; // Adjust to "/" if you moved index.html back to the root
-    backBtn.className = "text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors cursor-pointer text-decoration-none";
+    backBtn.href = "/index.html";
+    backBtn.className = "text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors cursor-pointer";
     backBtn.innerHTML = "&larr; Back to Dashboard";
 
     const title = document.createElement("h1");
@@ -629,14 +471,11 @@ export function renderApp() {
 
     const viewSwitch = document.createElement("div");
     viewSwitch.className = "flex bg-gray-200/60 backdrop-blur-sm p-1 rounded-xl";
-    ["month", "week", "day"].forEach((v) => {
+    ["month", "week", "day"].forEach(v => {
         const btn = document.createElement("button");
         btn.className = `px-3 py-1 text-sm rounded-md transition ${state.currentView === v ? "bg-white shadow text-blue-600 font-medium" : "text-gray-500 hover:text-gray-700"}`;
         btn.innerText = v === "month" ? "Month" : v === "week" ? "Week" : "Day";
-        btn.onclick = () => {
-            state.currentView = v as any;
-            renderApp();
-        };
+        btn.onclick = () => { state.currentView = v as any; renderApp(); };
         viewSwitch.appendChild(btn);
     });
 
@@ -648,56 +487,44 @@ export function renderApp() {
         <button onclick="window.moveDate(1)" class="px-3 py-1 bg-gray-50 hover:bg-gray-100 rounded border text-sm">Next</button>
     `;
 
-    header.appendChild(titleGroup); // Append the group instead of just the title
+    header.appendChild(titleGroup);
     header.appendChild(viewSwitch);
     header.appendChild(nav);
     container.appendChild(header);
 
-    // --- View Body ---
     const viewBody = document.createElement("div");
     viewBody.className = "flex-1 overflow-hidden relative";
 
-    if (state.currentView === "month") {
-        renderMonthView(viewBody);
-    } else {
-        renderTimeView(viewBody, preservedScrollTop);
-    }
+    if (state.currentView === "month") renderMonthView(viewBody);
+    else renderTimeView(viewBody, preservedScrollTop);
 
     container.appendChild(viewBody);
     app.appendChild(container);
 }
 
-// --- Render Month View ---
 function renderMonthView(container: HTMLElement) {
     const head = document.createElement("div");
     head.className = "grid grid-cols-7 border-b bg-gray-50";
-    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach((d) => (head.innerHTML += `<div class="py-2 text-center text-xs font-bold text-gray-400">${d}</div>`));
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(d => (head.innerHTML += `<div class="py-2 text-center text-xs font-bold text-gray-400">${d}</div>`));
     container.appendChild(head);
 
     const body = document.createElement("div");
     body.className = "overflow-y-auto h-[600px]";
 
-    const weeks = CalendarEngine.generateMonthGrid(state.currentDate);
-    weeks.forEach((weekDays) => {
+    CalendarEngine.generateMonthGrid(state.currentDate).forEach(weekDays => {
         const row = document.createElement("div");
         row.className = "month-row grid grid-cols-7 relative";
         row.dataset.date = weekDays[0].dateStr;
 
         weekDays.forEach((d: any) => {
             const cell = document.createElement("div");
-            cell.className = "month-cell p-2 cursor-pointer hover:bg-blue-50 rounded-lg transition-all"; 
+            cell.className = "month-cell p-2 cursor-pointer hover:bg-blue-50 rounded-lg transition-all";
             cell.innerHTML = `<div class="text-right text-xs ${d.date.month() === state.currentDate.month() ? "text-gray-700" : "text-gray-300"}">${d.date.date()}</div>`;
-
-            cell.onclick = (e) => {
-                if ((e.target as HTMLElement).closest('.event-base')) return;
-                openCalendarReminderModal(d.date.hour(12).minute(0));
-            };
-
+            cell.onclick = (e) => { if ((e.target as HTMLElement).closest(".event-base")) return; openCalendarReminderModal(d.date.hour(12).minute(0)); };
             row.appendChild(cell);
         });
 
-        const layout = CalendarEngine.calculateMonthLayout(state.events, weekDays[0].date.startOf("day"), weekDays[6].date.endOf('day'));
-        layout.forEach((item) => {
+        CalendarEngine.calculateMonthLayout(state.events, weekDays[0].date.startOf("day"), weekDays[6].date.endOf("day")).forEach(item => {
             const el = document.createElement("div");
             el.style.backgroundColor = item.origin.rawColor;
             el.className = `event-base event-bar ${item.origin.color}`;
@@ -716,7 +543,6 @@ function renderMonthView(container: HTMLElement) {
     container.appendChild(body);
 }
 
-// --- Render Week/Day View ---
 function renderTimeView(container: HTMLElement, initialScrollTop: number | null) {
     const columns = CalendarEngine.generateTimeColumns(state.currentDate, state.currentView);
 
@@ -753,36 +579,27 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
         col.dataset.date = colData.dateStr;
 
         col.onclick = (e) => {
-            if ((e.target as HTMLElement).closest('.event-base')) return;
-
+            if ((e.target as HTMLElement).closest(".event-base")) return;
             const rect = col.getBoundingClientRect();
             const relY = e.clientY - rect.top;
-
-            const rawMins = (relY/ Utils.getCellHeight()) * 80;
-
-            const snappedMins = Math.max(0, Math.min(1440, Math.floor(rawMins / 30) * 30));
-
+            const snappedMins = Math.max(0, Math.min(1440, Math.floor((relY / Utils.getCellHeight()) * 80 / 30) * 30));
             openCalendarReminderModal(colData.date.hour(0).minute(snappedMins));
-        }
+        };
 
-        const layout = CalendarEngine.calculateTimeLayout(state.events, colData.dateStr);
-        layout.forEach((item: any) => {
+        CalendarEngine.calculateTimeLayout(state.events, colData.dateStr).forEach((item: any) => {
             const el = document.createElement("div");
             el.className = `event-base event-block ${item.origin.color}`;
             el.style.backgroundColor = item.origin.rawColor;
             el.dataset.eid = item.origin.id;
             el.style.top = `${item.top}px`;
             el.style.height = `${item.height}px`;
-
             el.style.width = `calc(${item.widthPercent}% - 2px)`;
             el.style.left = `${item.leftPercent}%`;
-
             el.innerHTML = `
                 <div class="time-text">${dayjs(item.origin.start).format("HH:mm")} - ${dayjs(item.origin.end).format("HH:mm")}</div>
                 <div class="font-bold truncate">${item.origin.title}</div>
                 <div class="resize-handle resize-v"></div>
             `;
-
             DragManager.initTimeDrag(el, item.origin, item, renderApp);
             col.appendChild(el);
         });
@@ -795,15 +612,10 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
     container.appendChild(scrollWrap);
 
     setTimeout(() => {
-        if (initialScrollTop !== null && initialScrollTop !== undefined) {
-            scrollWrap.scrollTop = initialScrollTop;
-        } else {
-            scrollWrap.scrollTop = 480; // 8:00 (default)
-        }
+        scrollWrap.scrollTop = initialScrollTop ?? 480;
     }, 0);
 }
 
-// Window Navigation Event Handlers exposed so HTML buttons can use them
 (window as any).moveDate = (delta: number) => {
     const unit = state.currentView === "month" ? "month" : state.currentView === "week" ? "week" : "day";
     state.currentDate = state.currentDate.add(delta, unit);
@@ -815,5 +627,3 @@ function renderTimeView(container: HTMLElement, initialScrollTop: number | null)
     renderApp();
 };
 
-// Initial Render
-renderApp();
