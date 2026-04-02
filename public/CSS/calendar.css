@@ -199,89 +199,54 @@ body {
     transform-origin: top left;
 }
 
+
 /* =========================================
-   NEON NIGHT (DARK MODE) OVERRIDES
+   DARK MODE OVERRIDES
    ========================================= */
 
-/* 1. Deep Dark Backgrounds */
 .dark-mode .view-container,
 .dark-mode .time-grid-container,
 .dark-mode .time-body,
 .dark-mode .time-header,
 .dark-mode .time-axis,
 .dark-mode .day-column {
-    background-color: #020617 !important; /* Luminous Equinox Midnight */
+    background-color: #111827 !important; / Deep slate/black background /
 }
 
-/* Also catch the Tailwind classes injected by the script */
 .dark-mode .bg-white,
 .dark-mode .bg-gray-50 {
-    background-color: #0f172a !important; /* Slightly lighter slate for contrast */
+    background-color: #111827 !important;
 }
 
-/* 2. Subtle Neon/Glass Lines for Borders */
 .dark-mode .month-row,
 .dark-mode .month-cell,
 .dark-mode .time-header,
 .dark-mode .time-header-cell,
 .dark-mode .time-axis,
 .dark-mode .day-column {
-    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important; / Highly visible white /
 }
 
-/* 3. Force the dynamically injected script lines to be subtle */
-.dark-mode .day-column > div[style*="border-top"],
-.dark-mode .time-axis-label[style*="border-top"] {
-    border-top-color: rgba(255, 255, 255, 0.1) !important;
+.dark-mode .day-column > div[style="border-top"],
+.dark-mode .time-axis-label[style="border-top"] {
+    border-top-color: rgba(255, 255, 255, 0.6) !important;
     opacity: 1 !important;
 }
 
-/* 4. Text colors for axis labels */
 .dark-mode .time-axis-label {
-    color: #94a3b8 !important; /* slate-400 */
+    color: #ffffff !important;
 }
 
-/* 5. Subtle horizontal repeating grid lines */
 .dark-mode .day-column {
     background: repeating-linear-gradient(
             to bottom,
             transparent 0,
             transparent 59px,
-            rgba(255, 255, 255, 0.05) 60px
+            rgba(255, 255, 255, 0.6) 60px
     ) !important;
 }
 
-/* 6. Neon Purple Ghost Event for Drag and Drop */
 .dark-mode .ghost-event {
-    background-color: rgba(139, 92, 246, 0.15); /* Translucent Purple */
-    border-color: rgba(139, 92, 246, 0.8); /* Solid Purple Border */
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-}
-
-/* 7. Fix the Header Gradient */
-.dark-mode .from-blue-50 {
-    background-image: none !important;
-    background-color: rgba(30, 41, 59, 0.4) !important; /* Deep translucent slate */
-}
-
-/* 8. Fix the "Today" Column & Button */
-.dark-mode .bg-blue-50 {
-    background-color: rgba(59, 130, 246, 0.15) !important; /* Glowing neon blue */
-    color: #93c5fd !important; /* Light blue text */
-}
-
-/* 9. Fix the "Today" Button Border */
-.dark-mode .border-blue-100 {
-    border-color: rgba(59, 130, 246, 0.3) !important;
-}
-
-/* 10. Fix the View Switch Background (Month/Week/Day) */
-.dark-mode .bg-gray-200\/60 {
-    background-color: rgba(15, 23, 42, 0.6) !important;
-}
-
-/* 11. Fix the Calendar Container Background */
-.dark-mode .from-white {
-    background-image: none !important;
-    background-color: transparent !important;
+    background-color: rgba(96, 165, 250, 0.2);
+    border-color: rgba(96, 165, 250, 1);
 }
