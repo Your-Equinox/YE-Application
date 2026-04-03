@@ -95,3 +95,12 @@ Node: https://nodejs.org/learn/getting-started/debugging
 
 Vite: https://vite.dev/guide/troubleshooting
 
+## Acknowledgements
+[Google Fonts](https://fonts.google.com/)
+
+[Html Documentation](https://developer.mozilla.org/en-US/docs/Web/HTML)
+
+[Tailwindcss Documentation](https://tailwindcss.com/docs/installation/using-vite)
+
+[TypeScript Documentation](https://www.typescriptlang.org/docs/)
+
