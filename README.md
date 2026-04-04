@@ -37,26 +37,32 @@ Here are the following steps should you wish to copy this system locally to your
 ```
 git clone https://github.com/Your-Equinox/YE-Application.git 
 ```
+<img width="776" height="216" alt="image" src="https://github.com/user-attachments/assets/362b612d-b524-4153-847d-559c08ee121c" />
 
 2. Open the YE application using your code environment
 
-3. Install the necessary prequisites using the following commands.
+3. Install the necessary prequisites using the following commands into your terminal within your coding environment.
 ```
 npm install
 ```
+<img width="1508" height="521" alt="image" src="https://github.com/user-attachments/assets/709e4d79-e9de-4e8c-9197-f7ba8658564b" />
+
 4. Paste either of the following commands into your terminal  to start your own local version of the application
 
 This is to start on your own local system
 ```
 npm run dev
 ```
+<img width="351" height="192" alt="image" src="https://github.com/user-attachments/assets/ef2f105a-848e-44d8-9a28-d2cf26edc9b2" />
+
 
 This is to host YE over the internet if that is your wish 
 ```
-npm start dev -- --host
+npm run dev -- --host
 ```
+<img width="393" height="223" alt="image" src="https://github.com/user-attachments/assets/1adabb94-06e8-414e-bfbb-467a62c5b5f2" />
 
-5. Login using your own custom credentials
+5. Login using your own custom credentials (Note: In your browser if you are not brought to the authentication put in (Ex: http://localhost:5173/auth.html))
 
 6. Welcome to YE locally!!
 
@@ -88,4 +94,13 @@ To obtain access any of the quiz material a google gemini API key is required. T
 Node: https://nodejs.org/learn/getting-started/debugging
 
 Vite: https://vite.dev/guide/troubleshooting
+
+## Acknowledgements
+[Google Fonts](https://fonts.google.com/)
+
+[Html Documentation](https://developer.mozilla.org/en-US/docs/Web/HTML)
+
+[Tailwindcss Documentation](https://tailwindcss.com/docs/installation/using-vite)
+
+[TypeScript Documentation](https://www.typescriptlang.org/docs/)
 
