@@ -247,3 +247,39 @@ html.dark-mode body, body.dark-mode {
     background-color: rgba(30, 41, 59, 0.95) !important;
     border-color: #334155 !important;
 }
+
+/* =========================================
+   IMPORT / EXPORT MENU DARK MODE
+   ========================================= */
+
+/* Main Import and Export Toggle Buttons */
+.dark-mode #importDocument-btn,
+.dark-mode #export-menu-btn {
+    background-color: rgba(30, 41, 59, 0.8) !important; /* Sleek dark slate background */
+    color: #f8fafc !important; /* Crisp white text */
+    border-color: #334155 !important; /* Subtle dark border */
+}
+
+/* Hover state for the main buttons */
+.dark-mode #importDocument-btn:hover,
+.dark-mode #export-menu-btn:hover {
+    background-color: #334155 !important; /* Slightly lighter slate on hover */
+}
+
+/* The actual dropdown container */
+.dark-mode #export-dropdown {
+    background-color: #1e293b !important; /* Solid dark slate so nothing bleeds through */
+    border-color: #334155 !important;
+}
+
+/* The individual format options inside the dropdown */
+.dark-mode #export-dropdown button {
+    color: #e2e8f0 !important; /* Light text so it's readable */
+    border-color: #334155 !important; /* Darkens the divider lines between options */
+}
+
+/* The sleek hover state for the options (No bright white!) */
+.dark-mode #export-dropdown button:hover {
+    background-color: #334155 !important; /* Smooth dark hover state */
+    color: #ffffff !important;
+}

@@ -1,0 +1,204 @@
+/* ===== DYSLEXIA-FRIENDLY FONT ===== */
+.dyslexia-mode {
+    font-family: 'OpenDyslexic', 'Comic Sans MS', 'Courier New', monospace !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.1em !important;
+    line-height: 1.5 !important;
+}
+
+.dyslexia-mode p,
+.dyslexia-mode div,
+.dyslexia-mode span,
+.dyslexia-mode input,
+.dyslexia-mode textarea,
+.dyslexia-mode .ProseMirror {
+    font-family: 'OpenDyslexic', 'Comic Sans MS', 'Courier New', monospace !important;
+}
+
+/* ===== FONT SIZE CONTROLS ===== */
+.font-size-small {
+    font-size: 14px !important;
+}
+.font-size-small p,
+.font-size-small div,
+.font-size-small .ProseMirror {
+    font-size: 14px !important;
+}
+
+.font-size-medium {
+    font-size: 18px !important;
+}
+.font-size-medium p,
+.font-size-medium div,
+.font-size-medium .ProseMirror {
+    font-size: 18px !important;
+}
+
+.font-size-large {
+    font-size: 22px !important;
+}
+.font-size-large p,
+.font-size-large div,
+.font-size-large .ProseMirror {
+    font-size: 22px !important;
+}
+
+.font-size-xlarge {
+    font-size: 26px !important;
+}
+.font-size-xlarge p,
+.font-size-xlarge div,
+.font-size-xlarge .ProseMirror {
+    font-size: 26px !important;
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+.high-contrast {
+    --bg-primary: #000000 !important;
+    --bg-secondary: #111111 !important;
+    --text-primary: #ffffff !important;
+    --text-secondary: #ffff00 !important;
+    --border-color: #ffffff !important;
+    --accent-color: #00ff00 !important;
+}
+
+.high-contrast a {
+    color: #00ff00 !important;
+    text-decoration: underline !important;
+}
+
+.high-contrast button {
+    background-color: #222 !important;
+    color: #ffff00 !important;
+    border-color: #ffffff !important;
+}
+
+/* ===== ACCESSIBILITY TOOLBAR - COLLAPSIBLE ===== */
+.access-sidebar {
+    height: auto;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow-x: hidden;
+    transition: 0.3s;
+    border-radius: 20px 0 0 20px;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    /*X button has its own row */
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Dark Mode Overrides */
+.dark-mode .access-sidebar {
+    background-color: rgba(15, 23, 42, 0.85); /* Translucent dark slate for dark mode */
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: -4px 0 12px rgba(0,0,0,0.4);
+}
+
+.access-sidebar button {
+    padding: 12px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    color: var(--text-primary, #1f2937); /* Light mode text fallback */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.2s;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    width: calc(100% - 16px); /* Fixes width to account for margins */
+    cursor: pointer;
+    border-radius: 30px;
+    margin: 0 8px;
+}
+
+/* Force bright text on buttons when in dark mode */
+.dark-mode .access-sidebar button {
+    color: #f1f5f9;
+}
+
+.access-sidebar button:hover {
+    background: var(--accent-color, #3b82f6);
+    color: white;
+}
+
+.access-sidebar .active {
+    background: var(--accent-color, #3b82f6);
+    color: white;
+}
+
+/* Ensure hover/active states pop in dark mode */
+.dark-mode .access-sidebar button:hover,
+.dark-mode .access-sidebar .active {
+    background: var(--accent-color, #6366f1);
+    color: #ffffff;
+}
+
+.access-sidebar .closebtn {
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    font-size: 24px;
+    margin-left: 0;
+    padding: 4px 8px;
+    width: auto;
+}
+
+/* Soften the close button in dark mode so it isn't glaring */
+.dark-mode .access-sidebar .closebtn {
+    color: #94a3b8;
+}
+.dark-mode .access-sidebar .closebtn:hover {
+    color: #ffffff;
+}
+
+.access-openbtn {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    cursor: pointer;
+    background-color: var(--accent-color, #3b82f6);
+    color: white;
+    padding: 12px 8px;
+    border: none;
+    border-radius: 30px 0 0 30px;
+    z-index: 999;
+    transition: 0.2s;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.access-openbtn:hover {
+    padding-right: 12px;
+}
+
+
+/* ===== HIGH CONTRAST: FLASHCARD BUTTON ===== */
+.high-contrast #toggle-flashcard-btn {
+    background-color: #000000 !important;
+    color: var(--text-secondary, #ffff00) !important;
+    border: 2px solid var(--text-secondary, #ffff00) !important;
+}
+
+/* Invert colors on hover for clear feedback */
+.high-contrast #toggle-flashcard-btn:hover {
+    background-color: var(--text-secondary, #ffff00) !important;
+    color: #000000 !important;
+}
