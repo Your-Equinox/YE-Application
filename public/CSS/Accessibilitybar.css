@@ -190,15 +190,22 @@
 }
 
 
-/* ===== HIGH CONTRAST: FLASHCARD BUTTON ===== */
-.high-contrast #toggle-flashcard-btn {
-    background-color: #000000 !important;
-    color: var(--text-secondary, #ffff00) !important;
-    border: 2px solid var(--text-secondary, #ffff00) !important;
+/* FORCE SYNC: FLASHCARD BUTTON IN HIGH CONTRAST */
+.high-contrast #toggle-flashcard-btn,
+.high-contrast #toggle-flashcard-btn:hover,
+.high-contrast #toggle-flashcard-btn.active {
+    /* Use 'background' shorthand to kill gradients and images */
+    background: #000000 !important;
+    /* Force high-visibility border and text */
+    color: #ffff00 !important;
+    border: 3px solid #ffff00 !important;
+    /* Ensure emoji/icon is also visible */
+    filter: brightness(0) invert(1) sepia(1) saturate(10000%) hue-rotate(20deg) !important;
+    box-shadow: none !important;
 }
 
-/* Invert colors on hover for clear feedback */
-.high-contrast #toggle-flashcard-btn:hover {
-    background-color: var(--text-secondary, #ffff00) !important;
-    color: #000000 !important;
+/* Ensure text inside button isn't overridden by Tailwind utility classes */
+.high-contrast #toggle-flashcard-btn span,
+.high-contrast #toggle-flashcard-btn {
+    text-shadow: none !important;
 }
