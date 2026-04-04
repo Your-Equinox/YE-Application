@@ -120,15 +120,25 @@ The .env file serves as the connection credentials between the Vite app and Supa
 
 a. The Supabase URL (which can be found on the Project Dashboard).
 b. and the anon public key (which can be found in Project Settings -> API)
+
+
 <img width="557" height="121" alt="image" src="https://github.com/user-attachments/assets/c1eec0c7-9501-4789-8df1-2a654f398278" />
 
+
 Create a file named .env and add the following variables:
-<img width="489" height="76" alt="image" src="https://github.com/user-attachments/assets/b578278d-6c55-4f2b-8929-a0e6f81c3cb6" />
+
+
+```
+VITE_SUPABASE_URL=your_supabase_project_URL_here
+VITE_SUPABASE_ANON_KEY=your_anon_public_key_here
+```
 
 ## 3. Add .env file to gitignore.
 
 You can run this bash command to add the .env file to .gitignore
 
-"echo .env >> .gitignore"
+```
+echo .env >> .gitignore
+```
 
 
