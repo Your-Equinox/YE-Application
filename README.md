@@ -104,3 +104,31 @@ Vite: https://vite.dev/guide/troubleshooting
 
 [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 
+### For Developers - Supabase Setup 🛢️
+
+Supabase is the database used for the project, allowing for the asynchronous function of features and instantaneous and automatic saving of user data.
+
+## 1. Create a Supabase account
+
+<img width="640" height="384" alt="image" src="https://github.com/user-attachments/assets/dc9881b4-7301-483c-9ec7-4d9f47f1542b" />
+
+Signing up through GitHub is generally the easiest option. Once that is done, create a new project and choose a region that is closest to you.
+
+## 2. Creating the .env file
+
+The .env file serves as the connection credentials between the Vite app and Supabase. You will need to retrieve the following data from Supabase to set up this file.
+
+a. The Supabase URL (which can be found on the Project Dashboard).
+b. and the anon public key (which can be found in Project Settings -> API)
+<img width="557" height="121" alt="image" src="https://github.com/user-attachments/assets/c1eec0c7-9501-4789-8df1-2a654f398278" />
+
+Create a file named .env and add the following variables:
+<img width="489" height="76" alt="image" src="https://github.com/user-attachments/assets/b578278d-6c55-4f2b-8929-a0e6f81c3cb6" />
+
+## 3. Add .env file to gitignore.
+
+You can run this bash command to add the .env file to .gitignore
+
+"echo .env >> .gitignore"
+
+
