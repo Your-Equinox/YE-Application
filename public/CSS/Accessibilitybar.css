@@ -63,7 +63,7 @@
 }
 
 .high-contrast a {
-    color: #00ff00 !important;
+    color: #1658ff !important;
     text-decoration: underline !important;
 }
 
@@ -71,6 +71,19 @@
     background-color: #222 !important;
     color: #ffff00 !important;
     border-color: #ffffff !important;
+}
+
+/* ===== HIGH CONTRAST: FLASHCARD BUTTON ===== */
+.high-contrast #toggle-flashcard-btn,
+.high-contrast #toggle-flashcard-btn:hover,
+.high-contrast #toggle-flashcard-btn.active {
+    background: #000000 !important;
+    background-image: none !important;
+    color: #ffff00 !important;
+    border: 3px solid #ffff00 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
 }
 
 /* ===== ACCESSIBILITY TOOLBAR - COLLAPSIBLE ===== */
@@ -187,25 +200,4 @@
 
 .access-openbtn:hover {
     padding-right: 12px;
-}
-
-
-/* FORCE SYNC: FLASHCARD BUTTON IN HIGH CONTRAST */
-.high-contrast #toggle-flashcard-btn,
-.high-contrast #toggle-flashcard-btn:hover,
-.high-contrast #toggle-flashcard-btn.active {
-    /* Use 'background' shorthand to kill gradients and images */
-    background: #000000 !important;
-    /* Force high-visibility border and text */
-    color: #ffff00 !important;
-    border: 3px solid #ffff00 !important;
-    /* Ensure emoji/icon is also visible */
-    filter: brightness(0) invert(1) sepia(1) saturate(10000%) hue-rotate(20deg) !important;
-    box-shadow: none !important;
-}
-
-/* Ensure text inside button isn't overridden by Tailwind utility classes */
-.high-contrast #toggle-flashcard-btn span,
-.high-contrast #toggle-flashcard-btn {
-    text-shadow: none !important;
 }
