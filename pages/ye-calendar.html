@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: chrome-extension:; connect-src 'self' https://*.supabase.co;">
     <title>YE - Calendar</title>
-    <link rel="stylesheet" href="/YE-Application/CSS/theme.css">
-    <link rel="stylesheet" href="/YE-Application/CSS/calendar.css">
+    <link rel="stylesheet" href="/CSS/theme.css">
+    <link rel="stylesheet" href="/CSS/calendar.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
 </head>
 <body class="antialiased min-h-screen pt-24">
 <nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-3 py-2 bg-white/70 backdrop-blur-xl border rounded-full shadow-2xl flex items-center gap-2">
-    <a href="/YE-Application/YeDashBoard.html" class="px-5 py-2 rounded-full hover:bg-slate-100 font-bold text-sm">Home</a>
-    <a href="/YE-Application/pages/ye-notes.html" class="px-5 py-2 rounded-full hover:bg-slate-100 font-bold text-sm">Notes</a>
+    <a href="/YeDashBoard.html" class="px-5 py-2 rounded-full hover:bg-slate-100 font-bold text-sm">Home</a>
+    <a href="pages/ye-notes.html" class="px-5 py-2 rounded-full hover:bg-slate-100 font-bold text-sm">Notes</a>
     <a href="#" class="px-5 py-2 rounded-full bg-slate-900 text-white font-bold text-sm">Calendar</a>
 </nav>
 <div id="app" class="min-h-screen p-4 flex flex-col items-center max-w-[1600px] mx-auto"></div>
-<script type="module" src="/YE-Application/Scripts/Supabase/AuthGuard.ts"></script>
-<script type="module" src="/YE-Application/Scripts/Calendar/MainCalendar.ts"></script>
+<script type="module" src="/Scripts/Supabase/AuthGuard.ts"></script>
+<script type="module" src="/Scripts/Calendar/MainCalendar.ts"></script>
 </body>
 </html>
