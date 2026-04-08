@@ -458,7 +458,7 @@ export function renderApp() {
     titleGroup.className = "flex items-center gap-4";
 
     const backBtn = document.createElement("a");
-    backBtn.href = "/YeDashBoard.html";
+    backBtn.href = "../YeDashBoard.html";
     backBtn.className = "text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors cursor-pointer";
     backBtn.innerHTML = "&larr; Back to Dashboard";
 
