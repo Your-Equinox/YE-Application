@@ -3,28 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.cdnfonts.com chrome-extension:; connect-src 'self' https://*.supabase.co;">
   <title>Your Equinox - Pro Editor</title>
+
   <link rel="stylesheet" href="/CSS/theme.css">
   <link rel="stylesheet" href="/CSS/math.css">
   <link rel="stylesheet" href="/CSS/Accessibilitybar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+  <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 </head>
-<body class="h-screen flex overflow-hidden">
+
+<body class="h-screen flex overflow-hidden selection:bg-pink-500 selection:text-white">
+
+<div id="accessSidebar" class="access-sidebar" aria-hidden="true">
+  <button id="close-access-btn" class="closebtn" aria-label="Close Accessibility Toolbar">×</button>
+
+  <button id="dyslexia-toggle" aria-pressed="false">
+    <span aria-hidden="true">📖</span><span class="btn-text"> Dyslexic Font</span>
+  </button>
+  <button id="font-decrease">
+    <span aria-hidden="true">A-</span><span class="btn-text"> Decrease</span>
+  </button>
+  <button id="font-reset">
+    <span aria-hidden="true">A</span><span class="btn-text"> Reset Font</span>
+  </button>
+  <button id="font-increase">
+    <span aria-hidden="true">A+</span><span class="btn-text"> Increase</span>
+  </button>
+  <button id="zoom-reset">
+    <span aria-hidden="true">🔍</span><span class="btn-text"> Reset All</span>
+  </button>
+  <button id="high-contrast-toggle" aria-pressed="false">
+    <span aria-hidden="true">🌓</span><span class="btn-text"> High Contrast</span>
+  </button>
+</div>
+
+<button id="open-access-btn" class="access-openbtn" aria-label="Open Accessibility Toolbar">☰</button>
+
+<div class="toolbar-toggle-handle" id="toolbar-toggle-handle"></div>
+
 <aside class="w-64 glass-panel flex flex-col h-full shrink-0 z-20 shadow-xl">
   <div class="p-5 border-b border-gray-200 flex justify-between items-center">
-    <a href="/YeDashBoard.html" class="text-sm font-bold text-slate-500 hover:text-indigo-500 transition-colors flex items-center gap-2">&larr; Dashboard</a>
+    <a href="../YeDashBoard.html" class="text-sm font-bold text-slate-500 hover:text-indigo-500 transition-colors flex items-center gap-2">
+      <span aria-hidden="true">&larr;</span> Dashboard
+    </a>
+    <div class="flex items-center gap-1">
+      <button id="new-category-btn" class="p-2 rounded-lg text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 transition-all" aria-label="New Category" title="New Category">📁</button>
+      <button id="new-note-btn" class="p-2 rounded-lg text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 transition-all text-xl leading-none" aria-label="New Note" title="New Note">+</button>
+    </div>
   </div>
-  <div id="sidebar-note-list" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+
+  <div id="sidebar-note-list" class="flex-1 overflow-y-auto p-4 space-y-2 font-medium"></div>
+
+  <div class="p-5 border-t border-gray-200 dark:border-slate-700 space-y-2">
+    <input type="file" id="import-file" class="hidden" accept=".docx,.pdf,.txt,.md">
+
+    <button id="importDocument-btn" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-100 hover:bg-white dark:hover:bg-slate-700 transition shadow-sm">
+      <span aria-hidden="true">📥</span> Import Notes
+    </button>
+
+    <div class="w-full flex flex-col gap-2">
+      <button id="export-menu-btn" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-100 hover:bg-white dark:hover:bg-slate-700 transition shadow-sm">
+        <span aria-hidden="true">📤</span> Export Options
+      </button>
+
+      <div id="export-dropdown" class="hidden w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex-col">
+        <button id="export-txt-btn" class="w-full text-left px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 dark:hover:text-white border-b border-slate-100 dark:border-slate-700/50 transition flex items-center gap-2">
+          <span aria-hidden="true">📄</span> Current Note (.txt)
+        </button>
+        <button id="export-doc-btn" class="w-full text-left px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 dark:hover:text-white border-b border-slate-100 dark:border-slate-700/50 transition flex items-center gap-2">
+          <span aria-hidden="true">📝</span> Current Note (.doc)
+        </button>
+      </div>
+    </div>
+  </div>
 </aside>
-<main class="flex-1 flex flex-col overflow-y-auto relative bg-transparent">
-  <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 hidden flex-col min-h-full">
-    <input type="text" id="note-title" class="text-5xl font-black w-full outline-none mb-8 bg-transparent" placeholder="Untitled">
-    <div id="tiptap-editor" class="w-full flex-1 prose prose-slate prose-lg max-w-none pb-24"></div>
+
+<main class="flex-1 flex flex-col overflow-y-auto relative min-w-0 bg-transparent">
+
+  <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 pointer-events-none z-10">
+    <div class="text-6xl mb-4 opacity-50" aria-hidden="true">📝</div>
+    <p class="text-lg font-medium">Select a note or create a new one to begin.</p>
+  </div>
+
+  <div id="editor-container" class="max-w-4xl w-full mx-auto p-8 md:p-12 hidden flex-col min-h-full relative z-10">
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+      <div class="flex flex-wrap gap-2">
+        <button id="toggle-flashcard-btn" class="px-4 py-2 rounded-xl text-sm font-bold transition-all bg-indigo-50 text-indigo-600 hover:bg-indigo-100 shadow-sm border border-indigo-100">🧠 Flashcards</button>
+        <button id="generate-quiz-btn" class="px-4 py-2 rounded-xl text-sm font-bold transition-all bg-blue-50 text-blue-600 hover:bg-blue-100 shadow-sm border border-blue-100">🤖 Generate Quiz</button>
+        <button id="ai-assist-btn" class="hidden px-4 py-2 rounded-xl text-sm font-bold transition-all bg-purple-50 text-purple-600 hover:bg-purple-100 shadow-sm border border-purple-100">✨ AI Assistant</button>
+      </div>
+      <button id="delete-note-btn" class="text-red-500 hover:text-red-700 text-sm font-bold transition bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl border border-red-100">Delete Note</button>
+    </div>
+
+    <label for="note-title" class="sr-only">Note Title</label>
+    <input type="text" id="note-title" class="text-5xl md:text-6xl font-black tracking-tight w-full outline-none mb-8 placeholder-slate-200 text-slate-800 bg-transparent" placeholder="Untitled">
+
+    <div id="format-toolbar" class="flex flex-wrap items-center gap-1 glass-toolbar p-2 rounded-2xl w-fit fixed bottom-12 left-1/2 transform -translate-x-1/2 z-[60] shadow-2xl">
+      <button onclick="editor.chain().focus().toggleHeading({ level: 1 }).run()" class="px-3 py-1.5 text-sm font-black text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">H1</button>
+      <button onclick="editor.chain().focus().toggleHeading({ level: 2 }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">H2</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().toggleBold().run()" class="px-3 py-1.5 text-sm font-black text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">B</button>
+      <button onclick="editor.chain().focus().toggleItalic().run()" class="px-3 py-1.5 text-sm italic font-serif text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">I</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().toggleCodeBlock().run()" class="px-3 py-1.5 text-sm font-mono font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">Code</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">📊 Table</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button id="format-image" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">🖼️ Image</button>
+      <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+      <button onclick="editor.chain().focus().insertBlockMath({ latex: 'a^2 + b^2 = c^2' }).run()" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition">∑ Math</button>
+      <input type="file" id="image-upload-input" accept="image/*" class="hidden">
+    </div>
+
+    <div id="math-bubble-menu" class="flex items-center gap-2 glass-toolbar p-2 rounded-xl z-50 w-fit shadow-xl" style="visibility: hidden; position: absolute;">
+      <span class="text-sm font-black text-slate-400 ml-1" aria-hidden="true">∑</span>
+      <label for="math-editor-input" class="sr-only">Math LaTeX Input</label>
+      <input type="text" id="math-editor-input" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none w-64 text-slate-800 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono" placeholder="Enter LaTeX... (e.g. x^2)">
+      <button id="math-update-btn" class="px-4 py-1.5 text-xs font-bold bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg transition shadow-sm hover:shadow-md">Save</button>
+    </div>
+
+    <div id="table-bubble-menu" class="flex items-center gap-1 glass-toolbar p-1.5 rounded-xl z-50 w-fit" style="visibility: hidden; position: absolute;">
+      <button onclick="editor.chain().focus().addRowAfter().run()" class="px-3 py-1.5 text-xs font-bold text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition">+ Row</button>
+      <button onclick="editor.chain().focus().addColumnAfter().run()" class="px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition">+ Col</button>
+      <div class="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+      <button onclick="editor.chain().focus().deleteRow().run()" class="px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">Del Row</button>
+      <button onclick="editor.chain().focus().deleteColumn().run()" class="px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">Del Col</button>
+      <button onclick="editor.chain().focus().deleteTable().run()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-red-600 transition" aria-label="Delete Table">🗑️</button>
+    </div>
+
+    <div id="tiptap-editor" class="w-full flex-1 prose prose-slate prose-lg max-w-none bg-transparent pb-24 text-lg"></div>
+
   </div>
 </main>
+
+<aside id="ai-sidebar" class="fixed top-0 right-0 w-80 md:w-96 h-full glass-panel border-l border-slate-200 transform translate-x-full transition-transform duration-300 flex flex-col z-50 shadow-2xl">
+  <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white/40">
+    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+      <span class="bg-gradient-to-br from-purple-500 to-indigo-500 text-transparent bg-clip-text">✨ AI Assistant</span>
+    </h3>
+    <button id="close-ai-btn" class="text-slate-400 hover:text-slate-700 text-2xl leading-none transition" aria-label="Close AI Assistant">&times;</button>
+  </div>
+  <div id="ai-chat-history" class="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col"></div>
+  <div class="p-5 border-t border-slate-200 bg-white/40">
+    <form id="ai-form" class="flex gap-2 relative">
+      <label for="ai-input" class="sr-only">Ask AI</label>
+      <input type="text" id="ai-input" placeholder="Ask anything..." class="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white/80" required>
+      <button type="submit" class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-5 py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition-all flare-btn" id="ai-submit-btn">Send</button>
+    </form>
+  </div>
+</aside>
+
 <script type="module" src="../Scripts/NoteTaking/Accessibilitybar.ts"></script>
 <script type="module" src="../Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="../Scripts/NoteTaking/NotePage.ts"></script>
+
 </body>
 </html>

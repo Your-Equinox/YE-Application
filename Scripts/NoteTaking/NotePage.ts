@@ -303,7 +303,7 @@
                 await saveNote(note);
 
                 alert("Quiz generated successfully! Redirecting...");
-                window.location.href = `/pages/ye-quiz.html?noteId=${note.id}`;
+                window.location.href = `pages/ye-quiz.html?noteId=${note.id}`;
 
             } catch (error) {
                 console.error("AI Error:", error);

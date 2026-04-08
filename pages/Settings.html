@@ -3,46 +3,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: chrome-extension:; connect-src 'self' https://*.supabase.co;">
   <title>Settings - Your Equinox</title>
+
   <link rel="stylesheet" href="/CSS/theme.css">
   <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
+
 <body class="h-screen flex overflow-hidden selection:bg-pink-500 selection:text-white">
+
 <aside class="w-72 glass-panel border-r border-y-0 border-l-0 flex flex-col z-10">
   <div class="p-8 border-b border-gray-200 dark:border-slate-700">
     <h1 class="text-3xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text tracking-tight">Settings</h1>
   </div>
   <nav class="flex-1 p-6 space-y-3">
-    <button class="w-full text-left px-5 py-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold transition-all shadow-md hover:scale-[1.02]">👤 General</button>
-    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">🔔 Notifications</button>
-    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">✨ AI Assistant</button>
-    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">🛡️ Privacy</button>
+    <button class="w-full text-left px-5 py-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold transition-all shadow-md hover:scale-[1.02]">
+      👤 General
+    </button>
+    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
+      🔔 Notifications
+    </button>
+    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
+      ✨ AI Assistant
+    </button>
+    <button class="w-full text-left px-5 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
+      🛡️ Privacy
+    </button>
   </nav>
   <div class="p-6 border-t border-gray-200 dark:border-slate-700 space-y-3">
-    <a href="/YeDashBoard.html" class="block w-full text-center px-5 py-3 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition">&larr; Dashboard</a>
-    <button id="logout-btn" class="block w-full text-center px-5 py-3 bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition font-bold">Sign Out</button>
+    <a href="../YeDashBoard.html" class="block w-full text-center px-5 py-3 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+      &larr; Dashboard
+    </a>
+    <button id="logout-btn" class="block w-full text-center px-5 py-3 bg-red-50 dark:bg-red-500/10 border-2 border-red-100 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition font-bold">
+      Sign Out
+    </button>
   </div>
 </aside>
+
 <main class="flex-1 overflow-y-auto p-8 md:p-12 relative z-0">
   <div class="max-w-3xl mx-auto space-y-8">
+
     <section id="general" class="glass-panel rounded-3xl p-8">
       <div class="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
         <h2 class="text-2xl font-black">General Account</h2>
-        <button id="theme-toggle-btn" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform"><svg id="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+        <button id="theme-toggle-btn" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform" aria-label="Switch mode">
+          <svg id="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
       </div>
+
       <div class="space-y-6">
         <div>
           <label class="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-2" for="display-name">Display Name</label>
           <div class="flex flex-col sm:flex-row gap-3">
-            <input type="text" id="display-name" class="flare-input flex-1 px-5 py-3 rounded-xl font-medium">
-            <button id="save-name-btn" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg">Save</button>
+            <input type="text" id="display-name" placeholder="Your Name" class="flare-input flex-1 px-5 py-3 rounded-xl font-medium">
+            <button id="save-name-btn" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+              Save
+            </button>
           </div>
+          <p id="name-status" class="text-emerald-500 font-bold text-sm mt-3 hidden">✓ Name updated.</p>
+        </div>
+        <p id="theme-status" class="text-emerald-500 font-bold text-sm mt-3 hidden">✓ Theme saved.</p>
+      </div>
+    </section>
+
+    <section id="notifications" class="glass-panel rounded-3xl p-8 hidden">
+      <div class="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <span class="text-3xl text-pink-500">🔔</span>
+        <h2 class="text-2xl font-black">Notifications</h2>
+      </div>
+      <p class="text-slate-500 font-medium mb-8">Manage how Your Equinox alerts you about due reviews and timed events.</p>
+      <ul id="reminderSettings" class="space-y-4 font-medium"></ul>
+    </section>
+
+    <section id="ai-settings" class="glass-panel rounded-3xl p-8 hidden">
+      <div class="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <span class="text-3xl text-purple-500">✨</span>
+        <h2 class="text-2xl font-black">AI Assistant</h2>
+      </div>
+      <p class="text-slate-500 font-medium mb-8">Configure your local API connection. Keys are stored safely in browser LocalStorage.</p>
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Gemini API Key</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="password" id="gemini-api-key" placeholder="AIzaSy..." class="flare-input flex-1 px-5 py-3 rounded-xl font-mono tracking-wider">
+            <button id="save-api-key-btn" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+              Store Key
+            </button>
+          </div>
+          <p id="api-key-status" class="text-emerald-500 font-bold text-sm mt-3 hidden">✓ API Key secured locally.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy" class="glass-panel rounded-3xl p-8 hidden">
+      <div class="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+        <span class="text-3xl text-emerald-500">🛡️</span>
+        <h2 class="text-2xl font-black">Privacy & Data</h2>
+      </div>
+      <p class="text-slate-500 font-medium mb-8">Maintain local compliance and full ownership of your data exports.</p>
+
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-2 border-slate-100 dark:border-slate-800 rounded-2xl bg-white/50 dark:bg-slate-800/30 gap-4">
+          <div>
+            <p class="font-bold text-lg">Import Data</p>
+            <p class="text-sm text-slate-500 font-medium mt-1">Restore from a backup JSON.</p>
+            <input type="file" id="import-file" accept=".json" class="hidden" />
+          </div>
+          <button id="import-btn" class="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 transition shadow-sm w-full sm:w-auto">Import</button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-2 border-slate-100 dark:border-slate-800 rounded-2xl bg-white/50 dark:bg-slate-800/30 gap-4">
+          <div>
+            <p class="font-bold text-lg">Export Data</p>
+            <p class="text-sm text-slate-500 font-medium mt-1">Download full JSON snapshot.</p>
+          </div>
+          <button id="export-btn" class="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 transition shadow-sm w-full sm:w-auto">Export</button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-2 border-red-100 dark:border-red-900/30 rounded-2xl bg-red-50/50 dark:bg-red-500/5 gap-4">
+          <div>
+            <p class="font-bold text-lg text-red-600 dark:text-red-400">Nuclear Option</p>
+            <p class="text-sm text-red-500 font-medium mt-1">Permanently wipe all browser data.</p>
+          </div>
+          <button id="purge-btn" class="px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-bold hover:shadow-lg hover:-translate-y-1 transition-all w-full sm:w-auto">Purge</button>
         </div>
       </div>
     </section>
   </div>
 </main>
+
+<dialog id="custom-confirm-modal" class="glass-panel p-8 rounded-3xl min-w-[320px] max-w-md w-full m-auto border-t-8 border-t-red-500 backdrop:bg-slate-900/60 shadow-[0_20px_60px_-15px_rgba(239,68,68,0.3)]">
+  <div class="text-6xl text-center mb-4">⚠️</div>
+  <h2 class="text-2xl font-black mb-2 text-red-600 text-center">Purge Data</h2>
+  <p class="mb-8 text-slate-600 dark:text-slate-300 font-medium text-center">This will destroy all tasks, notes, and settings stored in this browser. Proceed?</p>
+  <div class="flex flex-col sm:flex-row justify-end gap-3">
+    <button id="cancel-purge-btn" class="px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-white rounded-xl font-bold transition">Cancel</button>
+    <button id="confirm-purge-btn" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-lg">Destroy</button>
+  </div>
+</dialog>
+
 <script type="module" src="../Scripts/Supabase/AuthGuard.ts"></script>
 <script type="module" src="../Scripts/Settings/SettingsPage.ts"></script>
 </body>
