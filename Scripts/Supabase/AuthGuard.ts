@@ -7,5 +7,5 @@ const { data: { session } } = await supabase.auth.getSession();
 
 if (!session) {
     document.body.style.display = "none";
-    window.location.replace("/auth.html");
+    window.location.replace("./index.html");
 }

@@ -50,7 +50,7 @@ loginForm.addEventListener("submit", async (e) => {
         btn.textContent = "Sign In";
         btn.disabled = false;
     } else {
-        window.location.href = "/index.html";
+        window.location.href = "/YeDashBoard.html";
     }
 });
 
@@ -91,7 +91,7 @@ signupForm.addEventListener("submit", async (e) => {
     }
 
     showSuccess("Account created! Signing you in...");
-    setTimeout(() => window.location.href = "/index.html", 1500);
+    setTimeout(() => window.location.href = "/YeDashBoard.html", 1500);
 });
 
 // --- Helpers ---

@@ -86,7 +86,7 @@ const logoutBtn = document.querySelector<HTMLButtonElement>("#logout-btn");
 if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
         await supabase.auth.signOut();
-        window.location.href = "/auth.html";
+        window.location.href = "/index.html";
     });
 }
 
@@ -118,7 +118,7 @@ if (purgeBtn && customConfirmModal && confirmPurgeBtn && cancelPurgeBtn) {
         localStorage.clear();
         customConfirmModal.close();
         alert("All data has been successfully deleted.");
-        window.location.href = "/index.html";
+        window.location.href = "/YeDashBoard.html";
     });
 }
 
