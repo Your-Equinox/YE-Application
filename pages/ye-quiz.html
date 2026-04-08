@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YE - Practice Quiz</title>
-  <link rel="stylesheet" href="/YE-Application/CSS/theme.css">
+  <link rel="stylesheet" href="/CSS/theme.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-screen flex flex-col antialiased">
 <header class="p-5 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-  <a href="/YE-Application/pages/ye-notes.html" class="px-5 py-2 rounded-full bg-slate-100 font-bold text-sm">&larr; Exit</a>
+  <a href="pages/ye-notes.html" class="px-5 py-2 rounded-full bg-slate-100 font-bold text-sm">&larr; Exit</a>
 </header>
 <main class="flex-1 overflow-y-auto p-6 flex flex-col items-center">
   <div id="quiz-container" class="w-full max-w-3xl space-y-8"></div>
 </main>
-<script type="module" src="/YE-Application/Scripts/Supabase/AuthGuard.ts"></script>
-<script type="module" src="/YE-Application/Scripts/ActiveLearningTools/LearningTools/Quizzes.ts"></script>
+<script type="module" src="Scripts/Supabase/AuthGuard.ts"></script>
+<script type="module" src="Scripts/ActiveLearningTools/LearningTools/Quizzes.ts"></script>
 </body>
 </html>
